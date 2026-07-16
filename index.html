@@ -104,7 +104,25 @@ tr:last-child td{border-bottom:none;}
 .ibadge span{font-size:11px;font-weight:800;color:#fff;letter-spacing:0.1em;}
 .infobox{background:#eef3ff;border:1px solid #b8d0f8;border-radius:6px;padding:11px 13px;font-size:13px;color:#0530ad;margin-bottom:12px;}
 .infobox.g{background:#f0fff4;border-color:#86efac;color:#15803d;}
-svg.chart{width:100%;overflow:visible;}
+.wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;}
+.wheel-outer{position:relative;width:300px;height:300px;flex-shrink:0;}
+.wheel-canvas{border-radius:50%;box-shadow:0 4px 24px rgba(2,17,38,0.18);}
+.wheel-pointer{position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:28px solid #0f62fe;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));z-index:10;}
+.wheel-pointer::after{content:'';position:absolute;top:-32px;left:50%;transform:translateX(-50%);width:14px;height:14px;background:#0f62fe;border-radius:50%;}
+.spin-btn{padding:14px 44px;background:#0f62fe;color:#fff;border:none;border-radius:99px;font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(15,98,254,0.35);transition:transform 0.1s,background 0.2s;}
+.spin-btn:hover{background:#0530ad;transform:scale(1.04);}
+.spin-btn:disabled{background:#b8d0f8;cursor:not-allowed;transform:none;}
+.spin-result{background:linear-gradient(135deg,#eef3ff,#dceeff);border:2px solid #b8d0f8;border-radius:14px;padding:22px 24px;text-align:center;max-width:340px;width:100%;display:none;}
+.spin-result.show{display:block;animation:slideup 0.4s ease;}
+.spin-result .sr-icon{font-size:44px;margin-bottom:8px;}
+.spin-result .sr-title{font-size:18px;font-weight:800;color:#021126;margin-bottom:6px;}
+.spin-result .sr-msg{font-size:14px;color:#57606a;line-height:1.6;}
+.spin-result .sr-done{margin-top:14px;padding:9px 28px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+.spin-result .sr-done:hover{background:#0530ad;}
+.spin-hist{margin-top:8px;}
+.spin-hist-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid #f0f1f3;font-size:13px;}
+.spin-hist-item:last-child{border-bottom:none;}
+.spin-hist-time{color:#57606a;min-width:58px;}svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0530ad;color:#fff;padding:9px 20px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:9999;font-weight:600;}
@@ -159,6 +177,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <button data-tab="weekly">Weekly Report</button>
   <button data-tab="team">Team View</button>
   <button data-tab="reminders">&#x1F514; Reminders</button>
+  <button data-tab="spin">&#x1F3A1; Spin</button>
   <button data-tab="charts">Charts</button>
 </nav>
 <main>
@@ -235,6 +254,28 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   </div>
   <div class="card"><h2>Today&#39;s Reminder Log</h2><div id="rem-log"><div class="empty">No reminders fired yet today.</div></div></div>
 </div>
+
+<!-- SPIN THE WHEEL -->
+<div id="tab-spin" class="tab">
+  <div class="card">
+    <h2>&#x1F3A1; Spin for a Wellness Break</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:18px;">Not sure what wellness break to take? Give the wheel a spin and let fate decide!</p>
+    <div class="wheel-wrap">
+      <div class="wheel-outer">
+        <div class="wheel-pointer"></div>
+        <canvas id="spin-canvas" class="wheel-canvas" width="300" height="300"></canvas>
+      </div>
+      <button class="spin-btn" id="spin-btn">&#x1F3A1; Spin!</button>
+      <div class="spin-result" id="spin-result">
+        <div class="sr-icon" id="sr-icon"></div>
+        <div class="sr-title" id="sr-title"></div>
+        <div class="sr-msg" id="sr-msg"></div>
+        <button class="sr-done" id="sr-done">&#x2713; Done! Log it</button>
+      </div>
+    </div>
+  </div>
+  <div class="card"><h2>Spin History</h2><div id="spin-hist-wrap"><div class="empty">No spins yet today.</div></div></div>
+</div>
 <div id="tab-charts" class="tab">
   <div class="card"><h2>Steps — Last 7 Days</h2><div id="ch-steps"></div></div>
   <div class="card"><h2>Water — Last 7 Days</h2><div id="ch-water"></div></div>
@@ -286,7 +327,7 @@ document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.
 if(P){launch();}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
-document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='spin'){drawWheel(spinAngle);}if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});});});
 function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
 document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();renderSteps();renderSummary();toast('Steps saved!');});
 document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
@@ -352,6 +393,7 @@ setInterval(function(){var t=document.querySelector('nav button.active');fetchCl
 </script>
 </body>
 </html>
+
 
 
 
