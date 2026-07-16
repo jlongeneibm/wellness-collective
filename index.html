@@ -312,6 +312,8 @@ function launch(){
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
   syncRemUI();startReminders();renderRemLog();
+  var _sb=document.getElementById('spin-btn');if(_sb)_sb.addEventListener('click',spinWheel);
+  var _sd=document.getElementById('sr-done');if(_sd)_sd.addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
   fetchCloud().then(function(){renderTeam();syncSelf();});;setTimeout(function(){drawWheel(spinAngle);},300);
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
 }
@@ -450,8 +452,6 @@ function renderSpinHist(){
   if(!spinHistory.length){w.innerHTML='<div class="empty">No spins yet today.</div>';return;}
   w.innerHTML=spinHistory.map(function(h){return'<div class="spin-hist-item"><span class="spin-hist-time">'+h.time+'</span><span style="font-size:18px">'+h.icon+'</span><span style="font-weight:600">'+h.title+'</span></div>';}).join('');
 }
-var _sb=document.getElementById('spin-btn');if(_sb)_sb.addEventListener('click',spinWheel);
-var _sd=document.getElementById('sr-done');if(_sd)_sd.addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
