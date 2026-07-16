@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -193,6 +193,47 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><div class="banner bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>Individual Leaderboard — The Wellness Collective</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;"><p style="font-size:13px;color:#57606a;">Points: steps (1/1,000) · activity (1/10 min) · water (1/glass) · sleep ≥7 hrs (2/night).</p><span id="last-sync" style="font-size:11px;color:#57606a;"></span></div><div id="ind-lb"><div class="empty">Loading…</div></div></div>
   <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
 </div>
+
+<!-- REMINDERS -->
+<div id="tab-reminders" class="tab">
+  <div class="card">
+    <h2>&#x1F514; Wellness Break Reminders</h2>
+    <div class="infobox">Reminders pop up in the corner of your screen while the app is open. Click <strong>Enable Browser Notifications</strong> below to also receive alerts when the tab is in the background &mdash; works in Chrome, Edge, Firefox, and Safari.</div>
+    <h3>Enable Reminders</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <span style="font-size:14px;">Reminders active</span>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:0;">
+        <input type="checkbox" id="rem-enabled" style="width:18px;height:18px;accent-color:#0f62fe;margin:0;">
+        <span style="font-size:13px;color:#57606a;" id="rem-enabled-lbl">Off</span>
+      </label>
+    </div>
+    <h3>Reminder Interval</h3>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+      <input type="range" id="rem-interval" min="15" max="120" step="15" value="60">
+      <span style="font-size:15px;font-weight:700;color:#0f62fe;min-width:90px;" id="rem-interval-lbl">Every 60 min</span>
+    </div>
+    <h3>Quiet Hours (reminders only within these times)</h3>
+    <div class="g2" style="margin-bottom:14px;">
+      <div><label for="rem-start">Start time</label><input type="time" id="rem-start" value="08:00"></div>
+      <div><label for="rem-end">End time</label><input type="time" id="rem-end" value="17:00"></div>
+    </div>
+    <h3>Reminder Types &mdash; click to toggle on/off</h3>
+    <div class="rtype-grid" id="rtype-grid"></div>
+    <div class="sep"></div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+      <button class="btn bb" id="btn-rem-save">Save Settings</button>
+      <button class="btn bo bsm" id="btn-rem-test">Preview a Reminder</button>
+      <button class="btn bo bsm" id="btn-notif-req">Enable Browser Notifications</button>
+    </div>
+    <div class="sep"></div>
+    <h3>Next Reminder</h3>
+    <div class="rnext-box">
+      <span id="rnext-txt">Reminders are off.</span>
+      <span id="rnext-countdown" style="font-weight:700;color:#0f62fe;"></span>
+    </div>
+  </div>
+  <div class="card"><h2>Today&#39;s Reminder Log</h2><div id="rem-log"><div class="empty">No reminders fired yet today.</div></div></div>
+</div>
 <div id="tab-charts" class="tab">
   <div class="card"><h2>Steps — Last 7 Days</h2><div id="ch-steps"></div></div>
   <div class="card"><h2>Water — Last 7 Days</h2><div id="ch-water"></div></div>
@@ -228,7 +269,9 @@ function launch(){
   document.getElementById('hgreet').textContent=h<12?'Good morning!':h<17?'Good afternoon!':'Good evening!';
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
+  syncRemUI();startReminders();renderRemLog();
   fetchCloud().then(function(){renderTeam();syncSelf();});
+  if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
 }
 
 document.getElementById('go-btn').addEventListener('click',function(){
@@ -242,7 +285,7 @@ document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.
 if(P){launch();}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
-document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});});});
 function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
 document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();renderSteps();renderSummary();toast('Steps saved!');});
 document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
@@ -272,7 +315,40 @@ document.getElementById('btn-pair-save').addEventListener('click',function(){var
 function last7(){var d=[];for(var i=6;i>=0;i--){var x=new Date();x.setDate(x.getDate()-i);d.push(x.toISOString().slice(0,10));}return d;}
 function barChart(cid,data,max,cls,unit){var c=document.getElementById(cid),W=680,H=150,pl=36,pr=8,pt=12,pb=26,iW=W-pl-pr,iH=H-pt-pb,bW=Math.floor(iW/data.length)-6;var eM=max||Math.max.apply(null,data.map(function(d){return d.v;}).concat([1]));var bars='',lbl='',vals='',grid='';data.forEach(function(d,i){var x=pl+i*(iW/data.length)+3,bH=Math.max(2,Math.round(d.v/eM*iH)),y=pt+iH-bH;bars+='<rect class="cb '+cls+'" x="'+x+'" y="'+y+'" width="'+bW+'" height="'+bH+'" rx="2"/>';lbl+='<text class="cl" x="'+(x+bW/2)+'" y="'+(H-4)+'" text-anchor="middle">'+d.l.slice(5)+'</text>';vals+=d.v>0?'<text class="cl" x="'+(x+bW/2)+'" y="'+(y-3)+'" text-anchor="middle">'+d.v+'</text>':'';});for(var g=0;g<=4;g++){var yg=pt+iH-(g/4)*iH,val=Math.round(eM*g/4);grid+='<line x1="'+pl+'" y1="'+yg+'" x2="'+(W-pr)+'" y2="'+yg+'" stroke="#e5e7eb" stroke-width="1"/><text class="cl" x="'+(pl-3)+'" y="'+(yg+4)+'" text-anchor="end">'+val+'</text>';}c.innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+grid+bars+lbl+vals+'</svg><div style="font-size:11px;color:#57606a;text-align:right;margin-top:3px;">'+unit+'</div>';}
 function drawCharts(){var d=last7();barChart('ch-steps',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].steps:0)||0};}),10000,'','steps');barChart('ch-water',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].water:0)||0};}),8,'wt','glasses');barChart('ch-sleep',d.map(function(x){var e=SLP.find(function(s){return s.date===x;});return{l:x,v:e?e.hrs:0};}),10,'sl','hours');}
+
+// ---- REMINDER TYPES ----
+var RTYPES=[
+  {id:'walk',   icon:'\u{1F6B6}', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
+  {id:'water',  icon:'\u{1F4A7}', title:'Drink Water',         msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
+  {id:'stretch',icon:'\u{1F9D8}', title:'Stretch & Stand Up',  msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
+  {id:'breathe',icon:'\u{1F32C}', title:'Deep Breathing',      msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
+  {id:'eyes',   icon:'\u{1F441}', title:'Eye Break',           msg:'Look away from your screen - focus on something 20 feet away for 20 seconds. (20-20-20 rule)'},
+  {id:'snack',  icon:'\u{1F34E}', title:'Healthy Snack Break', msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
+  {id:'mood',   icon:'\u{1F60A}', title:'Mood Check-in',       msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
+  {id:'posture',icon:'\u{1FA91}', title:'Posture Check',       msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
+];
+var RSET=gl('wtrem',{enabled:false,interval:60,start:'08:00',end:'17:00',types:['walk','water','stretch','breathe','eyes']});
+var remTimer=null,remSnoozeTimer=null,remCountdownTimer=null,remNextTime=null,remLog=[],remTypeIdx=0;
+function saveRem(){sl('wtrem',RSET);}
+function startReminders(){clearRemTimers();if(!RSET.enabled)return;scheduleNext();remCountdownTimer=setInterval(updateNextDisplay,10000);}
+function clearRemTimers(){if(remTimer)clearTimeout(remTimer);if(remSnoozeTimer)clearTimeout(remSnoozeTimer);if(remCountdownTimer)clearInterval(remCountdownTimer);remTimer=null;remSnoozeTimer=null;remCountdownTimer=null;}
+function scheduleNext(ms){ms=ms!==undefined?ms:RSET.interval*60*1000;remNextTime=Date.now()+ms;remTimer=setTimeout(fireReminder,ms);updateNextDisplay();}
+function fireReminder(){if(!RSET.enabled)return;var now=new Date(),hhmm=now.getHours()*60+now.getMinutes();var s=RSET.start.split(':'),e=RSET.end.split(':');var sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);if(hhmm<sMin||hhmm>eMin){scheduleNext();return;}var enabled=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!enabled.length){scheduleNext();return;}var t=enabled[remTypeIdx%enabled.length];remTypeIdx++;showPopup(t);if(window.Notification&&Notification.permission==='granted'){try{new Notification('IBM Wellness Collective - '+t.title,{body:t.msg});}catch(e){}}remLog.push({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});renderRemLog();scheduleNext();}
+function showPopup(t){document.getElementById('rp-icon').textContent=t.icon;document.getElementById('rp-title').textContent=t.title;document.getElementById('rp-msg').textContent=t.msg;var p=document.getElementById('reminder-popup');p.style.display='block';setTimeout(function(){if(p.style.display==='block')p.style.display='none';},30000);}
+function updateNextDisplay(){var el=document.getElementById('rnext-txt'),cd=document.getElementById('rnext-countdown');if(!el)return;if(!RSET.enabled||!remNextTime){el.textContent='Reminders are off.';cd.textContent='';return;}var mins=Math.ceil(Math.max(0,remNextTime-Date.now())/60000);el.textContent='Next reminder in:';cd.textContent=mins+' min';}
+function buildRtypeGrid(){var g=document.getElementById('rtype-grid');g.innerHTML='';RTYPES.forEach(function(t){var on=RSET.types.indexOf(t.id)>=0;var c=document.createElement('div');c.className='rtype-chip'+(on?' on':'');c.textContent=t.icon+' '+t.title;c.dataset.id=t.id;c.addEventListener('click',function(){var i=RSET.types.indexOf(t.id);if(i>=0)RSET.types.splice(i,1);else RSET.types.push(t.id);c.classList.toggle('on');});g.appendChild(c);});}
+function syncRemUI(){document.getElementById('rem-enabled').checked=RSET.enabled;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-interval').value=RSET.interval;document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';document.getElementById('rem-start').value=RSET.start;document.getElementById('rem-end').value=RSET.end;buildRtypeGrid();updateNextDisplay();}
+function renderRemLog(){var w=document.getElementById('rem-log');if(!remLog.length){w.innerHTML='<div class="empty">No reminders fired yet today.</div>';return;}w.innerHTML='<table><thead><tr><th>Time</th><th>Reminder</th></tr></thead><tbody>'+[].concat(remLog).reverse().map(function(r){return'<tr><td style="color:#57606a">'+r.time+'</td><td>'+r.icon+' '+r.title+'</td></tr>';}).join('')+'</tbody></table>';}
+document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
+document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
+document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;saveRem();startReminders();toast('Reminder settings saved!');});
+document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}showPopup(en[Math.floor(Math.random()*en.length)]);});
+document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Browser notifications not supported.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Permission denied.');});});
+document.getElementById('rp-done').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';toast('Great job! Keep it up');});
+document.getElementById('rp-snooze').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';clearTimeout(remSnoozeTimer);remNextTime=Date.now()+600000;remSnoozeTimer=setTimeout(fireReminder,600000);updateNextDisplay();toast('Snoozed 10 minutes.');});
+document.getElementById('rp-dismiss').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';});
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
 </html>
+
