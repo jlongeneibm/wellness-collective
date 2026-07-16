@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Wellness Collective v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>The Wellness Collective v2</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.6;color:#1f2328;background:#061433;}
@@ -104,14 +104,16 @@ tr:last-child td{border-bottom:none;}
 .ibadge span{font-size:11px;font-weight:800;color:#fff;letter-spacing:0.1em;}
 .infobox{background:#eef3ff;border:1px solid #b8d0f8;border-radius:6px;padding:11px 13px;font-size:13px;color:#0530ad;margin-bottom:12px;}
 .infobox.g{background:#f0fff4;border-color:#86efac;color:#15803d;}
+
 .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;}
 .wheel-outer{position:relative;width:300px;height:300px;flex-shrink:0;}
-.wheel-canvas{border-radius:50%;box-shadow:0 4px 24px rgba(2,17,38,0.18);}
-.wheel-pointer{position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:28px solid #0f62fe;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));z-index:10;}
-.wheel-pointer::after{content:'';position:absolute;top:-32px;left:50%;transform:translateX(-50%);width:14px;height:14px;background:#0f62fe;border-radius:50%;}
-.spin-btn{padding:14px 44px;background:#0f62fe;color:#fff;border:none;border-radius:99px;font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(15,98,254,0.35);transition:transform 0.1s,background 0.2s;}
-.spin-btn:hover{background:#0530ad;transform:scale(1.04);}
-.spin-btn:disabled{background:#b8d0f8;cursor:not-allowed;transform:none;}
+.wheel-pointer{position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:28px solid #0f62fe;z-index:10;}
+.spin-wheel-css{width:300px;height:300px;border-radius:50%;position:relative;box-shadow:0 4px 24px rgba(2,17,38,0.18);}
+.sw-label{position:absolute;font-size:10px;font-weight:700;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.6);line-height:1.2;pointer-events:none;width:60px;}
+.wheel-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;background:#fff;border-radius:50%;border:2px solid #e5e7eb;display:flex;align-items:center;justify-content:center;z-index:10;}
+.spin-btn{padding:14px 44px;background:#0f62fe;color:#fff;border:none;border-radius:99px;font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(15,98,254,0.35);}
+.spin-btn:hover{background:#0530ad;}
+.spin-btn:disabled{background:#b8d0f8;cursor:not-allowed;}
 .spin-result{background:linear-gradient(135deg,#eef3ff,#dceeff);border:2px solid #b8d0f8;border-radius:14px;padding:22px 24px;text-align:center;max-width:340px;width:100%;display:none;}
 .spin-result.show{display:block;animation:slideup 0.4s ease;}
 .spin-result .sr-icon{font-size:44px;margin-bottom:8px;}
@@ -119,10 +121,10 @@ tr:last-child td{border-bottom:none;}
 .spin-result .sr-msg{font-size:14px;color:#57606a;line-height:1.6;}
 .spin-result .sr-done{margin-top:14px;padding:9px 28px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
 .spin-result .sr-done:hover{background:#0530ad;}
-.spin-hist{margin-top:8px;}
 .spin-hist-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid #f0f1f3;font-size:13px;}
 .spin-hist-item:last-child{border-bottom:none;}
-.spin-hist-time{color:#57606a;min-width:58px;}svg.chart{width:100%;overflow:visible;}
+.spin-hist-time{color:#57606a;min-width:58px;}
+svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0530ad;color:#fff;padding:9px 20px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:9999;font-weight:600;}
@@ -139,7 +141,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
     <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
     <div class="ibm-lbl">IBM</div>
     <h1>The Wellness Collective</h1>
-    <p>Enter your name to join the team leaderboard. Your weekly scores sync to the shared cloud automatically.</p>
+    <p>Enter your name to join the team leaderboard. Your weekly scores sync to the shared cloud automatically. Works in all browsers — Chrome, Edge, Firefox, and Safari.</p>
     <label class="flbl" for="inp-name">Your Name</label>
     <input class="finp" type="text" id="inp-name" placeholder="e.g. Alex Smith" autocomplete="off">
     <label class="flbl" for="inp-dept">Department <span style="font-weight:400;color:#57606a;">(optional)</span></label>
@@ -214,6 +216,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
 </div>
 
+
 <!-- REMINDERS -->
 <div id="tab-reminders" class="tab">
   <div class="card">
@@ -252,7 +255,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
       <span id="rnext-countdown" style="font-weight:700;color:#0f62fe;"></span>
     </div>
   </div>
-  <div class="card"><h2>Today&#39;s Reminder Log</h2><div id="rem-log"><div class="empty">No reminders fired yet today.</div></div></div>
+  <div class="card"><h2>Today's Reminder Log</h2><div id="rem-log"><div class="empty">No reminders fired yet today.</div></div></div>
 </div>
 
 <!-- SPIN THE WHEEL -->
@@ -263,7 +266,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
     <div class="wheel-wrap">
       <div class="wheel-outer">
         <div class="wheel-pointer"></div>
-        <canvas id="spin-canvas" class="wheel-canvas" width="300" height="300"></canvas>
+        <div id="spin-wheel-css" class="spin-wheel-css"></div>
       </div>
       <button class="spin-btn" id="spin-btn">&#x1F3A1; Spin!</button>
       <div class="spin-result" id="spin-result">
@@ -276,6 +279,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   </div>
   <div class="card"><h2>Spin History</h2><div id="spin-hist-wrap"><div class="empty">No spins yet today.</div></div></div>
 </div>
+
 <div id="tab-charts" class="tab">
   <div class="card"><h2>Steps — Last 7 Days</h2><div id="ch-steps"></div></div>
   <div class="card"><h2>Water — Last 7 Days</h2><div id="ch-water"></div></div>
@@ -283,7 +287,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 </main>
 <div id="toast"></div>
-<footer><div class="fr"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="0" y="0" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="2.3" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="4.6" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="6.9" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="9.2" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="0" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="2.3" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="4.6" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="6.9" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="9.2" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="0" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="2.3" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="4.6" width="8.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="6.9" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="9.2" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/></svg><div class="fd"></div><span style="color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;">The Wellness Collective</span><div class="fd"></div><span>Made with IBM Bob</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Team data synced via JSONBin · Personal logs stored locally in your browser.</div></footer>
+<footer><div class="fr"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="0" y="0" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="2.3" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="4.6" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="6.9" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="9.2" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="0" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="2.3" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="4.6" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="6.9" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="9.2" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="0" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="2.3" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="4.6" width="8.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="6.9" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="9.2" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/></svg><div class="fd"></div><span style="color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;">The Wellness Collective</span><div class="fd"></div><span>Made with IBM Bob</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Team data synced via JSONBin · Personal logs stored locally in your browser · Hosted on GitHub Pages</div></footer>
 </div>
 
 <script>
@@ -311,10 +315,19 @@ function launch(){
   document.getElementById('hgreet').textContent=h<12?'Good morning!':h<17?'Good afternoon!':'Good evening!';
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
+  fetchCloud().then(function(){renderTeam();syncSelf();});
   syncRemUI();startReminders();renderRemLog();
-  var _sb=document.getElementById('spin-btn');if(_sb)_sb.addEventListener('click',spinWheel);
-  var _sd=document.getElementById('sr-done');if(_sd)_sd.addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
-  fetchCloud().then(function(){renderTeam();syncSelf();});;setTimeout(function(){drawWheel(spinAngle);},300);
+  buildWheel();
+  document.getElementById('spin-btn').addEventListener('click',spinWheel);
+  document.getElementById('sr-done').addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
+  document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
+  document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
+  document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
+  document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}showPopup(en[Math.floor(Math.random()*en.length)]);});
+  document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Browser notifications not supported.');return;}if(Notification.permission==='denied'){toast('Blocked - click the padlock icon in your address bar to allow.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Click the padlock in the address bar to allow.');});});
+  document.getElementById('rp-done').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';toast('Great job! Keep it up!');});
+  document.getElementById('rp-snooze').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';clearTimeout(remSnoozeTimer);remNextTime=Date.now()+600000;remSnoozeTimer=setTimeout(fireReminder,600000);updateNextDisplay();toast('Snoozed 10 minutes.');});
+  document.getElementById('rp-dismiss').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';});
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
 }
 
@@ -329,7 +342,7 @@ document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.
 if(P){launch();}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
-document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='spin'){drawWheel(spinAngle);}if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='spin'){buildWheel();}});});
 function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
 document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();renderSteps();renderSummary();toast('Steps saved!');});
 document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
@@ -362,15 +375,17 @@ function drawCharts(){var d=last7();barChart('ch-steps',d.map(function(x){return
 
 // ---- REMINDER TYPES ----
 var RTYPES=[
-  {id:'walk',   icon:'\u{1F6B6}', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
-  {id:'water',  icon:'\u{1F4A7}', title:'Drink Water',         msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
-  {id:'stretch',icon:'\u{1F9D8}', title:'Stretch & Stand Up',  msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
-  {id:'breathe',icon:'\u{1F32C}', title:'Deep Breathing',      msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
-  {id:'eyes',   icon:'\u{1F441}', title:'Eye Break',           msg:'Look away from your screen - focus on something 20 feet away for 20 seconds. (20-20-20 rule)'},
-  {id:'snack',  icon:'\u{1F34E}', title:'Healthy Snack Break', msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
-  {id:'mood',   icon:'\u{1F60A}', title:'Mood Check-in',       msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
-  {id:'posture',icon:'\u{1FA91}', title:'Posture Check',       msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
+  {id:'walk',   icon:'🚶', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
+  {id:'water',  icon:'💧', title:'Drink Water',         msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
+  {id:'stretch',icon:'🧘', title:'Stretch & Stand Up',  msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
+  {id:'breathe',icon:'🌬️',title:'Deep Breathing', msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
+  {id:'eyes',   icon:'👁️',title:'Eye Break',      msg:'Look away from your screen - focus on something 20 feet away for 20 seconds. (20-20-20 rule)'},
+  {id:'snack',  icon:'🍎', title:'Healthy Snack Break', msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
+  {id:'mood',   icon:'😊', title:'Mood Check-in',       msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
+  {id:'posture',icon:'🪑', title:'Posture Check',       msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
 ];
+
+// ---- REMINDER STATE ----
 var RSET=gl('wtrem',{enabled:false,interval:60,start:'08:00',end:'17:00',types:['walk','water','stretch','breathe','eyes']});
 var remTimer=null,remSnoozeTimer=null,remCountdownTimer=null,remNextTime=null,remLog=[],remTypeIdx=0;
 function saveRem(){sl('wtrem',RSET);}
@@ -383,39 +398,38 @@ function updateNextDisplay(){var el=document.getElementById('rnext-txt'),cd=docu
 function buildRtypeGrid(){var g=document.getElementById('rtype-grid');g.innerHTML='';RTYPES.forEach(function(t){var on=RSET.types.indexOf(t.id)>=0;var c=document.createElement('div');c.className='rtype-chip'+(on?' on':'');c.textContent=t.icon+' '+t.title;c.dataset.id=t.id;c.addEventListener('click',function(){var i=RSET.types.indexOf(t.id);if(i>=0)RSET.types.splice(i,1);else RSET.types.push(t.id);c.classList.toggle('on');});g.appendChild(c);});}
 function syncRemUI(){document.getElementById('rem-enabled').checked=RSET.enabled;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-interval').value=RSET.interval;document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';document.getElementById('rem-start').value=RSET.start;document.getElementById('rem-end').value=RSET.end;buildRtypeGrid();updateNextDisplay();}
 function renderRemLog(){var w=document.getElementById('rem-log');if(!remLog.length){w.innerHTML='<div class="empty">No reminders fired yet today.</div>';return;}w.innerHTML='<table><thead><tr><th>Time</th><th>Reminder</th></tr></thead><tbody>'+[].concat(remLog).reverse().map(function(r){return'<tr><td style="color:#57606a">'+r.time+'</td><td>'+r.icon+' '+r.title+'</td></tr>';}).join('')+'</tbody></table>';}
-document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
-document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
-document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
-document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}showPopup(en[Math.floor(Math.random()*en.length)]);});
-document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Browser notifications not supported.');return;}if(Notification.permission==='denied'){toast('Blocked - click the padlock icon in your address bar to allow.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Click the padlock in the address bar to allow.');});});
-document.getElementById('rp-done').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';toast('Great job! Keep it up');});
-document.getElementById('rp-snooze').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';clearTimeout(remSnoozeTimer);remNextTime=Date.now()+600000;remSnoozeTimer=setTimeout(fireReminder,600000);updateNextDisplay();toast('Snoozed 10 minutes.');});
-document.getElementById('rp-dismiss').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';});
-// ---- SPIN THE WHEEL ----
+
+// ---- SPIN THE WHEEL JS ----
 var SPIN_COLORS=['#0f62fe','#00b4a0','#7c5cd8','#d97706','#ef4444','#22c55e','#0099c8','#0530ad'];
-var spinHistory=[],spinAngle=0,spinRunning=false;
-function drawWheel(angle){
-  var canvas=document.getElementById('spin-canvas');
-  if(!canvas)return;
-  var ctx=canvas.getContext('2d'),cx=150,cy=150,r=140,n=RTYPES.length,arc=(2*Math.PI)/n;
-  ctx.clearRect(0,0,300,300);
+var spinHistory=[],spinDeg=0,spinRunning=false;
+function buildWheel(){
+  var el=document.getElementById('spin-wheel-css');
+  if(!el||typeof RTYPES==='undefined'||!RTYPES)return;
+  var n=RTYPES.length,slice=360/n;
+  var grad=RTYPES.map(function(t,i){return SPIN_COLORS[i%SPIN_COLORS.length]+' '+Math.round(i*slice)+'deg '+Math.round((i+1)*slice)+'deg';}).join(', ');
+  el.style.background='conic-gradient('+grad+')';
+  el.style.transform='rotate('+spinDeg+'deg)';
+  el.style.transition='none';
+  // Clear old labels
+  Array.from(el.querySelectorAll('.sw-label,.wheel-center')).forEach(function(x){x.remove();});
+  // Add emoji + text labels
   RTYPES.forEach(function(t,i){
-    var start=angle+i*arc,end=start+arc;
-    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();
-    ctx.fillStyle=SPIN_COLORS[i%SPIN_COLORS.length];ctx.fill();
-    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
-    ctx.save();
-    ctx.translate(cx,cy);ctx.rotate(start+arc/2);ctx.translate(r*0.62,0);ctx.rotate(Math.PI/2);
-    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(t.icon,0,-10);
-    ctx.font='bold 9px sans-serif';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=3;
-    ctx.fillText(t.title.split(' ').slice(0,2).join(' '),0,8);
-    ctx.restore();
+    var midDeg=(i+0.5)*slice;
+    var midRad=midDeg*Math.PI/180;
+    var r=95,cx=150,cy=150;
+    var x=cx+r*Math.sin(midRad);
+    var y=cy-r*Math.cos(midRad);
+    var lbl=document.createElement('div');
+    lbl.className='sw-label';
+    lbl.style.cssText='left:'+x+'px;top:'+y+'px;transform:translate(-50%,-50%) rotate('+midDeg+'deg);';
+    lbl.textContent=t.icon+' '+t.title.split(' ').slice(0,2).join(' ');
+    el.appendChild(lbl);
   });
-  ctx.beginPath();ctx.arc(cx,cy,22,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();
-  ctx.strokeStyle='#e5e7eb';ctx.lineWidth=2;ctx.stroke();
-  ctx.fillStyle='#0f62fe';
-  for(var b=0;b<4;b++){ctx.fillRect(cx-10,cy-8+b*5,20,2.5);}
+  // IBM center circle
+  var ctr=document.createElement('div');
+  ctr.className='wheel-center';
+  ctr.innerHTML='<svg width="24" height="10" viewBox="0 0 24 10"><rect y="0" width="24" height="2" fill="#0f62fe"/><rect y="3" width="24" height="2" fill="#0f62fe"/><rect y="6" width="24" height="2" fill="#0f62fe"/><rect y="9" width="24" height="2" fill="#0f62fe"/></svg>';
+  el.appendChild(ctr);
 }
 function spinWheel(){
   if(spinRunning)return;
@@ -423,49 +437,40 @@ function spinWheel(){
   var btn=document.getElementById('spin-btn');
   if(btn)btn.disabled=true;
   document.getElementById('spin-result').classList.remove('show');
-  var totalRot=Math.PI*2*(5+Math.floor(Math.random()*6))+Math.random()*Math.PI*2;
-  var duration=3500,elapsed=0,iv=16,startAngle=spinAngle;
-  function ease(t){return 1-Math.pow(1-t,4);}
-  var tmr=setInterval(function(){
-    elapsed+=iv;
-    var p=Math.min(elapsed/duration,1);
-    spinAngle=startAngle+totalRot*ease(p);
-    drawWheel(spinAngle);
-    if(p>=1){
-      clearInterval(tmr);
-      spinAngle=spinAngle%(Math.PI*2);
-      spinRunning=false;
-      if(btn)btn.disabled=false;
-      showSpinResult();
-    }
-  },iv);
-}
-function showSpinResult(){
-  var n=RTYPES.length,arc=(2*Math.PI)/n;
-  var ptr=((Math.PI*1.5)-(spinAngle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
-  var t=RTYPES[Math.floor(ptr/arc)%n];
-  document.getElementById('sr-icon').textContent=t.icon;
-  document.getElementById('sr-title').textContent=t.title;
-  document.getElementById('sr-msg').textContent=t.msg;
-  document.getElementById('spin-result').classList.add('show');
-  var now=new Date();
-  spinHistory.unshift({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});
-  renderSpinHist();
+  var el=document.getElementById('spin-wheel-css');
+  if(!el){spinRunning=false;if(btn)btn.disabled=false;return;}
+  var n=RTYPES.length,slice=360/n;
+  var winner=Math.floor(Math.random()*n);
+  // Spin so winner segment center lands under the top pointer
+  var targetOffset=360-(winner*slice+slice/2);
+  var currentMod=spinDeg%360;
+  var diff=(targetOffset-currentMod+360)%360;
+  var finalDeg=spinDeg+360*6+diff;
+  el.style.transition='none';
+  el.getBoundingClientRect(); // force reflow
+  el.style.transition='transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)';
+  el.style.transform='rotate('+finalDeg+'deg)';
+  spinDeg=finalDeg;
+  setTimeout(function(){
+    spinRunning=false;
+    if(btn)btn.disabled=false;
+    var t=RTYPES[winner];
+    document.getElementById('sr-icon').textContent=t.icon;
+    document.getElementById('sr-title').textContent=t.title;
+    document.getElementById('sr-msg').textContent=t.msg;
+    document.getElementById('spin-result').classList.add('show');
+    var now=new Date();
+    spinHistory.unshift({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});
+    renderSpinHist();
+  },3600);
 }
 function renderSpinHist(){
   var w=document.getElementById('spin-hist-wrap');
   if(!spinHistory.length){w.innerHTML='<div class="empty">No spins yet today.</div>';return;}
   w.innerHTML=spinHistory.map(function(h){return'<div class="spin-hist-item"><span class="spin-hist-time">'+h.time+'</span><span style="font-size:18px">'+h.icon+'</span><span style="font-weight:600">'+h.title+'</span></div>';}).join('');
 }
+
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
