@@ -342,7 +342,7 @@ function syncRemUI(){document.getElementById('rem-enabled').checked=RSET.enabled
 function renderRemLog(){var w=document.getElementById('rem-log');if(!remLog.length){w.innerHTML='<div class="empty">No reminders fired yet today.</div>';return;}w.innerHTML='<table><thead><tr><th>Time</th><th>Reminder</th></tr></thead><tbody>'+[].concat(remLog).reverse().map(function(r){return'<tr><td style="color:#57606a">'+r.time+'</td><td>'+r.icon+' '+r.title+'</td></tr>';}).join('')+'</tbody></table>';}
 document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
 document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
-document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;saveRem();startReminders();toast('Reminder settings saved!');});
+document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
 document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}showPopup(en[Math.floor(Math.random()*en.length)]);});
 document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Browser notifications not supported.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Permission denied.');});});
 document.getElementById('rp-done').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';toast('Great job! Keep it up');});
@@ -352,5 +352,6 @@ setInterval(function(){var t=document.querySelector('nav button.active');fetchCl
 </script>
 </body>
 </html>
+
 
 
