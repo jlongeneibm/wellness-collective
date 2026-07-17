@@ -2673,70 +2673,89 @@ var CHALLENGES = [
   {icon:'🌬️', title:'Take 5 Deep Breaths Between Every Meeting', desc:'Before your next meeting ends, commit to 5 slow deep breaths in the transition. It resets your nervous system so you arrive present, not frazzled.', tags:['Mindfulness','1 min'], bg:['#3b0764','#6d28d9'], btnColor:'#6d28d9'}
 ];
 
-// Deterministic seeded random — same challenge every calendar day for everyone
+// Deterministic date seed — same challenge every calendar day, no overflow risk
 function dailySeed() {
-  var d = new Date(), s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-  s = ((s >>> 16) ^ s) * 0x45d9f3b; s = ((s >>> 16) ^ s) * 0x45d9f3b; s = (s >>> 16) ^ s;
-  return Math.abs(s) % CHALLENGES.length;
+  var d = new Date();
+  // Use day-of-year so the challenge advances every day
+  var start = new Date(d.getFullYear(), 0, 0);
+  var diff = d - start;
+  var oneDay = 1000 * 60 * 60 * 24;
+  var dayOfYear = Math.floor(diff / oneDay); // 1–366
+  // Mix in year so it doesn't repeat the same pattern each year
+  var n = d.getFullYear() * 1000 + dayOfYear;
+  // Simple but effective integer hash (no large multipliers that overflow)
+  n = ((n >> 16) ^ n) ^ ((n << 5) + n + 0xe6546b64 | 0);
+  return Math.abs(n) % CHALLENGES.length;
 }
 
 var CHALLENGE_KEY = 'wtchallenge'; // {date: 'YYYY-MM-DD', done: bool}
 
 function renderChallenge() {
-  var idx = dailySeed();
-  var ch = CHALLENGES[idx];
-  var today = td();
-  var saved = gl(CHALLENGE_KEY, {date: null, done: false});
-  var done = saved.date === today && saved.done;
-
-  // Background gradient
   var card = document.getElementById('challenge-card');
-  if (!card) return;
-  card.style.background = 'linear-gradient(135deg,' + ch.bg[0] + ' 0%,' + ch.bg[1] + ' 100%)';
+  if (!card) return; // element not present — safe exit
+  try {
+    var idx = dailySeed();
+    var ch = CHALLENGES[idx];
+    if (!ch) return; // safety: index out of range
+    var today = td();
+    var saved = gl(CHALLENGE_KEY, {date: null, done: false});
+    var done = saved.date === today && saved.done === true;
 
-  // Content
-  document.getElementById('ch-icon').textContent = ch.icon;
-  document.getElementById('ch-title').textContent = ch.title;
-  document.getElementById('ch-desc').textContent = ch.desc;
+    // Background gradient
+    card.style.background = 'linear-gradient(135deg,' + ch.bg[0] + ' 0%,' + ch.bg[1] + ' 100%)';
 
-  // Tags
-  var tagsEl = document.getElementById('ch-tags');
-  tagsEl.innerHTML = '';
-  ch.tags.forEach(function(t) {
-    var s = document.createElement('span');
-    s.className = 'ch-tag';
-    s.textContent = t;
-    tagsEl.appendChild(s);
-  });
+    // Content
+    var iconEl  = document.getElementById('ch-icon');
+    var titleEl = document.getElementById('ch-title');
+    var descEl  = document.getElementById('ch-desc');
+    var tagsEl  = document.getElementById('ch-tags');
+    var btn     = document.getElementById('btn-challenge-done');
+    var badge   = document.getElementById('challenge-done-badge');
+    var streakEl = document.getElementById('challenge-streak');
+    if (!iconEl || !titleEl || !descEl || !tagsEl || !btn || !badge || !streakEl) return;
 
-  // Button vs done badge
-  var btn = document.getElementById('btn-challenge-done');
-  var badge = document.getElementById('challenge-done-badge');
-  btn.style.color = ch.btnColor;
-  if (done) {
-    btn.style.display = 'none';
-    badge.style.display = 'flex';
-  } else {
-    btn.textContent = '✓ Mark Complete';
-    btn.style.display = 'inline-block';
-    badge.style.display = 'none';
-  }
+    iconEl.textContent  = ch.icon;
+    titleEl.textContent = ch.title;
+    descEl.textContent  = ch.desc;
 
-  // Streak
-  var streak = calcChallengeStreak(today);
-  var streakEl = document.getElementById('challenge-streak');
-  if (streak > 1) {
-    streakEl.textContent = '🔥 ' + streak + '-day streak!';
-  } else if (done) {
-    streakEl.textContent = '✓ Done today';
-  } else {
-    streakEl.textContent = 'Challenge ' + (idx + 1) + ' of ' + CHALLENGES.length;
+    // Tags
+    tagsEl.innerHTML = '';
+    ch.tags.forEach(function(t) {
+      var s = document.createElement('span');
+      s.className = 'ch-tag';
+      s.textContent = t;
+      tagsEl.appendChild(s);
+    });
+
+    // Button text must be set before toggling display
+    btn.textContent   = '✓ Mark Complete';
+    btn.style.color   = ch.btnColor;
+
+    if (done) {
+      btn.style.display   = 'none';
+      badge.style.display = 'flex';
+    } else {
+      btn.style.display   = 'inline-block';
+      badge.style.display = 'none';
+    }
+
+    // Streak counter
+    var streak = calcChallengeStreak(today);
+    if (streak > 1) {
+      streakEl.textContent = '🔥 ' + streak + '-day streak!';
+    } else if (done) {
+      streakEl.textContent = '✓ Done today';
+    } else {
+      streakEl.textContent = 'Challenge ' + (idx + 1) + ' of ' + CHALLENGES.length;
+    }
+  } catch(e) {
+    // Never let a rendering error freeze the rest of the app
+    console.warn('renderChallenge error:', e);
   }
 }
 
 function completeChallenge() {
   var today = td();
-  // Load history, mark today done
   var history = gl(CHALLENGE_KEY + '_hist', {});
   history[today] = true;
   sl(CHALLENGE_KEY + '_hist', history);
@@ -2748,12 +2767,11 @@ function completeChallenge() {
 function calcChallengeStreak(today) {
   var history = gl(CHALLENGE_KEY + '_hist', {});
   var streak = 0;
-  var d = new Date(today);
-  while (true) {
+  var d = new Date(today + 'T12:00:00'); // noon to avoid DST edge cases
+  for (var i = 0; i < 366; i++) {
     var key = d.toISOString().slice(0, 10);
     if (history[key]) { streak++; d.setDate(d.getDate() - 1); }
     else break;
-    if (streak > 365) break; // safety
   }
   return streak;
 }
