@@ -342,8 +342,8 @@ function persist(){sl('wtp',P);sl('wtd',DAYS);sl('wta',ACTS);sl('wts',SLP);sl('w
 function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};return DAYS[d];}
 function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
 function syncDot(s,m){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=m;}
-function fetchCloud(){syncDot('busy','Syncing…');return fetch(BURL+'/latest',{headers:{'X-Master-Key':KEY}}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Up to date');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('err','Sync failed');return false;});}
-function pushCloud(data){syncDot('busy','Saving…');return fetch(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('err','Save failed');return false;});}
+function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Up to date');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('err','Sync failed');return false;});}
+function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('err','Save failed');return false;});}
 function score(m){return Math.floor((+m.steps||0)/1000)+Math.floor((+m.activity||0)/10)+(+m.water||0)+(+m.sleep||0)*2;}
 function selfStats(){if(WKS.length){var w=WKS[WKS.length-1];return{steps:w.steps||0,activity:w.activity||0,water:w.water||0,sleep:w.sleep||0};}var s=0,a=0,w=0,sl=0;Object.values(DAYS).forEach(function(d){s+=(d.steps||0);w+=(d.water||0);});ACTS.forEach(function(x){a+=x.dur;});SLP.forEach(function(x){if(x.hrs>=7)sl++;});return{steps:s,activity:a,water:w,sleep:sl};}
 function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].concat(cloud.members),i=ms.findIndex(function(m){return m.name===P.name;});var e=Object.assign({name:P.name,dept:P.dept||''},st);if(i>=0)ms[i]=e;else ms.push(e);return pushCloud(Object.assign({},cloud,{members:ms}));}
@@ -356,8 +356,8 @@ function launch(){
   document.getElementById('hgreet').textContent=h<12?'Good morning!':h<17?'Good afternoon!':'Good evening!';
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
-  fetchCloud().then(function(){renderTeam();syncSelf();});
-  fetchPersonal();
+  syncDot('ok','Ready');
+  setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
   syncRemUI();startReminders();renderRemLog();
   buildWheel();
   document.getElementById('spin-btn').addEventListener('click',spinWheel);
@@ -438,6 +438,16 @@ function playChime(){
     });
   }catch(e){}
 }
+
+// ---- FETCH WITH TIMEOUT ----
+function fetchWithTimeout(url, opts, ms){
+  ms = ms || 8000;
+  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = setTimeout(function(){ if(controller) controller.abort(); }, ms);
+  var fetchOpts = controller ? Object.assign({}, opts, {signal: controller.signal}) : opts;
+  return fetch(url, fetchOpts).then(function(r){ clearTimeout(timer); return r; }).catch(function(e){ clearTimeout(timer); throw e; });
+}
+
 // ---- REMINDER TYPES ----
 var RTYPES=[
   {id:'walk',   icon:'🚶', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
@@ -541,7 +551,7 @@ var personalSyncing=false;
 
 function fetchPersonal(){
   if(!P)return Promise.resolve();
-  return fetch(PBURL+'/latest',{headers:{'X-Master-Key':KEY}})
+  return fetchWithTimeout(PBURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
     .then(function(r){if(!r.ok)throw 0;return r.json();})
     .then(function(j){
       var users=(j.record||{}).users||{};
@@ -565,13 +575,13 @@ function fetchPersonal(){
 function pushPersonal(){
   if(!P||personalSyncing)return Promise.resolve();
   personalSyncing=true;
-  return fetch(PBURL+'/latest',{headers:{'X-Master-Key':KEY}})
+  return fetchWithTimeout(PBURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
     .then(function(r){if(!r.ok)throw 0;return r.json();})
     .then(function(j){
       var data=j.record||{users:{}};
       if(!data.users)data.users={};
       data.users[P.name]={name:P.name,dept:P.dept||'',days:DAYS,acts:ACTS,slp:SLP,habits:HABITS,wks:WKS,updated:new Date().toISOString()};
-      return fetch(PBURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)});
+      return fetchWithTimeout(PBURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)},8000);
     })
     .then(function(r){if(!r.ok)throw 0;personalSyncing=false;})
     .catch(function(){personalSyncing=false;});
@@ -590,6 +600,16 @@ function schedulePush(){
   },3000);
 }
 
+
+// Watchdog: reset sync dot if stuck on Connecting for > 10s
+setTimeout(function(){
+  var dot = document.getElementById('sdot');
+  var txt = document.getElementById('stxt');
+  if(dot && txt && txt.textContent === 'Connecting…'){
+    dot.className = 'sdot ok';
+    txt.textContent = 'Ready (offline mode)';
+  }
+}, 10000);
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
