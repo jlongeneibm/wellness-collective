@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><title>The Wellness Collective v2</title>
+<title>The Wellness Collective v2</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.6;color:#1f2328;background:#061433;}
@@ -105,6 +106,16 @@ tr:last-child td{border-bottom:none;}
 .infobox{background:#eef3ff;border:1px solid #b8d0f8;border-radius:6px;padding:11px 13px;font-size:13px;color:#0530ad;margin-bottom:12px;}
 .infobox.g{background:#f0fff4;border-color:#86efac;color:#15803d;}
 
+/* REMINDER POPUP */
+#reminder-popup{position:fixed;bottom:28px;right:28px;z-index:9999;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(2,17,38,0.22);padding:20px 22px;max-width:320px;width:90%;display:none;border-top:5px solid #0f62fe;}
+#rp-done{flex:1;padding:9px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+#rp-done:hover{background:#0530ad;}
+#rp-snooze{flex:1;padding:9px;background:#f0f1f3;color:#1f2328;border:none;border-radius:7px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+#rp-dismiss{position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:#57606a;cursor:pointer;line-height:1;}
+.rtype-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.rtype-chip{padding:6px 13px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid #e5e7eb;background:#f7f8fa;color:#57606a;user-select:none;}
+.rtype-chip.on{border-color:#0f62fe;background:#eef3ff;color:#0f62fe;}
+.rnext-box{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;font-size:13px;color:#1f2328;display:flex;align-items:center;justify-content:space-between;}
 .wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;}
 .wheel-outer{position:relative;width:300px;height:300px;flex-shrink:0;}
 .wheel-pointer{position:absolute;top:-18px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:28px solid #0f62fe;z-index:10;}
@@ -124,23 +135,6 @@ tr:last-child td{border-bottom:none;}
 .spin-hist-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid #f0f1f3;font-size:13px;}
 .spin-hist-item:last-child{border-bottom:none;}
 .spin-hist-time{color:#57606a;min-width:58px;}
-
-.rtype-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.rtype-chip{padding:6px 13px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid #e5e7eb;background:#f7f8fa;color:#57606a;user-select:none;}
-.rtype-chip.on{border-color:#0f62fe;background:#eef3ff;color:#0f62fe;}
-.rnext-box{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;font-size:13px;color:#1f2328;display:flex;align-items:center;justify-content:space-between;}
-
-/* REMINDER POPUP */
-#reminder-popup{position:fixed;bottom:28px;right:28px;z-index:9999;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(2,17,38,0.22);padding:20px 22px;max-width:320px;width:90%;display:none;border-top:5px solid #0f62fe;}
-#reminder-popup .rp-ibm{font-size:10px;font-weight:700;color:#0f62fe;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;}
-#reminder-popup .rp-icon{font-size:32px;margin-bottom:8px;display:block;}
-#reminder-popup .rp-title{font-size:16px;font-weight:800;color:#021126;margin-bottom:4px;}
-#reminder-popup .rp-msg{font-size:14px;color:#57606a;margin-bottom:14px;}
-#reminder-popup .rp-btns{display:flex;gap:8px;}
-#rp-done{flex:1;padding:9px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
-#rp-done:hover{background:#0530ad;}
-#rp-snooze{flex:1;padding:9px;background:#f0f1f3;color:#1f2328;border:none;border-radius:7px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
-#rp-dismiss{position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:#57606a;cursor:pointer;line-height:1;}
 svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
@@ -155,15 +149,15 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 <!-- SETUP -->
 
 <!-- REMINDER POPUP -->
-<div id="reminder-popup" style="position:fixed;bottom:28px;right:28px;z-index:9999;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(2,17,38,0.22);padding:20px 22px;max-width:320px;width:90%;display:none;border-top:5px solid #0f62fe;">
-  <button id="rp-dismiss" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:#57606a;cursor:pointer;line-height:1;">&#x2715;</button>
+<div id="reminder-popup">
+  <button id="rp-dismiss">&#x2715;</button>
   <div style="font-size:10px;font-weight:700;color:#0f62fe;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;">IBM Wellness Collective</div>
   <span id="rp-icon" style="font-size:32px;margin-bottom:8px;display:block;">&#x1F6B6;</span>
   <div id="rp-title" style="font-size:16px;font-weight:800;color:#021126;margin-bottom:4px;">Time for a wellness break!</div>
   <div id="rp-msg" style="font-size:14px;color:#57606a;margin-bottom:14px;">Take a 10-minute walk to recharge.</div>
   <div style="display:flex;gap:8px;">
-    <button id="rp-done" style="flex:1;padding:9px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">&#x2713; Done!</button>
-    <button id="rp-snooze" style="flex:1;padding:9px;background:#f0f1f3;color:#1f2328;border:none;border-radius:7px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">&#x23F1; Snooze 10 min</button>
+    <button id="rp-done">&#x2713; Done!</button>
+    <button id="rp-snooze">&#x23F1; Snooze 10 min</button>
   </div>
 </div>
 
@@ -247,12 +241,11 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
 </div>
 
-
-<!-- REMINDERS -->
+<!-- REMINDERS TAB -->
 <div id="tab-reminders" class="tab">
   <div class="card">
     <h2>&#x1F514; Wellness Break Reminders</h2>
-    <div class="infobox">Reminders pop up in the corner of your screen while the app is open. Click <strong>Enable Browser Notifications</strong> below to also receive alerts when the tab is in the background &mdash; works in Chrome, Edge, Firefox, and Safari.</div>
+    <div class="infobox">Reminders pop up in the corner of your screen while the app is open. Click <strong>Enable Browser Notifications</strong> below to also receive alerts when the tab is in the background.</div>
     <h3>Enable Reminders</h3>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <span style="font-size:14px;">Reminders active</span>
@@ -266,7 +259,6 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
       <input type="range" id="rem-interval" min="15" max="120" step="15" value="60">
       <span style="font-size:15px;font-weight:700;color:#0f62fe;min-width:90px;" id="rem-interval-lbl">Every 60 min</span>
     </div>
-    
     <h3>Sound</h3>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <span style="font-size:14px;">Play chime with reminders</span>
@@ -298,7 +290,8 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><h2>Today's Reminder Log</h2><div id="rem-log"><div class="empty">No reminders fired yet today.</div></div></div>
 </div>
 
-<!-- SPIN THE WHEEL -->
+
+<!-- SPIN TAB -->
 <div id="tab-spin" class="tab">
   <div class="card">
     <h2>&#x1F3A1; Spin for a Wellness Break</h2>
@@ -327,12 +320,11 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 </main>
 <div id="toast"></div>
-<footer><div class="fr"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="0" y="0" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="2.3" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="4.6" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="6.9" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="9.2" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="0" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="2.3" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="4.6" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="6.9" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="9.2" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="0" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="2.3" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="4.6" width="8.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="6.9" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="9.2" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/></svg><div class="fd"></div><span style="color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;">The Wellness Collective</span><div class="fd"></div><span>Made with IBM Bob</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Team data synced via JSONBin · Personal logs stored locally in your browser · Hosted on GitHub Pages</div></footer>
+<footer><div class="fr"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="0" y="0" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="2.3" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="4.6" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="6.9" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="9.2" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="0" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="2.3" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="4.6" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="6.9" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="9.2" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="0" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="2.3" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="4.6" width="8.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="6.9" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="9.2" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/></svg><div class="fd"></div><span style="color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;">The Wellness Collective</span><div class="fd"></div><span>Made with IBM Bob</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Team data synced via JSONBin · Personal logs backed up to cloud · Hosted on GitHub Pages</div></footer>
 </div>
 
 <script>
 var BIN='6a57c11cda38895dfe6225c7',KEY='$2a$10$afJ/ONXifa.ehapwCn8wh.2gwgvVey8tOac6uC69ZzY31jRtVJNda',BURL='https://api.jsonbin.io/v3/b/'+BIN;
-var PBIN='6a5a467bf5f4af5e299cf1f0',PBURL='https://api.jsonbin.io/v3/b/6a5a467bf5f4af5e299cf1f0';
 function gl(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
 function sl(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function td(){return new Date().toISOString().slice(0,10);}
@@ -343,7 +335,7 @@ function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};ret
 function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
 function syncDot(s,m){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=m;}
 function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Connected ✓');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('ok','Ready');return false;});}
-function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('ok','Ready');return false;});}
+function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)},8000).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('ok','Ready');return false;});}
 function score(m){return Math.floor((+m.steps||0)/1000)+Math.floor((+m.activity||0)/10)+(+m.water||0)+(+m.sleep||0)*2;}
 function selfStats(){if(WKS.length){var w=WKS[WKS.length-1];return{steps:w.steps||0,activity:w.activity||0,water:w.water||0,sleep:w.sleep||0};}var s=0,a=0,w=0,sl=0;Object.values(DAYS).forEach(function(d){s+=(d.steps||0);w+=(d.water||0);});ACTS.forEach(function(x){a+=x.dur;});SLP.forEach(function(x){if(x.hrs>=7)sl++;});return{steps:s,activity:a,water:w,sleep:sl};}
 function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].concat(cloud.members),i=ms.findIndex(function(m){return m.name===P.name;});var e=Object.assign({name:P.name,dept:P.dept||''},st);if(i>=0)ms[i]=e;else ms.push(e);return pushCloud(Object.assign({},cloud,{members:ms}));}
@@ -351,27 +343,29 @@ function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].conc
 function launch(){
   document.getElementById('setup').style.display='none';
   document.getElementById('syncbar').style.display='flex';
+  syncDot('ok','Ready');
   document.getElementById('app').style.display='block';
   var now=new Date(),h=now.getHours();
   document.getElementById('hdate').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   document.getElementById('hgreet').textContent=h<12?'Good morning!':h<17?'Good afternoon!':'Good evening!';
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
-  syncDot('ok','Ready');
-  setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
   syncRemUI();startReminders();renderRemLog();
   buildWheel();
+  setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
+  if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
+  // Wire up all event listeners
   document.getElementById('spin-btn').addEventListener('click',spinWheel);
   document.getElementById('sr-done').addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
   document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
-  document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});document.getElementById('rem-sound').addEventListener('change',function(){RSET.sound=this.checked;document.getElementById('rem-sound-lbl').textContent=this.checked?'On':'Off';});
-  document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;RSET.sound=document.getElementById('rem-sound').checked;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-sound-lbl').textContent=RSET.sound?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
-  document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}var picked=en[Math.floor(Math.random()*en.length)];showPopup(picked);if(document.getElementById('rem-sound')&&document.getElementById('rem-sound').checked)playChime();});
-  document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Browser notifications not supported.');return;}if(Notification.permission==='denied'){toast('Blocked - click the padlock icon in your address bar to allow.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Click the padlock in the address bar to allow.');});});
+  document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
+  document.getElementById('rem-sound').addEventListener('change',function(){RSET.sound=this.checked;document.getElementById('rem-sound-lbl').textContent=this.checked?'On':'Off';});
+  document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.sound=document.getElementById('rem-sound').checked;RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-sound-lbl').textContent=RSET.sound?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
+  document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}var picked=en[Math.floor(Math.random()*en.length)];showPopup(picked);if(RSET.sound!==false)playChime();});
+  document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Not supported.');return;}if(Notification.permission==='denied'){toast('Blocked - click the padlock in address bar to allow.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Click the padlock to allow.');});});
   document.getElementById('rp-done').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';toast('Great job! Keep it up!');});
   document.getElementById('rp-snooze').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';clearTimeout(remSnoozeTimer);remNextTime=Date.now()+600000;remSnoozeTimer=setTimeout(fireReminder,600000);updateNextDisplay();toast('Snoozed 10 minutes.');});
   document.getElementById('rp-dismiss').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';});
-  if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
 }
 
 document.getElementById('go-btn').addEventListener('click',function(){
@@ -404,7 +398,7 @@ function renderSleep(){var w=document.getElementById('sleep-wrap');if(!SLP.lengt
 function getMon(d){var dt=new Date(d),day=dt.getDay(),diff=dt.getDate()-day+(day===0?-6:1);return new Date(dt.setDate(diff)).toISOString().slice(0,10);}
 document.getElementById('wk-start').value=getMon(td());
 document.getElementById('btn-wk-auto').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,we=new Date(ws);we.setDate(we.getDate()+6);var weS=we.toISOString().slice(0,10);var s=0,a=0,w=0,sl=0;Object.entries(DAYS).forEach(function(kv){if(kv[0]>=ws&&kv[0]<=weS){s+=(kv[1].steps||0);w+=(kv[1].water||0);}});ACTS.forEach(function(x){if(x.date>=ws&&x.date<=weS)a+=x.dur;});SLP.forEach(function(x){if(x.date>=ws&&x.date<=weS&&x.hrs>=7)sl++;});document.getElementById('wk-steps').value=s;document.getElementById('wk-act').value=a;document.getElementById('wk-water').value=w;document.getElementById('wk-sleep').value=sl;toast('Auto-filled!');});
-document.getElementById('btn-wk-save').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,steps=parseInt(document.getElementById('wk-steps').value)||0,act=parseInt(document.getElementById('wk-act').value)||0,water=parseInt(document.getElementById('wk-water').value)||0,slp=parseInt(document.getElementById('wk-sleep').value)||0;if(!ws){toast('Select a week.');return;}var sc=score({steps:steps,activity:act,water:water,sleep:slp}),i=WKS.findIndex(function(w){return w.ws===ws;});var e={ws:ws,steps:steps,activity:act,water:water,sleep:slp,score:sc};if(i>=0)WKS[i]=e;else WKS.push(e);WKS.sort(function(a,b){return a.ws<b.ws?-1:1;});persist();schedulePush();renderWkHist();syncSelf().then(function(){toast('Synced to team!');});});
+document.getElementById('btn-wk-save').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,steps=parseInt(document.getElementById('wk-steps').value)||0,act=parseInt(document.getElementById('wk-act').value)||0,water=parseInt(document.getElementById('wk-water').value)||0,slp=parseInt(document.getElementById('wk-sleep').value)||0;if(!ws){toast('Select a week.');return;}var sc=score({steps:steps,activity:act,water:water,sleep:slp}),i=WKS.findIndex(function(w){return w.ws===ws;});var e={ws:ws,steps:steps,activity:act,water:water,sleep:slp,score:sc};if(i>=0)WKS[i]=e;else WKS.push(e);WKS.sort(function(a,b){return a.ws<b.ws?-1:1;});persist();renderWkHist();syncSelf().then(function(){toast('Synced to team!');});});
 function renderWkHist(){var w=document.getElementById('wk-hist');if(!WKS.length){w.innerHTML='<div class="empty">No weekly reports yet.</div>';return;}var r=[].concat(WKS).reverse().map(function(w){return'<tr><td>'+w.ws+'</td><td>'+(w.steps||0).toLocaleString()+'</td><td>'+(w.activity||0)+' min</td><td>'+(w.water||0)+'</td><td>'+(w.sleep||0)+'</td><td><strong style="color:#0f62fe">'+w.score+' pts</strong></td></tr>';}).join('');w.innerHTML='<table><thead><tr><th>Week Of</th><th>Steps</th><th>Activity</th><th>Water</th><th>Sleep</th><th>Points</th></tr></thead><tbody>'+r+'</tbody></table>';}
 function renderTeam(){renderIndLB();renderPairsLB();fillSelects();renderPairsMgr();}
 function renderIndLB(){var sorted=[].concat(cloud.members).map(function(m){return Object.assign({},m,{sc:score(m)});}).sort(function(a,b){return b.sc-a.sc;});var max=sorted[0]?sorted[0].sc:1,w=document.getElementById('ind-lb');if(!sorted.length){w.innerHTML='<div class="empty">No data yet — submit your weekly report to appear here.</div>';return;}w.innerHTML=sorted.map(function(m,i){var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',pct=Math.round(m.sc/max*100),isMe=P&&m.name===P.name;return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+m.name+(isMe?' <span class="tag">You</span>':'')+(m.dept?' <span class="tag tagt">'+m.dept+'</span>':'')+'</div><div class="lbs">Steps: '+(m.steps||0).toLocaleString()+' · Act: '+(m.activity||0)+' min · Water: '+(m.water||0)+' · Sleep: '+(m.sleep||0)+'</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb'+(rc==='gold'?' gold':'')+'" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+m.sc+' pts</div></div>';}).join('');}
@@ -416,62 +410,43 @@ function last7(){var d=[];for(var i=6;i>=0;i--){var x=new Date();x.setDate(x.get
 function barChart(cid,data,max,cls,unit){var c=document.getElementById(cid),W=680,H=150,pl=36,pr=8,pt=12,pb=26,iW=W-pl-pr,iH=H-pt-pb,bW=Math.floor(iW/data.length)-6;var eM=max||Math.max.apply(null,data.map(function(d){return d.v;}).concat([1]));var bars='',lbl='',vals='',grid='';data.forEach(function(d,i){var x=pl+i*(iW/data.length)+3,bH=Math.max(2,Math.round(d.v/eM*iH)),y=pt+iH-bH;bars+='<rect class="cb '+cls+'" x="'+x+'" y="'+y+'" width="'+bW+'" height="'+bH+'" rx="2"/>';lbl+='<text class="cl" x="'+(x+bW/2)+'" y="'+(H-4)+'" text-anchor="middle">'+d.l.slice(5)+'</text>';vals+=d.v>0?'<text class="cl" x="'+(x+bW/2)+'" y="'+(y-3)+'" text-anchor="middle">'+d.v+'</text>':'';});for(var g=0;g<=4;g++){var yg=pt+iH-(g/4)*iH,val=Math.round(eM*g/4);grid+='<line x1="'+pl+'" y1="'+yg+'" x2="'+(W-pr)+'" y2="'+yg+'" stroke="#e5e7eb" stroke-width="1"/><text class="cl" x="'+(pl-3)+'" y="'+(yg+4)+'" text-anchor="end">'+val+'</text>';}c.innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+grid+bars+lbl+vals+'</svg><div style="font-size:11px;color:#57606a;text-align:right;margin-top:3px;">'+unit+'</div>';}
 function drawCharts(){var d=last7();barChart('ch-steps',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].steps:0)||0};}),10000,'','steps');barChart('ch-water',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].water:0)||0};}),8,'wt','glasses');barChart('ch-sleep',d.map(function(x){var e=SLP.find(function(s){return s.date===x;});return{l:x,v:e?e.hrs:0};}),10,'sl','hours');}
 
+// ---- FETCH WITH TIMEOUT ----
+function fetchWithTimeout(url,opts,ms){
+  ms=ms||8000;
+  return new Promise(function(resolve,reject){
+    var done=false;
+    var timer=setTimeout(function(){if(!done){done=true;reject(new Error('timeout'));}},ms);
+    fetch(url,opts).then(function(r){if(!done){done=true;clearTimeout(timer);resolve(r);}}).catch(function(e){if(!done){done=true;clearTimeout(timer);reject(e);}});
+  });
+}
 
 // ---- CHIME SOUND ----
 function playChime(){
   try{
     var ctx=new(window.AudioContext||window.webkitAudioContext)();
-    // Three-note ascending chime: C5 -> E5 -> G5
-    var notes=[523.25,659.25,783.99];
-    notes.forEach(function(freq,i){
-      var osc=ctx.createOscillator();
-      var gain=ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type='sine';
-      osc.frequency.value=freq;
+    [523.25,659.25,783.99].forEach(function(freq,i){
+      var osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';osc.frequency.value=freq;
       var t=ctx.currentTime+i*0.18;
       gain.gain.setValueAtTime(0,t);
       gain.gain.linearRampToValueAtTime(0.28,t+0.04);
       gain.gain.exponentialRampToValueAtTime(0.001,t+0.55);
-      osc.start(t);
-      osc.stop(t+0.6);
+      osc.start(t);osc.stop(t+0.6);
     });
   }catch(e){}
 }
 
-// ---- FETCH WITH TIMEOUT ----
-function fetchWithTimeout(url, opts, ms){
-  ms = ms || 8000;
-  var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  var timer = setTimeout(function(){ if(controller) controller.abort(); }, ms);
-  var fetchOpts = controller ? Object.assign({}, opts, {signal: controller.signal}) : opts;
-  return fetch(url, fetchOpts).then(function(r){ clearTimeout(timer); return r; }).catch(function(e){ clearTimeout(timer); throw e; });
-}
-
-
-function fetchCloudSilent(){
-  return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
-    .then(function(r){if(!r.ok)throw 0;return r.json();})
-    .then(function(j){
-      var r=j.record||{};
-      cloud.members=Array.isArray(r.members)?r.members:[];
-      cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];
-      document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-      return true;
-    })
-    .catch(function(){return false;});
-}
 // ---- REMINDER TYPES ----
 var RTYPES=[
-  {id:'walk',   icon:'🚶', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
-  {id:'water',  icon:'💧', title:'Drink Water',         msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
-  {id:'stretch',icon:'🧘', title:'Stretch & Stand Up',  msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
-  {id:'breathe',icon:'🌬️',title:'Deep Breathing', msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
-  {id:'eyes',   icon:'👁️',title:'Eye Break',      msg:'Look away from your screen - focus on something 20 feet away for 20 seconds. (20-20-20 rule)'},
-  {id:'snack',  icon:'🍎', title:'Healthy Snack Break', msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
-  {id:'mood',   icon:'😊', title:'Mood Check-in',       msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
-  {id:'posture',icon:'🪑', title:'Posture Check',       msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
+  {id:'walk',   icon:'🚶',title:'Take a Walk',       msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
+  {id:'water',  icon:'💧',title:'Drink Water',        msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
+  {id:'stretch',icon:'🧘',title:'Stretch & Stand Up', msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
+  {id:'breathe',icon:'🌬️',title:'Deep Breathing',msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
+  {id:'eyes',   icon:'👁️',title:'Eye Break',    msg:'Look away from your screen - focus on something 20 feet away for 20 seconds.'},
+  {id:'snack',  icon:'🍎',title:'Healthy Snack Break',msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
+  {id:'mood',   icon:'😊',title:'Mood Check-in',      msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
+  {id:'posture',icon:'🪑',title:'Posture Check',      msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
 ];
 
 // ---- REMINDER STATE ----
@@ -481,14 +456,67 @@ function saveRem(){sl('wtrem',RSET);}
 function startReminders(){clearRemTimers();if(!RSET.enabled)return;scheduleNext();remCountdownTimer=setInterval(updateNextDisplay,1000);}
 function clearRemTimers(){if(remTimer)clearTimeout(remTimer);if(remSnoozeTimer)clearTimeout(remSnoozeTimer);if(remCountdownTimer)clearInterval(remCountdownTimer);remTimer=null;remSnoozeTimer=null;remCountdownTimer=null;}
 function scheduleNext(ms){ms=ms!==undefined?ms:RSET.interval*60*1000;remNextTime=Date.now()+ms;remTimer=setTimeout(fireReminder,ms);updateNextDisplay();}
-function fireReminder(){if(!RSET.enabled)return;var now=new Date(),hhmm=now.getHours()*60+now.getMinutes();var s=RSET.start.split(':'),e=RSET.end.split(':');var sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);if(hhmm<sMin||hhmm>eMin){scheduleNext();return;}var enabled=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!enabled.length){scheduleNext();return;}var t=enabled[remTypeIdx%enabled.length];remTypeIdx++;showPopup(t);if(document.getElementById("rem-sound")&&document.getElementById("rem-sound").checked)playChime();if(window.Notification&&Notification.permission==='granted'){try{new Notification('IBM Wellness Collective - '+t.title,{body:t.msg});}catch(e){}}remLog.push({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});renderRemLog();scheduleNext();}
-function showPopup(t){document.getElementById('rp-icon').textContent=t.icon;document.getElementById('rp-title').textContent=t.title;document.getElementById('rp-msg').textContent=t.msg;var p=document.getElementById('reminder-popup');p.style.display='block';setTimeout(function(){if(p.style.display==='block')p.style.display='none';},30000);}
-function updateNextDisplay(){var el=document.getElementById('rnext-txt'),cd=document.getElementById('rnext-countdown');if(!el)return;if(!RSET.enabled||!remNextTime){el.textContent='Reminders are off.';cd.textContent='';return;}var ms=Math.max(0,remNextTime-Date.now()),mins=Math.floor(ms/60000),secs=Math.floor((ms%60000)/1000);var now=new Date(),hhmm=now.getHours()*60+now.getMinutes(),s=RSET.start.split(':'),e=RSET.end.split(':'),sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);if(hhmm<sMin||hhmm>eMin){el.textContent='Outside quiet hours - next active at '+RSET.start;cd.textContent='';}else{el.textContent='Next reminder in:';cd.textContent=mins+'m '+String(secs).padStart(2,'0')+'s';}}
-function buildRtypeGrid(){var g=document.getElementById('rtype-grid');g.innerHTML='';RTYPES.forEach(function(t){var on=RSET.types.indexOf(t.id)>=0;var c=document.createElement('div');c.className='rtype-chip'+(on?' on':'');c.textContent=t.icon+' '+t.title;c.dataset.id=t.id;c.addEventListener('click',function(){var i=RSET.types.indexOf(t.id);if(i>=0)RSET.types.splice(i,1);else RSET.types.push(t.id);c.classList.toggle('on');});g.appendChild(c);});}
-function syncRemUI(){document.getElementById('rem-enabled').checked=RSET.enabled;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-interval').value=RSET.interval;document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';document.getElementById('rem-start').value=RSET.start;document.getElementById('rem-end').value=RSET.end;buildRtypeGrid();updateNextDisplay();var se=document.getElementById('rem-sound');if(se){se.checked=RSET.sound!==false;document.getElementById('rem-sound-lbl').textContent=se.checked?'On':'Off';}}
-function renderRemLog(){var w=document.getElementById('rem-log');if(!remLog.length){w.innerHTML='<div class="empty">No reminders fired yet today.</div>';return;}w.innerHTML='<table><thead><tr><th>Time</th><th>Reminder</th></tr></thead><tbody>'+[].concat(remLog).reverse().map(function(r){return'<tr><td style="color:#57606a">'+r.time+'</td><td>'+r.icon+' '+r.title+'</td></tr>';}).join('')+'</tbody></table>';}
+function fireReminder(){
+  if(!RSET.enabled)return;
+  var now=new Date(),hhmm=now.getHours()*60+now.getMinutes();
+  var s=RSET.start.split(':'),e=RSET.end.split(':');
+  var sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);
+  if(hhmm<sMin||hhmm>eMin){scheduleNext();return;}
+  var enabled=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});
+  if(!enabled.length){scheduleNext();return;}
+  var t=enabled[remTypeIdx%enabled.length];remTypeIdx++;
+  showPopup(t);
+  if(RSET.sound!==false)playChime();
+  if(window.Notification&&Notification.permission==='granted'){try{new Notification('IBM Wellness - '+t.title,{body:t.msg});}catch(ex){}}
+  remLog.push({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});
+  renderRemLog();scheduleNext();
+}
+function showPopup(t){
+  document.getElementById('rp-icon').textContent=t.icon;
+  document.getElementById('rp-title').textContent=t.title;
+  document.getElementById('rp-msg').textContent=t.msg;
+  var p=document.getElementById('reminder-popup');
+  p.style.display='block';
+  setTimeout(function(){if(p.style.display==='block')p.style.display='none';},30000);
+}
+function updateNextDisplay(){
+  var el=document.getElementById('rnext-txt'),cd=document.getElementById('rnext-countdown');
+  if(!el)return;
+  if(!RSET.enabled||!remNextTime){el.textContent='Reminders are off.';cd.textContent='';return;}
+  var ms=Math.max(0,remNextTime-Date.now()),mins=Math.floor(ms/60000),secs=Math.floor((ms%60000)/1000);
+  var now=new Date(),hhmm=now.getHours()*60+now.getMinutes();
+  var s=RSET.start.split(':'),e=RSET.end.split(':'),sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);
+  if(hhmm<sMin||hhmm>eMin){el.textContent='Outside quiet hours - next active at '+RSET.start;cd.textContent='';}
+  else{el.textContent='Next reminder in:';cd.textContent=mins+'m '+String(secs).padStart(2,'0')+'s';}
+}
+function buildRtypeGrid(){
+  var g=document.getElementById('rtype-grid');g.innerHTML='';
+  RTYPES.forEach(function(t){
+    var on=RSET.types.indexOf(t.id)>=0;
+    var c=document.createElement('div');c.className='rtype-chip'+(on?' on':'');
+    c.textContent=t.icon+' '+t.title;c.dataset.id=t.id;
+    c.addEventListener('click',function(){var i=RSET.types.indexOf(t.id);if(i>=0)RSET.types.splice(i,1);else RSET.types.push(t.id);c.classList.toggle('on');});
+    g.appendChild(c);
+  });
+}
+function syncRemUI(){
+  document.getElementById('rem-enabled').checked=RSET.enabled;
+  document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';
+  document.getElementById('rem-interval').value=RSET.interval;
+  document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';
+  document.getElementById('rem-start').value=RSET.start;
+  document.getElementById('rem-end').value=RSET.end;
+  var se=document.getElementById('rem-sound');
+  if(se){se.checked=RSET.sound!==false;document.getElementById('rem-sound-lbl').textContent=se.checked?'On':'Off';}
+  buildRtypeGrid();updateNextDisplay();
+}
+function renderRemLog(){
+  var w=document.getElementById('rem-log');
+  if(!remLog.length){w.innerHTML='<div class="empty">No reminders fired yet today.</div>';return;}
+  w.innerHTML='<table><thead><tr><th>Time</th><th>Reminder</th></tr></thead><tbody>'+[].concat(remLog).reverse().map(function(r){return'<tr><td style="color:#57606a">'+r.time+'</td><td>'+r.icon+' '+r.title+'</td></tr>';}).join('')+'</tbody></table>';
+}
 
-// ---- SPIN THE WHEEL JS ----
+// ---- SPIN THE WHEEL ----
 var SPIN_COLORS=['#0f62fe','#00b4a0','#7c5cd8','#d97706','#ef4444','#22c55e','#0099c8','#0530ad'];
 var spinHistory=[],spinDeg=0,spinRunning=false;
 function buildWheel(){
@@ -499,50 +527,35 @@ function buildWheel(){
   el.style.background='conic-gradient('+grad+')';
   el.style.transform='rotate('+spinDeg+'deg)';
   el.style.transition='none';
-  // Clear old labels
   Array.from(el.querySelectorAll('.sw-label,.wheel-center')).forEach(function(x){x.remove();});
-  // Add emoji + text labels
   RTYPES.forEach(function(t,i){
-    var midDeg=(i+0.5)*slice;
-    var midRad=midDeg*Math.PI/180;
-    var r=95,cx=150,cy=150;
-    var x=cx+r*Math.sin(midRad);
-    var y=cy-r*Math.cos(midRad);
+    var midDeg=(i+0.5)*slice,midRad=midDeg*Math.PI/180,r=95,cx=150,cy=150;
+    var x=cx+r*Math.sin(midRad),y=cy-r*Math.cos(midRad);
     var lbl=document.createElement('div');
     lbl.className='sw-label';
     lbl.style.cssText='left:'+x+'px;top:'+y+'px;transform:translate(-50%,-50%) rotate('+midDeg+'deg);';
     lbl.textContent=t.icon+' '+t.title.split(' ').slice(0,2).join(' ');
     el.appendChild(lbl);
   });
-  // IBM center circle
-  var ctr=document.createElement('div');
-  ctr.className='wheel-center';
+  var ctr=document.createElement('div');ctr.className='wheel-center';
   ctr.innerHTML='<svg width="24" height="10" viewBox="0 0 24 10"><rect y="0" width="24" height="2" fill="#0f62fe"/><rect y="3" width="24" height="2" fill="#0f62fe"/><rect y="6" width="24" height="2" fill="#0f62fe"/><rect y="9" width="24" height="2" fill="#0f62fe"/></svg>';
   el.appendChild(ctr);
 }
 function spinWheel(){
   if(spinRunning)return;
   spinRunning=true;
-  var btn=document.getElementById('spin-btn');
-  if(btn)btn.disabled=true;
+  var btn=document.getElementById('spin-btn');if(btn)btn.disabled=true;
   document.getElementById('spin-result').classList.remove('show');
-  var el=document.getElementById('spin-wheel-css');
-  if(!el){spinRunning=false;if(btn)btn.disabled=false;return;}
-  var n=RTYPES.length,slice=360/n;
-  var winner=Math.floor(Math.random()*n);
-  // Spin so winner segment center lands under the top pointer
-  var targetOffset=360-(winner*slice+slice/2);
-  var currentMod=spinDeg%360;
-  var diff=(targetOffset-currentMod+360)%360;
-  var finalDeg=spinDeg+360*6+diff;
-  el.style.transition='none';
-  el.getBoundingClientRect(); // force reflow
+  var el=document.getElementById('spin-wheel-css');if(!el){spinRunning=false;if(btn)btn.disabled=false;return;}
+  var n=RTYPES.length,slice=360/n,winner=Math.floor(Math.random()*n);
+  var targetOffset=360-(winner*slice+slice/2),currentMod=spinDeg%360;
+  var diff=(targetOffset-currentMod+360)%360,finalDeg=spinDeg+360*6+diff;
+  el.style.transition='none';el.getBoundingClientRect();
   el.style.transition='transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)';
   el.style.transform='rotate('+finalDeg+'deg)';
   spinDeg=finalDeg;
   setTimeout(function(){
-    spinRunning=false;
-    if(btn)btn.disabled=false;
+    spinRunning=false;if(btn)btn.disabled=false;
     var t=RTYPES[winner];
     document.getElementById('sr-icon').textContent=t.icon;
     document.getElementById('sr-title').textContent=t.title;
@@ -559,17 +572,15 @@ function renderSpinHist(){
   w.innerHTML=spinHistory.map(function(h){return'<div class="spin-hist-item"><span class="spin-hist-time">'+h.time+'</span><span style="font-size:18px">'+h.icon+'</span><span style="font-weight:600">'+h.title+'</span></div>';}).join('');
 }
 
-
 // ---- PERSONAL CLOUD BACKUP ----
-var personalSyncing=false;
-
+var PBIN='6a5a467bf5f4af5e299cf1f0',PBURL='https://api.jsonbin.io/v3/b/6a5a467bf5f4af5e299cf1f0';
+var personalSyncing=false,personalPushTimer=null;
 function fetchPersonal(){
   if(!P)return Promise.resolve();
   return fetchWithTimeout(PBURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
     .then(function(r){if(!r.ok)throw 0;return r.json();})
     .then(function(j){
-      var users=(j.record||{}).users||{};
-      var me=users[P.name];
+      var me=(j.record||{users:{}}).users[P.name];
       if(me){
         if(me.days)Object.keys(me.days).forEach(function(d){DAYS[d]=me.days[d];});
         if(me.acts&&me.acts.length)ACTS=me.acts;
@@ -577,53 +588,36 @@ function fetchPersonal(){
         if(me.habits&&me.habits.length)HABITS=me.habits;
         if(me.wks&&me.wks.length)WKS=me.wks;
         persist();
-        renderSteps();renderWater();renderHabits();renderMood();renderSummary();
-        renderActs();renderSleep();renderWkHist();
-        if(document.getElementById('tab-charts').classList.contains('active'))drawCharts();
-        // restored silently
+        renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
       }
     })
     .catch(function(){});
 }
-
 function pushPersonal(){
   if(!P||personalSyncing)return Promise.resolve();
   personalSyncing=true;
   return fetchWithTimeout(PBURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
     .then(function(r){if(!r.ok)throw 0;return r.json();})
     .then(function(j){
-      var data=j.record||{users:{}};
-      if(!data.users)data.users={};
+      var data=j.record||{users:{}};if(!data.users)data.users={};
       data.users[P.name]={name:P.name,dept:P.dept||'',days:DAYS,acts:ACTS,slp:SLP,habits:HABITS,wks:WKS,updated:new Date().toISOString()};
       return fetchWithTimeout(PBURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)},8000);
     })
     .then(function(r){if(!r.ok)throw 0;personalSyncing=false;})
     .catch(function(){personalSyncing=false;});
 }
-
-var personalPushTimer=null;
 function schedulePush(){
   if(personalPushTimer)clearTimeout(personalPushTimer);
-  var ps=document.getElementById('psync-txt');
-  if(ps)ps.textContent='Saving...';
-  personalPushTimer=setTimeout(function(){
-    pushPersonal().then(function(){
-      var ps2=document.getElementById('psync-txt');
-      if(ps2){ps2.textContent='Personal data saved ✓';setTimeout(function(){if(ps2)ps2.textContent='';},3000);}
-    });
-  },3000);
+  personalPushTimer=setTimeout(function(){pushPersonal();},3000);
 }
 
 
-// Watchdog: reset sync dot if stuck on Connecting for > 10s
-setTimeout(function(){
-  var dot = document.getElementById('sdot');
-  var txt = document.getElementById('stxt');
-  if(dot && txt && txt.textContent === 'Connecting…'){
-    dot.className = 'sdot ok';
-    txt.textContent = 'Ready (offline mode)';
-  }
-}, 10000);
+function fetchCloudSilent(){
+  return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;})
+    .catch(function(){return false;});
+}
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloudSilent().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
