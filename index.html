@@ -266,6 +266,15 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
       <input type="range" id="rem-interval" min="15" max="120" step="15" value="60">
       <span style="font-size:15px;font-weight:700;color:#0f62fe;min-width:90px;" id="rem-interval-lbl">Every 60 min</span>
     </div>
+    
+    <h3>Sound</h3>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <span style="font-size:14px;">Play chime with reminders</span>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:0;">
+        <input type="checkbox" id="rem-sound" style="width:18px;height:18px;accent-color:#0f62fe;margin:0;" checked>
+        <span style="font-size:13px;color:#57606a;" id="rem-sound-lbl">On</span>
+      </label>
+    </div>
     <h3>Quiet Hours (reminders only within these times)</h3>
     <div class="g2" style="margin-bottom:14px;">
       <div><label for="rem-start">Start time</label><input type="time" id="rem-start" value="08:00"></div>
@@ -352,9 +361,9 @@ function launch(){
   document.getElementById('spin-btn').addEventListener('click',spinWheel);
   document.getElementById('sr-done').addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
   document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
-  document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
-  document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
-  document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}showPopup(en[Math.floor(Math.random()*en.length)]);});
+  document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});document.getElementById('rem-sound').addEventListener('change',function(){RSET.sound=this.checked;document.getElementById('rem-sound-lbl').textContent=this.checked?'On':'Off';});
+  document.getElementById('btn-rem-save').addEventListener('click',function(){RSET.enabled=document.getElementById('rem-enabled').checked;RSET.interval=parseInt(document.getElementById('rem-interval').value);RSET.start=document.getElementById('rem-start').value;RSET.end=document.getElementById('rem-end').value;RSET.sound=document.getElementById('rem-sound').checked;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-sound-lbl').textContent=RSET.sound?'On':'Off';saveRem();startReminders();updateNextDisplay();toast('Reminder settings saved!');});
+  document.getElementById('btn-rem-test').addEventListener('click',function(){var en=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!en.length){toast('Enable at least one reminder type first.');return;}var picked=en[Math.floor(Math.random()*en.length)];showPopup(picked);if(document.getElementById('rem-sound')&&document.getElementById('rem-sound').checked)playChime();});
   document.getElementById('btn-notif-req').addEventListener('click',function(){if(!('Notification' in window)){toast('Browser notifications not supported.');return;}if(Notification.permission==='denied'){toast('Blocked - click the padlock icon in your address bar to allow.');return;}Notification.requestPermission().then(function(r){toast(r==='granted'?'Browser notifications enabled':'Click the padlock in the address bar to allow.');});});
   document.getElementById('rp-done').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';toast('Great job! Keep it up!');});
   document.getElementById('rp-snooze').addEventListener('click',function(){document.getElementById('reminder-popup').style.display='none';clearTimeout(remSnoozeTimer);remNextTime=Date.now()+600000;remSnoozeTimer=setTimeout(fireReminder,600000);updateNextDisplay();toast('Snoozed 10 minutes.');});
@@ -404,6 +413,29 @@ function last7(){var d=[];for(var i=6;i>=0;i--){var x=new Date();x.setDate(x.get
 function barChart(cid,data,max,cls,unit){var c=document.getElementById(cid),W=680,H=150,pl=36,pr=8,pt=12,pb=26,iW=W-pl-pr,iH=H-pt-pb,bW=Math.floor(iW/data.length)-6;var eM=max||Math.max.apply(null,data.map(function(d){return d.v;}).concat([1]));var bars='',lbl='',vals='',grid='';data.forEach(function(d,i){var x=pl+i*(iW/data.length)+3,bH=Math.max(2,Math.round(d.v/eM*iH)),y=pt+iH-bH;bars+='<rect class="cb '+cls+'" x="'+x+'" y="'+y+'" width="'+bW+'" height="'+bH+'" rx="2"/>';lbl+='<text class="cl" x="'+(x+bW/2)+'" y="'+(H-4)+'" text-anchor="middle">'+d.l.slice(5)+'</text>';vals+=d.v>0?'<text class="cl" x="'+(x+bW/2)+'" y="'+(y-3)+'" text-anchor="middle">'+d.v+'</text>':'';});for(var g=0;g<=4;g++){var yg=pt+iH-(g/4)*iH,val=Math.round(eM*g/4);grid+='<line x1="'+pl+'" y1="'+yg+'" x2="'+(W-pr)+'" y2="'+yg+'" stroke="#e5e7eb" stroke-width="1"/><text class="cl" x="'+(pl-3)+'" y="'+(yg+4)+'" text-anchor="end">'+val+'</text>';}c.innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+grid+bars+lbl+vals+'</svg><div style="font-size:11px;color:#57606a;text-align:right;margin-top:3px;">'+unit+'</div>';}
 function drawCharts(){var d=last7();barChart('ch-steps',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].steps:0)||0};}),10000,'','steps');barChart('ch-water',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].water:0)||0};}),8,'wt','glasses');barChart('ch-sleep',d.map(function(x){var e=SLP.find(function(s){return s.date===x;});return{l:x,v:e?e.hrs:0};}),10,'sl','hours');}
 
+
+// ---- CHIME SOUND ----
+function playChime(){
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    // Three-note ascending chime: C5 -> E5 -> G5
+    var notes=[523.25,659.25,783.99];
+    notes.forEach(function(freq,i){
+      var osc=ctx.createOscillator();
+      var gain=ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type='sine';
+      osc.frequency.value=freq;
+      var t=ctx.currentTime+i*0.18;
+      gain.gain.setValueAtTime(0,t);
+      gain.gain.linearRampToValueAtTime(0.28,t+0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001,t+0.55);
+      osc.start(t);
+      osc.stop(t+0.6);
+    });
+  }catch(e){}
+}
 // ---- REMINDER TYPES ----
 var RTYPES=[
   {id:'walk',   icon:'🚶', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
@@ -417,17 +449,17 @@ var RTYPES=[
 ];
 
 // ---- REMINDER STATE ----
-var RSET=gl('wtrem',{enabled:false,interval:60,start:'08:00',end:'17:00',types:['walk','water','stretch','breathe','eyes']});
+var RSET=gl('wtrem',{enabled:false,interval:60,start:'08:00',end:'17:00',types:['walk','water','stretch','breathe','eyes'],sound:true});
 var remTimer=null,remSnoozeTimer=null,remCountdownTimer=null,remNextTime=null,remLog=[],remTypeIdx=0;
 function saveRem(){sl('wtrem',RSET);}
 function startReminders(){clearRemTimers();if(!RSET.enabled)return;scheduleNext();remCountdownTimer=setInterval(updateNextDisplay,1000);}
 function clearRemTimers(){if(remTimer)clearTimeout(remTimer);if(remSnoozeTimer)clearTimeout(remSnoozeTimer);if(remCountdownTimer)clearInterval(remCountdownTimer);remTimer=null;remSnoozeTimer=null;remCountdownTimer=null;}
 function scheduleNext(ms){ms=ms!==undefined?ms:RSET.interval*60*1000;remNextTime=Date.now()+ms;remTimer=setTimeout(fireReminder,ms);updateNextDisplay();}
-function fireReminder(){if(!RSET.enabled)return;var now=new Date(),hhmm=now.getHours()*60+now.getMinutes();var s=RSET.start.split(':'),e=RSET.end.split(':');var sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);if(hhmm<sMin||hhmm>eMin){scheduleNext();return;}var enabled=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!enabled.length){scheduleNext();return;}var t=enabled[remTypeIdx%enabled.length];remTypeIdx++;showPopup(t);if(window.Notification&&Notification.permission==='granted'){try{new Notification('IBM Wellness Collective - '+t.title,{body:t.msg});}catch(e){}}remLog.push({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});renderRemLog();scheduleNext();}
+function fireReminder(){if(!RSET.enabled)return;var now=new Date(),hhmm=now.getHours()*60+now.getMinutes();var s=RSET.start.split(':'),e=RSET.end.split(':');var sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);if(hhmm<sMin||hhmm>eMin){scheduleNext();return;}var enabled=RTYPES.filter(function(t){return RSET.types.indexOf(t.id)>=0;});if(!enabled.length){scheduleNext();return;}var t=enabled[remTypeIdx%enabled.length];remTypeIdx++;showPopup(t);if(document.getElementById("rem-sound")&&document.getElementById("rem-sound").checked)playChime();if(window.Notification&&Notification.permission==='granted'){try{new Notification('IBM Wellness Collective - '+t.title,{body:t.msg});}catch(e){}}remLog.push({time:now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),icon:t.icon,title:t.title});renderRemLog();scheduleNext();}
 function showPopup(t){document.getElementById('rp-icon').textContent=t.icon;document.getElementById('rp-title').textContent=t.title;document.getElementById('rp-msg').textContent=t.msg;var p=document.getElementById('reminder-popup');p.style.display='block';setTimeout(function(){if(p.style.display==='block')p.style.display='none';},30000);}
 function updateNextDisplay(){var el=document.getElementById('rnext-txt'),cd=document.getElementById('rnext-countdown');if(!el)return;if(!RSET.enabled||!remNextTime){el.textContent='Reminders are off.';cd.textContent='';return;}var ms=Math.max(0,remNextTime-Date.now()),mins=Math.floor(ms/60000),secs=Math.floor((ms%60000)/1000);var now=new Date(),hhmm=now.getHours()*60+now.getMinutes(),s=RSET.start.split(':'),e=RSET.end.split(':'),sMin=parseInt(s[0])*60+parseInt(s[1]),eMin=parseInt(e[0])*60+parseInt(e[1]);if(hhmm<sMin||hhmm>eMin){el.textContent='Outside quiet hours - next active at '+RSET.start;cd.textContent='';}else{el.textContent='Next reminder in:';cd.textContent=mins+'m '+String(secs).padStart(2,'0')+'s';}}
 function buildRtypeGrid(){var g=document.getElementById('rtype-grid');g.innerHTML='';RTYPES.forEach(function(t){var on=RSET.types.indexOf(t.id)>=0;var c=document.createElement('div');c.className='rtype-chip'+(on?' on':'');c.textContent=t.icon+' '+t.title;c.dataset.id=t.id;c.addEventListener('click',function(){var i=RSET.types.indexOf(t.id);if(i>=0)RSET.types.splice(i,1);else RSET.types.push(t.id);c.classList.toggle('on');});g.appendChild(c);});}
-function syncRemUI(){document.getElementById('rem-enabled').checked=RSET.enabled;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-interval').value=RSET.interval;document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';document.getElementById('rem-start').value=RSET.start;document.getElementById('rem-end').value=RSET.end;buildRtypeGrid();updateNextDisplay();}
+function syncRemUI(){document.getElementById('rem-enabled').checked=RSET.enabled;document.getElementById('rem-enabled-lbl').textContent=RSET.enabled?'On':'Off';document.getElementById('rem-interval').value=RSET.interval;document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';document.getElementById('rem-start').value=RSET.start;document.getElementById('rem-end').value=RSET.end;buildRtypeGrid();updateNextDisplay();var se=document.getElementById('rem-sound');if(se){se.checked=RSET.sound!==false;document.getElementById('rem-sound-lbl').textContent=se.checked?'On':'Off';}}
 function renderRemLog(){var w=document.getElementById('rem-log');if(!remLog.length){w.innerHTML='<div class="empty">No reminders fired yet today.</div>';return;}w.innerHTML='<table><thead><tr><th>Time</th><th>Reminder</th></tr></thead><tbody>'+[].concat(remLog).reverse().map(function(r){return'<tr><td style="color:#57606a">'+r.time+'</td><td>'+r.icon+' '+r.title+'</td></tr>';}).join('')+'</tbody></table>';}
 
 // ---- SPIN THE WHEEL JS ----
