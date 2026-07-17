@@ -129,6 +129,18 @@ tr:last-child td{border-bottom:none;}
 .rtype-chip{padding:6px 13px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid #e5e7eb;background:#f7f8fa;color:#57606a;user-select:none;}
 .rtype-chip.on{border-color:#0f62fe;background:#eef3ff;color:#0f62fe;}
 .rnext-box{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;font-size:13px;color:#1f2328;display:flex;align-items:center;justify-content:space-between;}
+
+/* REMINDER POPUP */
+#reminder-popup{position:fixed;bottom:28px;right:28px;z-index:9999;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(2,17,38,0.22);padding:20px 22px;max-width:320px;width:90%;display:none;border-top:5px solid #0f62fe;}
+#reminder-popup .rp-ibm{font-size:10px;font-weight:700;color:#0f62fe;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;}
+#reminder-popup .rp-icon{font-size:32px;margin-bottom:8px;display:block;}
+#reminder-popup .rp-title{font-size:16px;font-weight:800;color:#021126;margin-bottom:4px;}
+#reminder-popup .rp-msg{font-size:14px;color:#57606a;margin-bottom:14px;}
+#reminder-popup .rp-btns{display:flex;gap:8px;}
+#rp-done{flex:1;padding:9px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+#rp-done:hover{background:#0530ad;}
+#rp-snooze{flex:1;padding:9px;background:#f0f1f3;color:#1f2328;border:none;border-radius:7px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+#rp-dismiss{position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:#57606a;cursor:pointer;line-height:1;}
 svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
@@ -141,6 +153,20 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 <body>
 
 <!-- SETUP -->
+
+<!-- REMINDER POPUP -->
+<div id="reminder-popup" style="position:fixed;bottom:28px;right:28px;z-index:9999;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(2,17,38,0.22);padding:20px 22px;max-width:320px;width:90%;display:none;border-top:5px solid #0f62fe;">
+  <button id="rp-dismiss" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;color:#57606a;cursor:pointer;line-height:1;">&#x2715;</button>
+  <div style="font-size:10px;font-weight:700;color:#0f62fe;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;">IBM Wellness Collective</div>
+  <span id="rp-icon" style="font-size:32px;margin-bottom:8px;display:block;">&#x1F6B6;</span>
+  <div id="rp-title" style="font-size:16px;font-weight:800;color:#021126;margin-bottom:4px;">Time for a wellness break!</div>
+  <div id="rp-msg" style="font-size:14px;color:#57606a;margin-bottom:14px;">Take a 10-minute walk to recharge.</div>
+  <div style="display:flex;gap:8px;">
+    <button id="rp-done" style="flex:1;padding:9px;background:#0f62fe;color:#fff;border:none;border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;">&#x2713; Done!</button>
+    <button id="rp-snooze" style="flex:1;padding:9px;background:#f0f1f3;color:#1f2328;border:none;border-radius:7px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">&#x23F1; Snooze 10 min</button>
+  </div>
+</div>
+
 <div id="setup">
   <div class="box">
     <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
