@@ -695,7 +695,8 @@ function launch(){
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
   // Wire up all event listeners
   document.getElementById('spin-btn').addEventListener('click',spinWheel);
-  document.getElementById('btn-shout-send').addEventListener('click',sendShoutOut);
+  var shoutBtn=document.getElementById('btn-shout-send');
+  if(shoutBtn)shoutBtn.addEventListener('click',sendShoutOut);
   initShoutEmojis();
   document.getElementById('sr-done').addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
   document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
