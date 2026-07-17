@@ -270,6 +270,45 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 .focus-prep-btn:hover{border-color:#0f62fe;background:#eef3ff;color:#0f62fe;}
 .focus-prep-btn .fp-icon{font-size:26px;display:block;margin-bottom:5px;}
 .focus-prep-panel{display:none;}.focus-prep-panel.active{display:block;}
+
+/* ---- AI COACH TAB ---- */
+.coach-hero{background:linear-gradient(135deg,#021126 0%,#0530ad 55%,#7c5cd8 100%);border-radius:10px;padding:22px 20px;margin-bottom:14px;color:#fff;}
+.coach-hero h2{font-size:17px;font-weight:800;margin-bottom:5px;}
+.coach-hero p{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;}
+.coach-scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.coach-scenario-btn{padding:16px 10px;background:#f7f8fa;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#1f2328;text-align:center;transition:border-color 0.15s,background 0.15s,box-shadow 0.15s;}
+.coach-scenario-btn:hover{border-color:#7c5cd8;background:#faf5ff;color:#6d28d9;box-shadow:0 2px 8px rgba(124,92,216,0.12);}
+.coach-scenario-btn.selected{border-color:#7c5cd8;background:#ede9fe;color:#6d28d9;}
+.coach-scenario-btn .csb-icon{font-size:26px;display:block;margin-bottom:6px;}
+.coach-panel{display:none;margin-top:4px;}
+.coach-panel.active{display:block;animation:slideup 0.3s ease;}
+.coach-step-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.coach-step-num{width:28px;height:28px;border-radius:50%;background:#7c5cd8;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.coach-step-title{font-size:14px;font-weight:700;color:#1f2328;}
+.coach-checklist{list-style:none;}
+.coach-checklist li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f1f3;font-size:13px;color:#374151;line-height:1.5;}
+.coach-checklist li:last-child{border-bottom:none;}
+.coach-ck-box{width:18px;height:18px;border:2px solid #7c5cd8;border-radius:4px;flex-shrink:0;cursor:pointer;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.coach-ck-box.checked{background:#7c5cd8;}
+.coach-ck-box.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:800;}
+.coach-affirmation-box{background:linear-gradient(135deg,#3b0764,#6d28d9);border-radius:10px;padding:20px;text-align:center;margin:12px 0;}
+.coach-affirmation-text{font-size:16px;font-weight:700;color:#fff;line-height:1.5;font-style:italic;}
+.coach-badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:800;background:#ede9fe;color:#6d28d9;margin-bottom:6px;letter-spacing:0.04em;}
+.coach-timer-mini{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin:10px 0;}
+.coach-timer-mini .ctm-time{font-size:28px;font-weight:800;color:#7c5cd8;line-height:1;}
+.coach-timer-mini .ctm-lbl{font-size:12px;color:#57606a;}
+.coach-timer-btn{padding:6px 14px;background:#7c5cd8;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
+.coach-timer-btn:hover{background:#6d28d9;}
+/* Today tab AI flags */
+.today-flag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.today-flag-btn{padding:8px 14px;border-radius:99px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:2px solid #e5e7eb;background:#f7f8fa;color:#57606a;transition:border-color 0.15s,background 0.15s;}
+.today-flag-btn:hover{border-color:#7c5cd8;background:#faf5ff;color:#6d28d9;}
+.today-flag-btn.flagged{border-color:#7c5cd8;background:#ede9fe;color:#6d28d9;}
+.today-coach-nudge{background:linear-gradient(135deg,#faf5ff,#ede9fe);border:1px solid #c4b5fd;border-radius:8px;padding:14px 16px;margin-bottom:12px;display:none;}
+.today-coach-nudge.show{display:block;animation:slideup 0.3s ease;}
+.today-coach-nudge .tcn-title{font-size:14px;font-weight:800;color:#6d28d9;margin-bottom:6px;}
+.today-coach-nudge .tcn-body{font-size:13px;color:#374151;line-height:1.5;margin-bottom:10px;}
+@keyframes slideup{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 </style>
 </head>
 <body>
@@ -336,9 +375,17 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <button data-tab="focus">&#x23F1; Focus</button>
   <button data-tab="spin">&#x1F3A1; Spin</button>
   <button data-tab="charts">Charts</button>
+  <button data-tab="coach">&#x1F916; AI Coach</button>
 </nav>
 <main>
 <div id="tab-today" class="tab active">
+  <!-- Today AI Coach Nudge (shown when a flag is active) -->
+  <div id="today-coach-nudge" class="today-coach-nudge card" style="display:none;">
+    <div class="tcn-title" id="tcn-title">&#x1F916; You've got a big moment today</div>
+    <div class="tcn-body" id="tcn-body">Here's your personalized prep routine.</div>
+    <button class="btn bsm" id="tcn-cta" style="background:#7c5cd8;color:#fff;border:none;">Open Full Prep Routine &#x2192;</button>
+  </div>
+
   <div class="card">
     <div class="ibadge"><svg width="14" height="6" viewBox="0 0 28 12" fill="none"><rect width="7" height="2" rx="0.5" fill="white"/><rect y="3" width="7" height="2" rx="0.5" fill="white"/><rect y="6" width="7" height="2" rx="0.5" fill="white"/><rect y="9" width="7" height="2" rx="0.5" fill="white"/><rect x="9" width="10" height="2" rx="0.5" fill="white"/><rect x="10" y="3" width="8" height="2" rx="0.5" fill="white"/><rect x="9" y="6" width="10" height="2" rx="0.5" fill="white"/><rect x="10" y="9" width="8" height="2" rx="0.5" fill="white"/><rect x="21" width="7" height="2" rx="0.5" fill="white"/><rect x="22" y="3" width="5" height="2" rx="0.5" fill="white"/><rect x="21" y="6" width="7" height="2" rx="0.5" fill="white"/><rect x="22" y="9" width="5" height="2" rx="0.5" fill="white"/></svg><span>Daily Summary</span></div>
     <div class="g3">
@@ -353,6 +400,21 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   </div>
   <div class="card"><h2>Daily Habits</h2><ul class="hlist" id="hlist"></ul><div class="sep"></div><h3>Add a habit</h3><div class="irow"><div><label for="new-habit">Habit name</label><input type="text" id="new-habit" placeholder="e.g. 10-min meditation"></div><button class="btn bb bsm" id="btn-add-habit">Add</button></div></div>
   <div class="card"><h2>Mood Check-in</h2><p style="font-size:13px;color:#57606a;margin-bottom:11px;">How are you feeling today?</p><div style="display:flex;gap:9px;flex-wrap:wrap;" id="mood-btns"></div><div id="mood-disp" style="margin-top:11px;font-size:14px;color:#57606a;"></div></div>
+
+  <!-- Today AI Coach Flags -->
+  <div class="card">
+    <h2>&#x1F916; Flag Today's Challenges</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Tap what's on your plate today — your AI Coach will prepare a tailored routine for you.</p>
+    <div class="today-flag-row" id="today-flag-row">
+      <button class="today-flag-btn" data-flag="exec" id="flag-exec">&#x1F3A4; Big Presentation</button>
+      <button class="today-flag-btn" data-flag="hm" id="flag-hm">&#x1F91D; Difficult HM Sync</button>
+      <button class="today-flag-btn" data-flag="candidate" id="flag-candidate">&#x1F4BC; Tough Candidate Call</button>
+      <button class="today-flag-btn" data-flag="marathon" id="flag-marathon">&#x1F4C5; Meeting Marathon</button>
+      <button class="today-flag-btn" data-flag="stakeholder" id="flag-stakeholder">&#x1F4CA; Stakeholder Review</button>
+      <button class="today-flag-btn" data-flag="difficult-conv" id="flag-difficult-conv">&#x1F4AC; Hard Conversation</button>
+    </div>
+    <div id="today-flag-result" style="display:none;"></div>
+  </div>
 </div>
 <div id="tab-log" class="tab">
   <div class="card"><h2>Log Activity</h2><div class="g2"><div><label for="log-date">Date</label><input type="date" id="log-date"></div><div><label for="log-type">Activity Type</label><select id="log-type"><option>Walking</option><option>Running</option><option>Cycling</option><option>Swimming</option><option>Yoga</option><option>Strength Training</option><option>Stretching</option><option>Other</option></select></div><div><label for="log-dur">Duration (minutes)</label><input type="number" id="log-dur" min="1" max="480" placeholder="e.g. 30"></div><div><label for="log-cal">Calories (optional)</label><input type="number" id="log-cal" min="0" placeholder="e.g. 200"></div></div><label for="log-notes">Notes (optional)</label><input type="text" id="log-notes" placeholder="How did it feel?"><button class="btn bb" id="btn-log-act">Log Activity</button></div>
@@ -997,13 +1059,64 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><h2>Water — Last 7 Days</h2><div id="ch-water"></div></div>
   <div class="card"><h2>Sleep — Last 7 Days</h2><div id="ch-sleep"></div></div>
 </div>
+
+<!-- AI COACH TAB -->
+<div id="tab-coach" class="tab">
+
+  <!-- Hero header -->
+  <div class="coach-hero">
+    <div class="ibadge" style="background:rgba(255,255,255,0.15);margin-bottom:8px;"><span>AI COACH</span></div>
+    <h2>&#x1F916; Your Personal Wellness Coach</h2>
+    <p>No AI API needed — this is expert-curated coaching tailored to the real challenges recruiters face every day. Select a scenario below to get your personalized prep routine.</p>
+  </div>
+
+  <!-- Scenario picker card -->
+  <div class="card">
+    <h2>What are you facing today?</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Select a scenario to get a step-by-step coaching routine — breathing prep, mindset reframes, power phrases, and an affirmation tailored to the moment.</p>
+    <div class="coach-scenario-grid" id="coach-scenario-grid">
+      <button class="coach-scenario-btn" data-scenario="exec" onclick="showCoachPanel('exec')"><span class="csb-icon">&#x1F3A4;</span>Exec / Big Presentation</button>
+      <button class="coach-scenario-btn" data-scenario="hm" onclick="showCoachPanel('hm')"><span class="csb-icon">&#x1F91D;</span>Difficult HM Sync</button>
+      <button class="coach-scenario-btn" data-scenario="candidate" onclick="showCoachPanel('candidate')"><span class="csb-icon">&#x1F4BC;</span>Tough Candidate Call</button>
+      <button class="coach-scenario-btn" data-scenario="stakeholder" onclick="showCoachPanel('stakeholder')"><span class="csb-icon">&#x1F4CA;</span>Stakeholder Review</button>
+      <button class="coach-scenario-btn" data-scenario="marathon" onclick="showCoachPanel('marathon')"><span class="csb-icon">&#x1F4C5;</span>Meeting Marathon Recovery</button>
+      <button class="coach-scenario-btn" data-scenario="difficult-conv" onclick="showCoachPanel('difficult-conv')"><span class="csb-icon">&#x1F4AC;</span>Hard Conversation</button>
+      <button class="coach-scenario-btn" data-scenario="offer-declined" onclick="showCoachPanel('offer-declined')"><span class="csb-icon">&#x1F614;</span>Offer Declined / Ghosted</button>
+      <button class="coach-scenario-btn" data-scenario="req-on-hold" onclick="showCoachPanel('req-on-hold')"><span class="csb-icon">&#x23F8;&#xFE0F;</span>Req On Hold / Cancelled</button>
+    </div>
+    <!-- Coach panel output area -->
+    <div id="coach-panel-area"></div>
+  </div>
+
+  <!-- How it works card -->
+  <div class="card">
+    <h2>&#x1F4A1; How AI Coach Works</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Each coaching routine is built around evidence-based techniques used by performance coaches and workplace wellbeing researchers:</p>
+    <div class="tip-card" style="margin-bottom:8px;">
+      <div class="tc-icon">&#x1F32C;</div>
+      <div class="tc-title">Physiological prep</div>
+      <div class="tc-body">Breathing exercises reduce cortisol within 90 seconds. Every routine starts with the right breath work for the situation.</div>
+    </div>
+    <div class="tip-card teal" style="margin-bottom:8px;">
+      <div class="tc-icon">&#x1F9E0;</div>
+      <div class="tc-title">Cognitive reframing</div>
+      <div class="tc-body">Each scenario includes reframe scripts — phrases to shift your mindset from reactive to strategic before you enter the room.</div>
+    </div>
+    <div class="tip-card purple">
+      <div class="tc-icon">&#x2728;</div>
+      <div class="tc-title">Anchoring affirmations</div>
+      <div class="tc-body">Scenario-specific affirmations close every routine. These are tailored to what you're actually facing — not generic positivity.</div>
+    </div>
+  </div>
+
+</div>
 </main>
 <div id="toast"></div>
 <footer><div class="fr"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="0" y="0" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="2.3" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="4.6" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="6.9" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="9.2" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="0" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="2.3" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="4.6" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="6.9" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="9.2" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="0" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="2.3" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="4.6" width="8.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="6.9" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="9.2" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/></svg><div class="fd"></div><span style="color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;">The Wellness Collective</span><div class="fd"></div><span>Made with IBM Bob</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Team data synced via JSONBin · Personal logs backed up to cloud · Hosted on GitHub Pages</div></footer>
 </div>
 
 <script>
-var APP_VERSION='20250722-8';var APP_VER='20250722-8';
+var APP_VERSION='20250724-9';var APP_VER='20250724-9';
 (function(){
   if(location.search.indexOf('v=')>=0)return;
   fetch(location.pathname+'?nocache='+Date.now())
@@ -1102,7 +1215,7 @@ function launch(){
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
   syncRemUI();startReminders();renderRemLog();
-  buildWheel();
+  buildWheel();initTodayFlags();
   setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
   // Wire up all event listeners
@@ -2063,6 +2176,507 @@ function hideFocusPrep() {
     }
   });
 })();
+
+// ---- AI COACH ----
+
+var COACH_SCENARIOS = {
+  'exec': {
+    title: '🎤 Exec / Big Presentation Prep',
+    badge: 'PRE-MEETING PREP',
+    steps: [
+      {
+        label: 'Step 1 — Physiological Reset (2 min)',
+        icon: '🌬️',
+        color: '',
+        items: [
+          'Do <strong>3 rounds of box breathing</strong> right now: inhale 4 counts → hold 4 → exhale 4 → hold 4. This measurably reduces cortisol before high-stakes moments.',
+          '<strong>Power pose:</strong> Stand tall, shoulders back, feet shoulder-width. Hold for 60 seconds. Research shows this shifts your body chemistry toward confidence.',
+          'Release jaw tension — unclench, let it drop. Shake out your hands.'
+        ]
+      },
+      {
+        label: 'Step 2 — Mental Frame Check (1 min)',
+        icon: '🧠',
+        color: 'teal',
+        items: [
+          'You are the <strong>expert in the room</strong> on this topic. That\'s why you\'re presenting.',
+          'Execs want you to succeed — a good presentation outcome is a win for everyone.',
+          'Your preparation has already done most of the work. This is just delivery.',
+          '<strong>Reframe script:</strong> "I am sharing insights they need. I am on their side."'
+        ]
+      },
+      {
+        label: 'Step 3 — The 3-Point Anchor',
+        icon: '🎯',
+        color: 'purple',
+        items: [
+          'Write down <strong>the one number or outcome</strong> you want them to remember when this ends.',
+          'Know your <strong>one ask</strong> — if you could get only one thing from this meeting, what is it?',
+          '<strong>Closing move:</strong> End with "The action I\'m recommending is [X]. Can I count on your support?" Clean, direct, memorable.'
+        ]
+      }
+    ],
+    affirmation: 'I prepared for this. I know my material. I bring real value to this room — and they know it too.'
+  },
+  'hm': {
+    title: '🤝 Difficult Hiring Manager Sync',
+    badge: 'CONVERSATION COACHING',
+    steps: [
+      {
+        label: 'Step 1 — Ground Before You Enter (90 sec)',
+        icon: '🌱',
+        color: 'teal',
+        items: [
+          'Take <strong>3 slow deep breaths</strong> before joining the call or entering the room. Exhale longer than you inhale (breathe in 4, out 6). This activates calm.',
+          'Name the emotion: "I feel [frustrated/anxious/defensive]." Naming it reduces its physiological grip by up to 50%.',
+          '<strong>Intention:</strong> "I am going into this to understand, not to win."'
+        ]
+      },
+      {
+        label: 'Step 2 — Your Tactical Toolkit',
+        icon: '🛠️',
+        color: '',
+        items: [
+          '<strong>Opening reset phrase:</strong> "Before we dive in — I want to make sure I have the full picture. What\'s the most important outcome for you today?"',
+          '<strong>De-escalation phrase:</strong> "I hear you. Let me make sure I understand what you\'re describing." (Pause. Repeat back. Don\'t defend yet.)',
+          '<strong>Redirect phrase:</strong> "That\'s a fair concern. Here\'s how I\'m thinking about it — and where I need your input." Turns tension into collaboration.',
+          'Difficult behavior often reflects <strong>their pressure</strong>, not your performance. Hold that frame.'
+        ]
+      },
+      {
+        label: 'Step 3 — Own the Close',
+        icon: '✅',
+        color: 'amber',
+        items: [
+          'Always end with an action, never a complaint: <strong>"Let me follow up with [specific deliverable] by [day]."</strong>',
+          'You stay in control of the close even if the middle was turbulent.',
+          'After the meeting: give yourself 5 minutes before the next thing. See the Meeting Reset routine.'
+        ]
+      }
+    ],
+    affirmation: 'I am a strategic partner, not an order-taker. I bring expertise they need and I show up professionally no matter the energy in the room.'
+  },
+  'candidate': {
+    title: '📋 Tough Candidate Call Prep',
+    badge: 'CONVERSATION COACHING',
+    steps: [
+      {
+        label: 'Step 1 — Set the Conversational Frame',
+        icon: '🎯',
+        color: '',
+        items: [
+          'Your role is to be <strong>honest, fair, and caring</strong> — not to "win" or force a decision.',
+          '<strong>Opening:</strong> "I want to be straightforward with you today because I respect your time and your career."',
+          'Know your <strong>one non-negotiable message</strong> before dialing. What is the one thing they must hear by the end of this call?'
+        ]
+      },
+      {
+        label: 'Step 2 — Navigate Pushback',
+        icon: '↩️',
+        color: 'teal',
+        items: [
+          '<strong>Acknowledge first, always:</strong> "That\'s a completely valid concern. Here\'s how I\'d think about it from where I sit."',
+          '<strong>Silence is okay.</strong> After asking a tough question, wait. Resist filling the silence — it often leads to the real answer.',
+          'If they\'re emotionally charged: "I can hear this is important to you. Take your time."'
+        ]
+      },
+      {
+        label: 'Step 3 — Emotional Prep',
+        icon: '💙',
+        color: 'purple',
+        items: [
+          'Whatever happens on this call, <strong>you will have done your job well</strong> by being honest and professional.',
+          'Candidate decisions are ultimately theirs. Your job is quality of process, not control of outcome.',
+          'Breathe slowly. Speak at 80% of your normal speed. Calm is contagious.'
+        ]
+      }
+    ],
+    affirmation: 'I show up for candidates with honesty, care, and professionalism. That is something I am genuinely proud of.'
+  },
+  'stakeholder': {
+    title: '📊 Stakeholder Review Prep',
+    badge: 'PRE-MEETING PREP',
+    steps: [
+      {
+        label: 'Step 1 — Know Your Story (2 min)',
+        icon: '📖',
+        color: '',
+        items: [
+          'Before any stakeholder meeting, answer these 3 questions: <strong>What happened? What does it mean? What\'s next?</strong>',
+          'Lead with outcomes, not activities: "We closed 3 reqs and have 2 in final rounds" beats "We had 14 candidate interviews."',
+          '<strong>Know your one ask</strong> — every stakeholder meeting should end with one clear request or decision needed from them.'
+        ]
+      },
+      {
+        label: 'Step 2 — Handle the Hard Questions',
+        icon: '💬',
+        color: 'amber',
+        items: [
+          'If you don\'t know: <strong>"Great question — let me confirm the data and follow up by [day]."</strong> Never guess under pressure.',
+          'If challenged on a miss: <strong>"You\'re right. Here\'s what we learned and what we\'re changing."</strong> Ownership builds credibility.',
+          'Avoid defensive language. Replace "but" with "and" — it keeps the conversation forward-facing.'
+        ]
+      },
+      {
+        label: 'Step 3 — Confidence Check',
+        icon: '💪',
+        color: 'teal',
+        items: [
+          'Do 3 rounds of box breathing before you join.',
+          'Posture check: sit tall, feet flat, shoulders back. Presence is felt through the camera too.',
+          '<strong>Remind yourself:</strong> You are the expert on your pipeline. They need your insight to make decisions.'
+        ]
+      }
+    ],
+    affirmation: 'I own my data, I know my story, and I show up to these rooms as a credible strategic partner. I\'ve earned my seat at this table.'
+  },
+  'marathon': {
+    title: '📅 Meeting Marathon Recovery',
+    badge: 'RECOVERY PROTOCOL',
+    steps: [
+      {
+        label: 'Step 1 — Physical Reset (3 min)',
+        icon: '🚶',
+        color: 'teal',
+        items: [
+          '<strong>Get up right now.</strong> Walk to the kitchen, outside, or just around your space. No screens.',
+          'Physical movement clears cortisol faster than anything else. Even 3 minutes shifts your state.',
+          'Roll your shoulders back, drop your jaw, take 3 slow breaths. You are physically leaving those meetings.'
+        ]
+      },
+      {
+        label: 'Step 2 — Brain Dump (3 min)',
+        icon: '📝',
+        color: 'amber',
+        items: [
+          'Grab a notepad or open a doc. <strong>Write every unresolved thought, action, and concern</strong> from all those meetings.',
+          'Don\'t organize it yet — just empty your head onto the page. This frees 30–40% of your cognitive load instantly.',
+          'Set the list aside. Your brain no longer needs to hold those threads — they\'re captured.'
+        ]
+      },
+      {
+        label: 'Step 3 — One Priority Reset (2 min)',
+        icon: '🎯',
+        color: '',
+        items: [
+          'Look at your dump list. <strong>Circle the ONE thing</strong> that matters most in the next 2 hours.',
+          'Everything else is scheduled for later. You are now starting fresh with a single focus.',
+          'Set a 25-min focus timer. Start on only that one thing. Momentum follows action.'
+        ]
+      }
+    ],
+    affirmation: 'I survived those meetings and I am still here. I am choosing what matters next. My focus is powerful when I direct it.'
+  },
+  'difficult-conv': {
+    title: '💬 Hard Conversation Prep',
+    badge: 'CONVERSATION COACHING',
+    steps: [
+      {
+        label: 'Step 1 — Get Regulated First',
+        icon: '🌬️',
+        color: '',
+        items: [
+          'Do <strong>4 slow breaths</strong> before the conversation: in for 4, hold for 2, out for 6. This shifts your nervous system into a regulated state.',
+          'Name what you\'re feeling without judgment: "I\'m nervous" or "I\'m frustrated." Awareness reduces reactivity.',
+          '<strong>Set your intent:</strong> "I am going into this to be honest, fair, and respectful — regardless of how they respond."'
+        ]
+      },
+      {
+        label: 'Step 2 — Structure the Message',
+        icon: '🗣️',
+        color: 'purple',
+        items: [
+          'Use the <strong>SBI framework:</strong> Situation → Behavior → Impact. Describe facts, not judgments.',
+          'Example: "In Tuesday\'s sync (S), when the timeline was pushed back without notice (B), it affected my ability to prepare the candidate (I)."',
+          '<strong>One message, one conversation.</strong> Don\'t pile on. Make your point clearly and then listen.'
+        ]
+      },
+      {
+        label: 'Step 3 — Handle the Response',
+        icon: '👂',
+        color: 'teal',
+        items: [
+          'After you speak: <strong>go silent and listen fully.</strong> Don\'t pre-plan your rebuttal while they\'re talking.',
+          'If defensive: "I hear you. I want us to find a way forward." Stay anchored in your intent.',
+          'Close with an action: "Can we agree on [X] going forward?" End with something constructive.'
+        ]
+      }
+    ],
+    affirmation: 'I have the courage to have honest conversations. I do hard things with care — that is a rare and powerful quality.'
+  },
+  'offer-declined': {
+    title: '😕 Offer Declined / Candidate Ghosted',
+    badge: 'RECOVERY PROTOCOL',
+    steps: [
+      {
+        label: 'Step 1 — Process It (5 min)',
+        icon: '💙',
+        color: 'purple',
+        items: [
+          '<strong>Allow yourself 5 minutes to feel it.</strong> Disappointment is a real and valid response. Don\'t skip past it — just don\'t live in it.',
+          'Candidate ghosting is at an all-time high industry-wide. Offer decline rates average 10–20% across sectors. This is market reality, not your failure.',
+          'Write down one sentence about what happened. Getting it out of your head reduces rumination.'
+        ]
+      },
+      {
+        label: 'Step 2 — Professional Reset',
+        icon: '📋',
+        color: '',
+        items: [
+          '<strong>Document it in your ATS</strong> right now — notes, reason if known, follow-up sent. Protect yourself with data.',
+          'Send one brief, professional closing message if not already done. No emotion, just professional closure. Then move on.',
+          'Ask: "What\'s the next best candidate in my pipeline?" Redirect your energy there within 15 minutes.'
+        ]
+      },
+      {
+        label: 'Step 3 — Recount Your Wins',
+        icon: '🏆',
+        color: 'teal',
+        items: [
+          'You built the pipeline that found this candidate. That sourcing work has real value.',
+          'You ran a strong process — the outcome was outside your control.',
+          'List <strong>3 actual wins from this week</strong> — interviews scheduled, candidates advanced, relationships built. They\'re real.'
+        ]
+      }
+    ],
+    affirmation: 'My value as a recruiter is not determined by one candidate\'s decision. I run excellent processes and I keep moving forward.'
+  },
+  'req-on-hold': {
+    title: '⏸️ Req On Hold / Cancelled',
+    badge: 'RECOVERY PROTOCOL',
+    steps: [
+      {
+        label: 'Step 1 — Acknowledge the Impact',
+        icon: '😤',
+        color: 'amber',
+        items: [
+          'A cancelled req after weeks of work is genuinely frustrating. <strong>That frustration is appropriate and valid.</strong>',
+          'Give yourself a few minutes before communicating externally. Compose yourself before composing emails.',
+          'Breathe. This happens. It is not a reflection of your performance.'
+        ]
+      },
+      {
+        label: 'Step 2 — Communicate Professionally',
+        icon: '📧',
+        color: '',
+        items: [
+          '<strong>Notify candidates in pipeline within 24 hours</strong> — brief, professional, respectful. "The role has been placed on hold due to business priorities. We will be in touch if it reopens."',
+          'Brief your hiring manager contact if appropriate — maintain the relationship for when the req reopens.',
+          'Update your ATS. Your documentation is your professional record.'
+        ]
+      },
+      {
+        label: 'Step 3 — Redirect Your Energy',
+        icon: '🔄',
+        color: 'teal',
+        items: [
+          'Identify: which candidates in this pipeline could be a strong fit for <strong>another open req?</strong> Pivot sourcing immediately.',
+          'Document what you learned about this role\'s requirements — it will reopen or a similar one will come.',
+          'Ask your manager: "What\'s the highest priority req I should shift my focus to right now?" Get clear direction fast.'
+        ]
+      }
+    ],
+    affirmation: 'Business priorities shift — that is not a reflection of my work. I adapt, I protect relationships, and I move forward with professionalism.'
+  }
+};
+
+// Which today-flag maps to which coach scenario
+var TODAY_FLAG_MAP = {
+  'exec': 'exec',
+  'hm': 'hm',
+  'candidate': 'candidate',
+  'marathon': 'marathon',
+  'stakeholder': 'stakeholder',
+  'difficult-conv': 'difficult-conv'
+};
+
+// Today flags state (persisted per day)
+var TODAY_FLAGS_KEY = 'wtflags';
+function getTodayFlags(){var d=gl(TODAY_FLAGS_KEY,{});return d[td()]||[];}
+function saveTodayFlags(flags){var d=gl(TODAY_FLAGS_KEY,{});d[td()]=flags;sl(TODAY_FLAGS_KEY,d);}
+
+function initTodayFlags(){
+  var flags=getTodayFlags();
+  document.querySelectorAll('.today-flag-btn').forEach(function(btn){
+    var flag=btn.dataset.flag;
+    if(flags.indexOf(flag)>=0){btn.classList.add('flagged');}
+    btn.addEventListener('click',function(){
+      var cur=getTodayFlags();
+      var idx=cur.indexOf(flag);
+      if(idx>=0){cur.splice(idx,1);btn.classList.remove('flagged');}
+      else{cur.push(flag);btn.classList.add('flagged');}
+      saveTodayFlags(cur);
+      renderTodayFlagResult(cur);
+      updateTodayCoachNudge(cur);
+    });
+  });
+  var cur=getTodayFlags();
+  renderTodayFlagResult(cur);
+  updateTodayCoachNudge(cur);
+}
+
+function renderTodayFlagResult(flags){
+  var el=document.getElementById('today-flag-result');
+  if(!el)return;
+  if(!flags.length){el.style.display='none';el.innerHTML='';return;}
+  var scenarios=flags.filter(function(f){return TODAY_FLAG_MAP[f];});
+  if(!scenarios.length){el.style.display='none';return;}
+  el.style.display='block';
+  el.innerHTML='<div class="infobox" style="background:#faf5ff;border-color:#c4b5fd;color:#6d28d9;margin-top:10px;">'+
+    '<strong>&#x1F916; '+scenarios.length+' coaching routine'+(scenarios.length!==1?'s':'')+' ready.</strong> '+
+    'Head to the <strong>AI Coach</strong> tab for your full prep routines.'+
+    '</div>';
+}
+
+function updateTodayCoachNudge(flags){
+  var nudge=document.getElementById('today-coach-nudge');
+  var title=document.getElementById('tcn-title');
+  var body=document.getElementById('tcn-body');
+  var cta=document.getElementById('tcn-cta');
+  if(!nudge)return;
+  var scenarios=flags.filter(function(f){return TODAY_FLAG_MAP[f];});
+  if(!scenarios.length){nudge.style.display='none';return;}
+  nudge.style.display='block';
+  var first=scenarios[0];
+  var sc=COACH_SCENARIOS[TODAY_FLAG_MAP[first]];
+  if(title)title.innerHTML='&#x1F916; '+sc.title+' is ready for you';
+  if(body)body.textContent='Your personalized coaching routine is prepared. Tap below to open it before your session.';
+  if(cta){
+    cta.onclick=function(){
+      document.querySelector('nav button[data-tab="coach"]').click();
+      setTimeout(function(){showCoachPanel(TODAY_FLAG_MAP[first]);},100);
+    };
+  }
+}
+
+// ---- COACH PANEL RENDERER ----
+var _activeCoachScenario = null;
+var _coachTimerID = null;
+var _coachTimerSecs = 0;
+var _coachTimerRunning = false;
+
+function showCoachPanel(id){
+  _activeCoachScenario = id;
+  // Highlight selected scenario button
+  document.querySelectorAll('.coach-scenario-btn').forEach(function(b){
+    b.classList.toggle('selected', b.dataset.scenario === id);
+  });
+  var sc = COACH_SCENARIOS[id];
+  if(!sc){return;}
+  var area = document.getElementById('coach-panel-area');
+  if(!area)return;
+
+  // Build step colors map
+  var colorClass = {'':"", 'teal':'teal', 'amber':'amber', 'purple':'purple'};
+
+  var html = '<div class="coach-panel active" id="active-coach-panel">';
+  html += '<hr style="border:none;border-top:1px solid #e5e7eb;margin:14px 0;">';
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
+  html += '<span class="coach-badge">'+sc.badge+'</span>';
+  html += '</div>';
+  html += '<h3 style="font-size:15px;font-weight:800;color:#1f2328;margin-bottom:14px;">'+sc.title+'</h3>';
+
+  // Breathing mini-timer
+  html += '<div class="coach-timer-mini" id="coach-timer-mini">';
+  html += '<div><div class="ctm-lbl">Breathing timer</div><div class="ctm-time" id="coach-timer-display">0:30</div></div>';
+  html += '<div style="display:flex;gap:7px;align-items:center;">';
+  html += '<button class="coach-timer-btn" id="coach-timer-30" onclick="startCoachTimer(30)">30s</button>';
+  html += '<button class="coach-timer-btn" id="coach-timer-60" onclick="startCoachTimer(60)">1m</button>';
+  html += '<button class="coach-timer-btn" id="coach-timer-90" onclick="startCoachTimer(90)" style="background:#6d28d9;">2m</button>';
+  html += '<button class="coach-timer-btn" id="coach-timer-stop" onclick="stopCoachTimer()" style="background:#e5e7eb;color:#1f2328;display:none;">&#x25A0;</button>';
+  html += '</div></div>';
+
+  // Steps
+  sc.steps.forEach(function(step, si){
+    var cc = colorClass[step.color||''] || '';
+    html += '<div class="tip-card '+(cc)+'" style="margin-bottom:10px;">';
+    html += '<div class="coach-step-header"><div class="coach-step-num">'+(si+1)+'</div><div class="coach-step-title">'+step.icon+' '+step.label+'</div></div>';
+    html += '<ul class="coach-checklist">';
+    step.items.forEach(function(item, ii){
+      html += '<li><div class="coach-ck-box" id="cck-'+id+'-'+si+'-'+ii+'" onclick="toggleCoachCheck(this)"></div><div>'+item+'</div></li>';
+    });
+    html += '</ul></div>';
+  });
+
+  // Affirmation
+  html += '<div class="coach-affirmation-box">';
+  html += '<div style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.5);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Your Anchoring Affirmation</div>';
+  html += '<div class="coach-affirmation-text">&ldquo;'+sc.affirmation+'&rdquo;</div>';
+  html += '</div>';
+
+  // Action buttons
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">';
+  html += '<button class="btn bsm" onclick="showMindPanel(\'breathing\')" style="background:#7c5cd8;color:#fff;border:none;">&#x1F32C; Open Breathing Exercise</button>';
+  html += '<button class="btn bo bsm" onclick="clearCoachPanel()">Close Routine</button>';
+  html += '</div>';
+  html += '</div>';
+
+  area.innerHTML = html;
+  area.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function clearCoachPanel(){
+  var area=document.getElementById('coach-panel-area');
+  if(area)area.innerHTML='';
+  document.querySelectorAll('.coach-scenario-btn').forEach(function(b){b.classList.remove('selected');});
+  stopCoachTimer();
+  _activeCoachScenario=null;
+}
+
+function toggleCoachCheck(el){
+  el.classList.toggle('checked');
+}
+
+function startCoachTimer(secs){
+  stopCoachTimer();
+  _coachTimerSecs=secs;
+  _coachTimerRunning=true;
+  var stopBtn=document.getElementById('coach-timer-stop');
+  if(stopBtn)stopBtn.style.display='inline-block';
+  updateCoachTimerDisplay();
+  _coachTimerID=setInterval(function(){
+    _coachTimerSecs--;
+    updateCoachTimerDisplay();
+    if(_coachTimerSecs<=0){
+      stopCoachTimer();
+      playChime();
+      var disp=document.getElementById('coach-timer-display');
+      if(disp)disp.textContent='✓ Done';
+    }
+  },1000);
+}
+
+function stopCoachTimer(){
+  if(_coachTimerID)clearInterval(_coachTimerID);
+  _coachTimerID=null;
+  _coachTimerRunning=false;
+  var stopBtn=document.getElementById('coach-timer-stop');
+  if(stopBtn)stopBtn.style.display='none';
+}
+
+function updateCoachTimerDisplay(){
+  var disp=document.getElementById('coach-timer-display');
+  if(!disp)return;
+  var m=Math.floor(_coachTimerSecs/60),s=_coachTimerSecs%60;
+  disp.textContent=m+':'+String(s).padStart(2,'0');
+}
+
+// Wire coach tab nav click
+(function(){
+  document.querySelectorAll('nav button').forEach(function(b){
+    if(b.dataset.tab==='coach'){
+      b.addEventListener('click',function(){
+        // If a today-flag was set, auto-select the first flagged scenario
+        var flags=getTodayFlags();
+        var first=flags.filter(function(f){return TODAY_FLAG_MAP[f];})[0];
+        if(first&&!_activeCoachScenario){
+          showCoachPanel(TODAY_FLAG_MAP[first]);
+        }
+      });
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
