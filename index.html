@@ -1003,7 +1003,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 
 <script>
-var APP_VERSION='20250722-7';var APP_VER='20250722-7';
+var APP_VERSION='20250722-8';var APP_VER='20250722-8';
 (function(){
   if(location.search.indexOf('v=')>=0)return;
   fetch(location.pathname+'?nocache='+Date.now())
@@ -1554,6 +1554,11 @@ var groundStep = 0;
 var affirmationIdx = 0;
 
 function showMindPanel(id) {
+  // Switch to the Mindfulness tab first if it isn't already active
+  var mindBtn = document.querySelector('nav button[data-tab="mindfulness"]');
+  if (mindBtn && !mindBtn.classList.contains('active')) {
+    mindBtn.click();
+  }
   document.querySelectorAll('.mind-panel').forEach(function(p){ p.classList.remove('active'); });
   var panel = document.getElementById('mind-' + id);
   if (panel) {
