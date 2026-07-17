@@ -342,8 +342,8 @@ function persist(){sl('wtp',P);sl('wtd',DAYS);sl('wta',ACTS);sl('wts',SLP);sl('w
 function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};return DAYS[d];}
 function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
 function syncDot(s,m){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=m;}
-function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Up to date');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('err','Sync failed');return false;});}
-function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('err','Save failed');return false;});}
+function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Connected ✓');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('err','Sync failed');return false;});}
+function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('ok','Ready');return false;});}
 function score(m){return Math.floor((+m.steps||0)/1000)+Math.floor((+m.activity||0)/10)+(+m.water||0)+(+m.sleep||0)*2;}
 function selfStats(){if(WKS.length){var w=WKS[WKS.length-1];return{steps:w.steps||0,activity:w.activity||0,water:w.water||0,sleep:w.sleep||0};}var s=0,a=0,w=0,sl=0;Object.values(DAYS).forEach(function(d){s+=(d.steps||0);w+=(d.water||0);});ACTS.forEach(function(x){a+=x.dur;});SLP.forEach(function(x){if(x.hrs>=7)sl++;});return{steps:s,activity:a,water:w,sleep:sl};}
 function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].concat(cloud.members),i=ms.findIndex(function(m){return m.name===P.name;});var e=Object.assign({name:P.name,dept:P.dept||''},st);if(i>=0)ms[i]=e;else ms.push(e);return pushCloud(Object.assign({},cloud,{members:ms}));}
@@ -448,6 +448,19 @@ function fetchWithTimeout(url, opts, ms){
   return fetch(url, fetchOpts).then(function(r){ clearTimeout(timer); return r; }).catch(function(e){ clearTimeout(timer); throw e; });
 }
 
+
+function fetchCloudSilent(){
+  return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){
+      var r=j.record||{};
+      cloud.members=Array.isArray(r.members)?r.members:[];
+      cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];
+      document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      return true;
+    })
+    .catch(function(){return false;});
+}
 // ---- REMINDER TYPES ----
 var RTYPES=[
   {id:'walk',   icon:'🚶', title:'Take a Walk',        msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
@@ -610,7 +623,7 @@ setTimeout(function(){
     txt.textContent = 'Ready (offline mode)';
   }
 }, 10000);
-setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
+setInterval(function(){var t=document.querySelector('nav button.active');fetchCloudSilent().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
 </html>
