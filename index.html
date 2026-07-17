@@ -330,6 +330,23 @@ function sl(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function td(){return new Date().toISOString().slice(0,10);}
 var P=gl('wtp',null),DAYS=gl('wtd',{}),ACTS=gl('wta',[]),SLP=gl('wts',[]),HABITS=gl('wth',['Drink water before coffee','10-min walk','No phone before bed']),WKS=gl('wtw',[]);
 var cloud={members:[],pairs:[]};
+var RTYPES=[
+  {id:'walk',   icon:'🚶',title:'Take a Walk',       msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
+  {id:'water',  icon:'💧',title:'Drink Water',        msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
+  {id:'stretch',icon:'🧘',title:'Stretch & Stand Up', msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
+  {id:'breathe',icon:'🌬️',title:'Deep Breathing',msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
+  {id:'eyes',   icon:'👁️',title:'Eye Break',    msg:'Look away from your screen - focus on something 20 feet away for 20 seconds.'},
+  {id:'snack',  icon:'🍎',title:'Healthy Snack Break',msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
+  {id:'mood',   icon:'😊',title:'Mood Check-in',      msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
+  {id:'posture',icon:'🪑',title:'Posture Check',      msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
+];
+var RSET=gl('wtrem',{enabled:false,interval:60,start:'08:00',end:'17:00',types:['walk','water','stretch','breathe','eyes'],sound:true});
+var remTimer=null,remSnoozeTimer=null,remCountdownTimer=null,remNextTime=null,remLog=[],remTypeIdx=0;
+var SPIN_COLORS=['#0f62fe','#00b4a0','#7c5cd8','#d97706','#ef4444','#22c55e','#0099c8','#0530ad'];
+var spinHistory=[],spinDeg=0,spinRunning=false;
+var PBIN='6a5a467bf5f4af5e299cf1f0',PBURL='https://api.jsonbin.io/v3/b/6a5a467bf5f4af5e299cf1f0';
+var personalSyncing=false,personalPushTimer=null;
+
 function persist(){sl('wtp',P);sl('wtd',DAYS);sl('wta',ACTS);sl('wts',SLP);sl('wth',HABITS);sl('wtw',WKS);}
 function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};return DAYS[d];}
 function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
@@ -438,20 +455,8 @@ function playChime(){
 }
 
 // ---- REMINDER TYPES ----
-var RTYPES=[
-  {id:'walk',   icon:'🚶',title:'Take a Walk',       msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
-  {id:'water',  icon:'💧',title:'Drink Water',        msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
-  {id:'stretch',icon:'🧘',title:'Stretch & Stand Up', msg:'Stand up, roll your shoulders, and stretch for 2 minutes. Your back will thank you!'},
-  {id:'breathe',icon:'🌬️',title:'Deep Breathing',msg:'Take 5 slow deep breaths. Inhale for 4 counts, hold for 4, exhale for 4.'},
-  {id:'eyes',   icon:'👁️',title:'Eye Break',    msg:'Look away from your screen - focus on something 20 feet away for 20 seconds.'},
-  {id:'snack',  icon:'🍎',title:'Healthy Snack Break',msg:'Fuel up with a healthy snack - fruit, nuts, or yogurt to keep your energy steady.'},
-  {id:'mood',   icon:'😊',title:'Mood Check-in',      msg:'How are you feeling right now? Take 30 seconds to check in with yourself.'},
-  {id:'posture',icon:'🪑',title:'Posture Check',      msg:'Sit up straight, feet flat on the floor, shoulders back. Good posture reduces fatigue!'}
-];
 
 // ---- REMINDER STATE ----
-var RSET=gl('wtrem',{enabled:false,interval:60,start:'08:00',end:'17:00',types:['walk','water','stretch','breathe','eyes'],sound:true});
-var remTimer=null,remSnoozeTimer=null,remCountdownTimer=null,remNextTime=null,remLog=[],remTypeIdx=0;
 function saveRem(){sl('wtrem',RSET);}
 function startReminders(){clearRemTimers();if(!RSET.enabled)return;scheduleNext();remCountdownTimer=setInterval(updateNextDisplay,1000);}
 function clearRemTimers(){if(remTimer)clearTimeout(remTimer);if(remSnoozeTimer)clearTimeout(remSnoozeTimer);if(remCountdownTimer)clearInterval(remCountdownTimer);remTimer=null;remSnoozeTimer=null;remCountdownTimer=null;}
@@ -517,8 +522,6 @@ function renderRemLog(){
 }
 
 // ---- SPIN THE WHEEL ----
-var SPIN_COLORS=['#0f62fe','#00b4a0','#7c5cd8','#d97706','#ef4444','#22c55e','#0099c8','#0530ad'];
-var spinHistory=[],spinDeg=0,spinRunning=false;
 function buildWheel(){
   var el=document.getElementById('spin-wheel-css');
   if(!el||typeof RTYPES==='undefined'||!RTYPES)return;
@@ -573,8 +576,6 @@ function renderSpinHist(){
 }
 
 // ---- PERSONAL CLOUD BACKUP ----
-var PBIN='6a5a467bf5f4af5e299cf1f0',PBURL='https://api.jsonbin.io/v3/b/6a5a467bf5f4af5e299cf1f0';
-var personalSyncing=false,personalPushTimer=null;
 function fetchPersonal(){
   if(!P)return Promise.resolve();
   return fetchWithTimeout(PBURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
