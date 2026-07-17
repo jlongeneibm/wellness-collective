@@ -535,6 +535,61 @@ function renderSpinHist(){
   w.innerHTML=spinHistory.map(function(h){return'<div class="spin-hist-item"><span class="spin-hist-time">'+h.time+'</span><span style="font-size:18px">'+h.icon+'</span><span style="font-weight:600">'+h.title+'</span></div>';}).join('');
 }
 
+
+// ---- PERSONAL CLOUD BACKUP ----
+var personalSyncing=false;
+
+function fetchPersonal(){
+  if(!P)return Promise.resolve();
+  return fetch(PBURL+'/latest',{headers:{'X-Master-Key':KEY}})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){
+      var users=(j.record||{}).users||{};
+      var me=users[P.name];
+      if(me){
+        if(me.days)Object.keys(me.days).forEach(function(d){DAYS[d]=me.days[d];});
+        if(me.acts&&me.acts.length)ACTS=me.acts;
+        if(me.slp&&me.slp.length)SLP=me.slp;
+        if(me.habits&&me.habits.length)HABITS=me.habits;
+        if(me.wks&&me.wks.length)WKS=me.wks;
+        persist();
+        renderSteps();renderWater();renderHabits();renderMood();renderSummary();
+        renderActs();renderSleep();renderWkHist();
+        if(document.getElementById('tab-charts').classList.contains('active'))drawCharts();
+        toast('Personal data restored ✓');
+      }
+    })
+    .catch(function(){});
+}
+
+function pushPersonal(){
+  if(!P||personalSyncing)return Promise.resolve();
+  personalSyncing=true;
+  return fetch(PBURL+'/latest',{headers:{'X-Master-Key':KEY}})
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){
+      var data=j.record||{users:{}};
+      if(!data.users)data.users={};
+      data.users[P.name]={name:P.name,dept:P.dept||'',days:DAYS,acts:ACTS,slp:SLP,habits:HABITS,wks:WKS,updated:new Date().toISOString()};
+      return fetch(PBURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)});
+    })
+    .then(function(r){if(!r.ok)throw 0;personalSyncing=false;})
+    .catch(function(){personalSyncing=false;});
+}
+
+var personalPushTimer=null;
+function schedulePush(){
+  if(personalPushTimer)clearTimeout(personalPushTimer);
+  var ps=document.getElementById('psync-txt');
+  if(ps)ps.textContent='Saving...';
+  personalPushTimer=setTimeout(function(){
+    pushPersonal().then(function(){
+      var ps2=document.getElementById('psync-txt');
+      if(ps2){ps2.textContent='Personal data saved ✓';setTimeout(function(){if(ps2)ps2.textContent='';},3000);}
+    });
+  },3000);
+}
+
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
 </body>
