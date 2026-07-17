@@ -135,6 +135,53 @@ tr:last-child td{border-bottom:none;}
 .spin-hist-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid #f0f1f3;font-size:13px;}
 .spin-hist-item:last-child{border-bottom:none;}
 .spin-hist-time{color:#57606a;min-width:58px;}
+
+.mind-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mind-btn{padding:14px 10px;background:#f7f8fa;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#1f2328;text-align:center;transition:border-color 0.15s,background 0.15s;}
+.mind-btn:hover{border-color:#0f62fe;background:#eef3ff;color:#0f62fe;}
+.mind-btn .mb-icon{font-size:28px;display:block;margin-bottom:5px;}
+.mind-panel{display:none;}.mind-panel.active{display:block;}
+/* Breathing animation */
+.breath-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 0;}
+.breath-ring{width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#dceeff 0%,#b8d0f8 60%,#0f62fe 100%);display:flex;align-items:center;justify-content:center;transition:transform 0s;box-shadow:0 0 0 0 rgba(15,98,254,0.3);}
+.breath-ring.inhale{transition:transform 4s ease-in-out,box-shadow 4s ease-in-out;}
+.breath-ring.exhale{transition:transform 4s ease-in-out,box-shadow 4s ease-in-out;}
+.breath-ring.expanded{transform:scale(1.35);box-shadow:0 0 0 20px rgba(15,98,254,0.1);}
+.breath-inner{font-size:15px;font-weight:800;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.3);}
+.breath-phase{font-size:18px;font-weight:800;color:#0f62fe;margin:16px 0 4px;}
+.breath-count{font-size:42px;font-weight:800;color:#0530ad;line-height:1;}
+.breath-prog{font-size:13px;color:#57606a;margin-top:8px;}
+.breath-opts{display:flex;gap:9px;justify-content:center;margin-bottom:18px;}
+.breath-opt{padding:7px 18px;border-radius:99px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:2px solid #e5e7eb;background:#f7f8fa;color:#57606a;}
+.breath-opt.active{border-color:#0f62fe;background:#0f62fe;color:#fff;}
+/* Grounding */
+.ground-step{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin-bottom:10px;display:none;}
+.ground-step.active{display:block;animation:slideup 0.3s ease;}
+.ground-num{font-size:32px;font-weight:800;color:#0f62fe;margin-bottom:4px;}
+.ground-q{font-size:15px;font-weight:700;color:#1f2328;margin-bottom:8px;}
+.ground-inp{width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:14px;font-family:inherit;color:#1f2328;resize:none;}
+.ground-inp:focus{outline:2px solid #0f62fe;border-color:transparent;}
+/* Content cards */
+.tip-card{background:linear-gradient(135deg,#eef3ff,#dceeff);border:1px solid #b8d0f8;border-radius:10px;padding:18px;margin-bottom:10px;}
+.tip-card .tc-icon{font-size:32px;margin-bottom:8px;}
+.tip-card .tc-title{font-size:15px;font-weight:800;color:#021126;margin-bottom:6px;}
+.tip-card .tc-body{font-size:13px;color:#374151;line-height:1.7;}
+.tip-card.teal{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-color:#5eead4;}
+.tip-card.teal .tc-title{color:#0f766e;}
+.tip-card.amber{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-color:#fcd34d;}
+.tip-card.amber .tc-title{color:#92400e;}
+.tip-card.purple{background:linear-gradient(135deg,#faf5ff,#ede9fe);border-color:#c4b5fd;}
+.tip-card.purple .tc-title{color:#6d28d9;}
+.affirmation-box{background:linear-gradient(135deg,#021126,#0530ad);border-radius:12px;padding:28px 24px;text-align:center;margin-bottom:14px;}
+.affirmation-text{font-size:18px;font-weight:700;color:#fff;line-height:1.5;font-style:italic;}
+.affirmation-sub{font-size:12px;color:rgba(255,255,255,0.5);margin-top:8px;}
+.btn-affirmation{margin-top:14px;padding:9px 24px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:99px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
+.btn-affirmation:hover{background:rgba(255,255,255,0.25);}
+.step-list{list-style:none;counter-reset:steps;}
+.step-list li{counter-increment:steps;display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f0f1f3;}
+.step-list li:last-child{border-bottom:none;}
+.step-list li::before{content:counter(steps);width:24px;height:24px;border-radius:50%;background:#0f62fe;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-text{font-size:13px;color:#374151;line-height:1.6;}
 svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
@@ -203,6 +250,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <button data-tab="sleep">Sleep</button>
   <button data-tab="weekly">Weekly Report</button>
   <button data-tab="team">Team View</button>
+  <button data-tab="mindfulness">&#x1F9D8; Mindfulness</button>
   <button data-tab="reminders">&#x1F514; Reminders</button>
   <button data-tab="spin">&#x1F3A1; Spin</button>
   <button data-tab="charts">Charts</button>
@@ -239,6 +287,265 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 <div id="tab-team" class="tab">
   <div class="card"><div class="banner bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>Individual Leaderboard — The Wellness Collective</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;"><p style="font-size:13px;color:#57606a;">Points: steps (1/1,000) · activity (1/10 min) · water (1/glass) · sleep ≥7 hrs (2/night).</p><span id="last-sync" style="font-size:11px;color:#57606a;"></span></div><div id="ind-lb"><div class="empty">Loading…</div></div></div>
   <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
+</div>
+
+
+<!-- MINDFULNESS TAB -->
+<div id="tab-mindfulness" class="tab">
+
+  <!-- Quick access grid -->
+  <div class="card">
+    <h2>&#x1F9D8; Mindfulness &amp; Stress Relief</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:16px;">Choose what you need right now:</p>
+    <div class="mind-grid">
+      <button class="mind-btn" onclick="showMindPanel('breathing')"><span class="mb-icon">&#x1F32C;</span>Guided Breathing</button>
+      <button class="mind-btn" onclick="showMindPanel('grounding')"><span class="mb-icon">&#x1F33F;</span>Grounding Exercise</button>
+      <button class="mind-btn" onclick="showMindPanel('meditation')"><span class="mb-icon">&#x1F9E0;</span>Quick Meditation</button>
+      <button class="mind-btn" onclick="showMindPanel('affirmations')"><span class="mb-icon">&#x2728;</span>Affirmations</button>
+      <button class="mind-btn" onclick="showMindPanel('hm-recovery')"><span class="mb-icon">&#x1F91D;</span>Difficult HM Recovery</button>
+      <button class="mind-btn" onclick="showMindPanel('ghosting')"><span class="mb-icon">&#x1F47B;</span>Ghosting Recovery</button>
+      <button class="mind-btn" onclick="showMindPanel('rejection')"><span class="mb-icon">&#x1F4AA;</span>Rejection Resilience</button>
+      <button class="mind-btn" onclick="showMindPanel('reset')"><span class="mb-icon">&#x1F504;</span>Reset After a Meeting</button>
+    </div>
+  </div>
+
+  <!-- BREATHING PANEL -->
+  <div id="mind-breathing" class="mind-panel card">
+    <h2>&#x1F32C; Guided Breathing</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Box breathing reduces stress and improves focus. Choose your session length:</p>
+    <div class="breath-opts">
+      <button class="breath-opt active" id="bopt-1" onclick="setBreathDur(1)">1 min</button>
+      <button class="breath-opt" id="bopt-3" onclick="setBreathDur(3)">3 min</button>
+      <button class="breath-opt" id="bopt-5" onclick="setBreathDur(5)">5 min</button>
+    </div>
+    <div class="breath-wrap">
+      <div class="breath-ring" id="breath-ring"><div class="breath-inner" id="breath-inner">Ready</div></div>
+      <div class="breath-phase" id="breath-phase">Press Start</div>
+      <div class="breath-count" id="breath-count">&nbsp;</div>
+      <div class="breath-prog" id="breath-prog">Inhale &rarr; Hold &rarr; Exhale &rarr; Hold &rarr; Repeat</div>
+    </div>
+    <div style="display:flex;gap:9px;justify-content:center;">
+      <button class="btn bb" id="btn-breath-start" onclick="startBreathing()">&#x25B6; Start</button>
+      <button class="btn bo bsm" id="btn-breath-stop" onclick="stopBreathing()" style="display:none;">&#x25A0; Stop</button>
+    </div>
+  </div>
+
+  <!-- GROUNDING PANEL -->
+  <div id="mind-grounding" class="mind-panel card">
+    <h2>&#x1F33F; 5-4-3-2-1 Grounding Exercise</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">This technique anchors you to the present moment. Work through each sense:</p>
+    <div id="ground-steps">
+      <div class="ground-step active" id="gs-0">
+        <div class="ground-num">5</div>
+        <div class="ground-q">Name 5 things you can <strong>SEE</strong> right now</div>
+        <textarea class="ground-inp" id="gi-0" rows="2" placeholder="e.g. my monitor, a plant, my coffee mug..."></textarea>
+      </div>
+      <div class="ground-step" id="gs-1">
+        <div class="ground-num">4</div>
+        <div class="ground-q">Name 4 things you can <strong>TOUCH or FEEL</strong></div>
+        <textarea class="ground-inp" id="gi-1" rows="2" placeholder="e.g. the chair, keyboard, floor under my feet..."></textarea>
+      </div>
+      <div class="ground-step" id="gs-2">
+        <div class="ground-num">3</div>
+        <div class="ground-q">Name 3 things you can <strong>HEAR</strong></div>
+        <textarea class="ground-inp" id="gi-2" rows="2" placeholder="e.g. keyboard typing, AC, distant voices..."></textarea>
+      </div>
+      <div class="ground-step" id="gs-3">
+        <div class="ground-num">2</div>
+        <div class="ground-q">Name 2 things you can <strong>SMELL</strong></div>
+        <textarea class="ground-inp" id="gi-3" rows="2" placeholder="e.g. coffee, fresh air..."></textarea>
+      </div>
+      <div class="ground-step" id="gs-4">
+        <div class="ground-num">1</div>
+        <div class="ground-q">Name 1 thing you can <strong>TASTE</strong></div>
+        <textarea class="ground-inp" id="gi-4" rows="2" placeholder="e.g. mint from gum, morning coffee..."></textarea>
+      </div>
+      <div class="ground-step" id="gs-5">
+        <div class="tip-card" style="text-align:center;">
+          <div class="tc-icon">&#x1F31F;</div>
+          <div class="tc-title">Well done!</div>
+          <div class="tc-body">You've completed the grounding exercise. Notice how you feel more present and calm. Take one deep breath and return to your day with renewed focus.</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:10px;">
+      <button class="btn bb" id="btn-ground-next" onclick="groundNext()">Next &rarr;</button>
+      <button class="btn bo bsm" onclick="groundReset()">Start Over</button>
+    </div>
+  </div>
+
+  <!-- MEDITATION PANEL -->
+  <div id="mind-meditation" class="mind-panel card">
+    <h2>&#x1F9E0; Quick Meditation</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">A guided mindfulness session. Find a comfortable position, close your eyes when ready.</p>
+    <div id="med-content">
+      <div class="tip-card purple">
+        <div class="tc-icon">&#x1F9D8;</div>
+        <div class="tc-title">3-Minute Mindfulness Reset</div>
+        <div class="tc-body">
+          <ul class="step-list">
+            <li><div class="step-text"><strong>Settle (1 min):</strong> Sit comfortably. Close your eyes. Take 3 slow deep breaths. Feel your feet on the floor and your hands in your lap.</div></li>
+            <li><div class="step-text"><strong>Observe (1 min):</strong> Notice thoughts as they come — don't judge them. Imagine each thought as a cloud drifting past. You are the sky, not the cloud.</div></li>
+            <li><div class="step-text"><strong>Return (1 min):</strong> Bring attention back to your breath. Feel the rise and fall of your chest. When ready, wiggle your fingers and slowly open your eyes.</div></li>
+          </ul>
+        </div>
+      </div>
+      <div class="tip-card teal">
+        <div class="tc-icon">&#x1F4AB;</div>
+        <div class="tc-title">Body Scan (5 minutes)</div>
+        <div class="tc-body">
+          <ul class="step-list">
+            <li><div class="step-text">Close your eyes and take 3 deep breaths.</div></li>
+            <li><div class="step-text">Bring attention to the top of your head. Notice any tension. Breathe into it and let it soften.</div></li>
+            <li><div class="step-text">Slowly move awareness down: forehead, jaw, neck, shoulders. Release any tightness.</div></li>
+            <li><div class="step-text">Continue down through your chest, stomach, arms, hands. Notice sensations without judgment.</div></li>
+            <li><div class="step-text">Finish at your feet. Feel grounded. Take one final deep breath and return to the room.</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:4px;">
+      <button class="btn bb" onclick="showMindPanel('breathing')">&#x1F32C; Add Breathing Exercise</button>
+    </div>
+  </div>
+
+  <!-- AFFIRMATIONS PANEL -->
+  <div id="mind-affirmations" class="mind-panel card">
+    <h2>&#x2728; Positive Affirmations</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Curated affirmations for workplace resilience. Your daily affirmation:</p>
+    <div class="affirmation-box">
+      <div class="affirmation-text" id="affirmation-text"></div>
+      <div class="affirmation-sub">IBM Wellness Collective</div>
+      <button class="btn-affirmation" onclick="nextAffirmation()">&#x21BB; New Affirmation</button>
+    </div>
+    <h3 style="margin-bottom:10px;">More affirmations for tough moments:</h3>
+    <div id="affirmation-extras"></div>
+  </div>
+
+  <!-- HM RECOVERY PANEL -->
+  <div id="mind-hm-recovery" class="mind-panel card">
+    <h2>&#x1F91D; Difficult HM Recovery</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Because we ALL have those conversations. Here's your reset toolkit:</p>
+    <div class="tip-card amber">
+      <div class="tc-icon">&#x1F4AA;</div>
+      <div class="tc-title">First: Acknowledge the frustration</div>
+      <div class="tc-body">It's okay to feel frustrated. That conversation was hard. Take 60 seconds to just feel it — don't push it away. Set a timer if it helps. Then let it go.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tc-icon">&#x1F32C;</div>
+      <div class="tc-title">The 3-breath reset</div>
+      <div class="tc-body">Breathe in for 4 counts. Hold for 4. Out for 6. Repeat 3 times. This activates your parasympathetic nervous system and physically calms your stress response within 90 seconds.</div>
+    </div>
+    <div class="tip-card teal">
+      <div class="tc-icon">&#x1F504;</div>
+      <div class="tc-title">Reframe the situation</div>
+      <div class="tc-body">
+        <ul class="step-list">
+          <li><div class="step-text">Their urgency is not your emergency. You are a professional managing competing priorities.</div></li>
+          <li><div class="step-text">Difficult behavior often reflects their own pressure — it's not about you.</div></li>
+          <li><div class="step-text">You showed up, stayed professional, and did your job. That matters.</div></li>
+          <li><div class="step-text">What's one thing you can control in this situation right now?</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip-card purple">
+      <div class="tc-icon">&#x1F3AF;</div>
+      <div class="tc-title">Your next step</div>
+      <div class="tc-body">Write down one concrete action you can take today that moves this forward. Then close this tab, take a 5-minute walk, and come back refreshed. You've got this.</div>
+    </div>
+    <div id="hm-prompts"></div>
+  </div>
+
+  <!-- GHOSTING RECOVERY PANEL -->
+  <div id="mind-ghosting" class="mind-panel card">
+    <h2>&#x1F47B; Candidate Ghosting Recovery</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">It happens to every recruiter. Here's how to process it and move forward:</p>
+    <div class="tip-card amber">
+      <div class="tc-icon">&#x1F4AD;</div>
+      <div class="tc-title">Remember: It's not personal</div>
+      <div class="tc-body">Candidate ghosting is at an all-time high industry-wide. Research shows 28% of candidates ghost after an offer — it reflects the current market, not your skills or the role. You did everything right.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tc-icon">&#x1F4CB;</div>
+      <div class="tc-title">The 3-step professional reset</div>
+      <div class="tc-body">
+        <ul class="step-list">
+          <li><div class="step-text"><strong>Document it:</strong> Log the ghosting in your ATS. Data helps identify patterns and protects you.</div></li>
+          <li><div class="step-text"><strong>One final reach-out:</strong> Send a brief, professional message closing the loop. No emotion, just closure. Then move on.</div></li>
+          <li><div class="step-text"><strong>Pipeline pivot:</strong> Who is your next best candidate? Shift your energy there within 15 minutes.</div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="tip-card teal">
+      <div class="tc-icon">&#x1F4AA;</div>
+      <div class="tc-title">Reframe your wins</div>
+      <div class="tc-body">You still sourced the candidate. You still ran a great process. The pipeline you built has real value. One ghosted candidate doesn't erase weeks of quality work. Count your actual wins today.</div>
+    </div>
+    <div class="tip-card purple">
+      <div class="tc-icon">&#x2728;</div>
+      <div class="tc-title">Quick affirmation</div>
+      <div class="tc-body" id="ghost-affirmation" style="font-style:italic;font-size:14px;font-weight:600;"></div>
+    </div>
+  </div>
+
+  <!-- REJECTION RESILIENCE PANEL -->
+  <div id="mind-rejection" class="mind-panel card">
+    <h2>&#x1F4AA; Rejection Resilience</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">When a req goes on hold, a candidate declines, or a role is cancelled — here's your toolkit:</p>
+    <div class="tip-card">
+      <div class="tc-icon">&#x1F9E0;</div>
+      <div class="tc-title">Normalize the feeling</div>
+      <div class="tc-body">Rejection and setbacks are built into recruiting. Every top recruiter has a story of the one that got away. Resilience isn't about not feeling it — it's about how fast you recover.</div>
+    </div>
+    <div class="tip-card amber">
+      <div class="tc-icon">&#x1F4D6;</div>
+      <div class="tc-title">The growth question</div>
+      <div class="tc-body">Ask yourself: "What's one thing I learned from this situation?" Write it down. Converting setbacks into learning moments is the hallmark of elite recruiters. This experience has value.</div>
+    </div>
+    <div class="tip-card teal">
+      <div class="tc-icon">&#x1F3AF;</div>
+      <div class="tc-title">Your resilience toolkit</div>
+      <div class="tc-body">
+        <ul class="step-list">
+          <li><div class="step-text">Take 5 minutes away from your screen. Walk, stretch, breathe.</div></li>
+          <li><div class="step-text">List 3 things that went well this week — even small wins count.</div></li>
+          <li><div class="step-text">Identify one action you can take in the next hour that's within your control.</div></li>
+          <li><div class="step-text">Reach out to a teammate. Connection is the fastest path to resilience.</div></li>
+        </ul>
+      </div>
+    </div>
+    <div id="rejection-prompts"></div>
+  </div>
+
+  <!-- RESET AFTER MEETING PANEL -->
+  <div id="mind-reset" class="mind-panel card">
+    <h2>&#x1F504; Reset After a Difficult Meeting</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Give yourself 5 minutes before jumping to the next thing:</p>
+    <div class="tip-card">
+      <div class="tc-icon">&#x23F1;</div>
+      <div class="tc-title">Step 1: Decompress (90 seconds)</div>
+      <div class="tc-body">Stand up. Roll your shoulders back 3 times. Take 3 deep slow breaths. Let the tension in your jaw and hands release. You are physically leaving that meeting space.</div>
+    </div>
+    <div class="tip-card teal">
+      <div class="tc-icon">&#x1F4DD;</div>
+      <div class="tc-title">Step 2: Brain dump (2 minutes)</div>
+      <div class="tc-body">Jot down every outstanding action item, concern, or unresolved thought from that meeting. Getting it out of your head and onto paper frees your mental space immediately.</div>
+    </div>
+    <div class="tip-card amber">
+      <div class="tc-icon">&#x1F3AF;</div>
+      <div class="tc-title">Step 3: Set your intention (90 seconds)</div>
+      <div class="tc-body">Ask: "What's the most important thing I need to focus on right now?" Pick ONE thing. Write it down. This resets your priority compass before the next task or meeting.</div>
+    </div>
+    <div class="tip-card purple">
+      <div class="tc-icon">&#x2728;</div>
+      <div class="tc-title">Step 4: Affirmation</div>
+      <div class="tc-body" id="reset-affirmation" style="font-style:italic;font-size:14px;font-weight:600;"></div>
+    </div>
+    <div style="margin-top:10px;">
+      <button class="btn bb" onclick="showMindPanel('breathing')">&#x1F32C; Follow with a Breathing Exercise</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- REMINDERS TAB -->
@@ -396,7 +703,7 @@ document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.
 if(P){launch();}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
-document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='spin'){buildWheel();}});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='mindfulness'){initAffirmations();initGhosting();initReset();}if(b.dataset.tab==='spin'){buildWheel();}});});
 function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
 document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();schedulePush();renderSteps();renderSummary();toast('Steps saved!');});
 document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
@@ -618,6 +925,216 @@ function fetchCloudSilent(){
     .then(function(r){if(!r.ok)throw 0;return r.json();})
     .then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;})
     .catch(function(){return false;});
+}
+
+// ---- MINDFULNESS ----
+var AFFIRMATIONS = [
+  "I am doing meaningful work that creates real impact for people's careers.",
+  "Every challenging conversation makes me a stronger, more empathetic recruiter.",
+  "I bring energy, creativity, and professionalism to everything I do.",
+  "I am resilient. I have navigated difficult situations before and I will again.",
+  "My value is not determined by a hiring manager's mood or a candidate's decision.",
+  "I am building relationships that matter — one conversation at a time.",
+  "I choose to respond with patience and confidence, even in pressure situations.",
+  "I am a skilled professional and my expertise is real and valuable.",
+  "Progress, not perfection. I am moving forward every single day.",
+  "I release what I cannot control and focus my energy on what I can.",
+  "My pipeline is growing. My network is strong. My results speak for themselves.",
+  "I am allowed to take breaks. Rest makes me more effective, not less.",
+  "I advocate for candidates and hiring managers equally — that is a superpower.",
+  "Difficult conversations are opportunities to demonstrate my professionalism.",
+  "I am part of a strong team. I give and receive support freely.",
+  "Every 'no' brings me closer to the right 'yes' — for candidates and roles alike.",
+  "I manage complexity with grace. That is a rare and powerful skill.",
+  "I celebrate small wins. Every placed candidate, every interview scheduled, matters.",
+  "My well-being is a professional asset. I invest in it without guilt.",
+  "I am exactly where I need to be, doing exactly what I need to do, right now."
+];
+
+var GHOSTING_AFFIRMATIONS = [
+  "Their silence is not a reflection of your worth as a recruiter.",
+  "You ran a great process. The outcome was outside your control.",
+  "Your pipeline is bigger than one candidate. Move forward with confidence.",
+  "Every ghosting experience makes you a more resilient recruiter."
+];
+
+var REJECTION_PROMPTS = [
+  "Name one skill you used today that you're proud of.",
+  "What's one small win from this week, however tiny?",
+  "Who on your team could use a quick encouraging message right now?",
+  "What's one thing within your control that you could act on in the next 30 minutes?"
+];
+
+var breathDuration = 1;
+var breathTimer = null;
+var breathRunning = false;
+var groundStep = 0;
+var affirmationIdx = 0;
+
+function showMindPanel(id) {
+  document.querySelectorAll('.mind-panel').forEach(function(p){ p.classList.remove('active'); });
+  var panel = document.getElementById('mind-' + id);
+  if (panel) {
+    panel.classList.add('active');
+    panel.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  if (id === 'affirmations') initAffirmations();
+  if (id === 'ghosting') initGhosting();
+  if (id === 'rejection') initRejection();
+  if (id === 'reset') initReset();
+  if (id === 'breathing') stopBreathing();
+}
+
+// ---- BREATHING ----
+function setBreathDur(mins) {
+  breathDuration = mins;
+  document.querySelectorAll('.breath-opt').forEach(function(b){ b.classList.remove('active'); });
+  var el = document.getElementById('bopt-' + mins);
+  if (el) el.classList.add('active');
+  stopBreathing();
+}
+
+function startBreathing() {
+  if (breathRunning) return;
+  breathRunning = true;
+  document.getElementById('btn-breath-start').style.display = 'none';
+  document.getElementById('btn-breath-stop').style.display = 'inline-block';
+  var totalCycles = Math.round(breathDuration * 60 / 16); // 4+4+4+4 = 16s per cycle
+  var cyclesDone = 0;
+  var phases = [
+    {name:'Inhale', dur:4, expand:true},
+    {name:'Hold',   dur:4, expand:true},
+    {name:'Exhale', dur:4, expand:false},
+    {name:'Hold',   dur:4, expand:false}
+  ];
+  var phaseIdx = 0, countdown = phases[0].dur;
+
+  document.getElementById('breath-prog').textContent = 'Cycle 1 of ' + totalCycles;
+
+  function tick() {
+    if (!breathRunning) return;
+    var phase = phases[phaseIdx];
+    document.getElementById('breath-phase').textContent = phase.name;
+    document.getElementById('breath-count').textContent = countdown;
+    document.getElementById('breath-inner').textContent = phase.name;
+    var ring = document.getElementById('breath-ring');
+    if (countdown === phase.dur) {
+      ring.classList.remove('inhale','exhale','expanded');
+      void ring.offsetWidth;
+      if (phase.expand) { ring.classList.add('inhale','expanded'); }
+      else { ring.classList.add('exhale'); ring.classList.remove('expanded'); }
+    }
+    countdown--;
+    if (countdown < 0) {
+      phaseIdx = (phaseIdx + 1) % 4;
+      countdown = phases[phaseIdx].dur;
+      if (phaseIdx === 0) {
+        cyclesDone++;
+        if (cyclesDone >= totalCycles) {
+          stopBreathing();
+          document.getElementById('breath-phase').textContent = 'Complete!';
+          document.getElementById('breath-count').textContent = '';
+          document.getElementById('breath-inner').textContent = '✓';
+          document.getElementById('breath-prog').textContent = 'Great job! You completed ' + totalCycles + ' breathing cycles.';
+          if (typeof playChime === 'function') playChime();
+          return;
+        }
+        document.getElementById('breath-prog').textContent = 'Cycle ' + (cyclesDone+1) + ' of ' + totalCycles;
+      }
+    }
+    breathTimer = setTimeout(tick, 1000);
+  }
+  tick();
+}
+
+function stopBreathing() {
+  breathRunning = false;
+  if (breathTimer) clearTimeout(breathTimer);
+  breathTimer = null;
+  var startBtn = document.getElementById('btn-breath-start');
+  var stopBtn = document.getElementById('btn-breath-stop');
+  if (startBtn) startBtn.style.display = 'inline-block';
+  if (stopBtn) stopBtn.style.display = 'none';
+  var ring = document.getElementById('breath-ring');
+  if (ring) { ring.classList.remove('inhale','exhale','expanded'); }
+  var phase = document.getElementById('breath-phase');
+  var count = document.getElementById('breath-count');
+  var inner = document.getElementById('breath-inner');
+  if (phase) phase.textContent = 'Press Start';
+  if (count) count.textContent = '';
+  if (inner) inner.textContent = 'Ready';
+}
+
+// ---- GROUNDING ----
+function groundNext() {
+  var current = document.getElementById('gs-' + groundStep);
+  if (current) current.classList.remove('active');
+  groundStep++;
+  var next = document.getElementById('gs-' + groundStep);
+  if (next) {
+    next.classList.add('active');
+    next.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  if (groundStep >= 5) {
+    document.getElementById('btn-ground-next').textContent = 'Start Over';
+    document.getElementById('btn-ground-next').onclick = groundReset;
+  }
+}
+
+function groundReset() {
+  var current = document.getElementById('gs-' + groundStep);
+  if (current) current.classList.remove('active');
+  groundStep = 0;
+  document.getElementById('gs-0').classList.add('active');
+  for (var i = 0; i <= 5; i++) {
+    var el = document.getElementById('gi-' + i);
+    if (el) el.value = '';
+  }
+  var btn = document.getElementById('btn-ground-next');
+  if (btn) { btn.textContent = 'Next →'; btn.onclick = groundNext; }
+}
+
+// ---- AFFIRMATIONS ----
+function initAffirmations() {
+  var today = new Date();
+  affirmationIdx = (today.getDate() + today.getMonth()) % AFFIRMATIONS.length;
+  document.getElementById('affirmation-text').textContent = '“' + AFFIRMATIONS[affirmationIdx] + '”';
+  var extras = document.getElementById('affirmation-extras');
+  if (extras) {
+    var picks = [];
+    for (var i = 0; i < 3; i++) {
+      picks.push(AFFIRMATIONS[(affirmationIdx + i + 1) % AFFIRMATIONS.length]);
+    }
+    extras.innerHTML = picks.map(function(a){
+      return '<div class="tip-card" style="margin-bottom:8px;"><div class="tc-body" style="font-style:italic;font-size:13px;font-weight:600;">“'+a+'”</div></div>';
+    }).join('');
+  }
+}
+
+function nextAffirmation() {
+  affirmationIdx = (affirmationIdx + 1) % AFFIRMATIONS.length;
+  document.getElementById('affirmation-text').textContent = '“' + AFFIRMATIONS[affirmationIdx] + '”';
+}
+
+// ---- GHOSTING ----
+function initGhosting() {
+  var el = document.getElementById('ghost-affirmation');
+  if (el) el.textContent = '“' + GHOSTING_AFFIRMATIONS[Math.floor(Math.random()*GHOSTING_AFFIRMATIONS.length)] + '”';
+}
+
+// ---- REJECTION ----
+function initRejection() {
+  var el = document.getElementById('rejection-prompts');
+  if (!el) return;
+  el.innerHTML = '<div class="tip-card teal"><div class="tc-icon">&#x1F4AC;</div><div class="tc-title">Reflection prompts</div><div class="tc-body"><ul class="step-list">' +
+    REJECTION_PROMPTS.map(function(p){ return '<li><div class="step-text">'+p+'</div></li>'; }).join('') +
+    '</ul></div></div>';
+}
+
+// ---- RESET ----
+function initReset() {
+  var el = document.getElementById('reset-affirmation');
+  if (el) el.textContent = '“' + AFFIRMATIONS[Math.floor(Math.random()*AFFIRMATIONS.length)] + '”';
 }
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloudSilent().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
