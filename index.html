@@ -801,7 +801,14 @@ document.getElementById('go-btn').addEventListener('click',function(){
 });
 document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('go-btn').click();});
 
-if(P){launch();}
+// Global error trap — shows any JS crash visibly so we can diagnose it
+window.onerror=function(msg,src,line,col,err){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;top:0;left:0;right:0;background:#ef4444;color:#fff;padding:12px 16px;font-size:13px;font-weight:700;z-index:99999;white-space:pre-wrap;';
+  d.textContent='JS ERROR (line '+line+'): '+msg+(err?' | '+err.stack:'');
+  document.body.appendChild(d);
+};
+if(P){try{launch();}catch(e){window.onerror(e.message,'',0,0,e);}}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
 document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();renderShoutFeed();fillShoutToSelect();initShoutEmojis();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='mindfulness'){initAffirmations();initGhosting();initReset();}if(b.dataset.tab==='spin'){buildWheel();}});});
