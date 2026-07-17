@@ -182,6 +182,21 @@ tr:last-child td{border-bottom:none;}
 .step-list li:last-child{border-bottom:none;}
 .step-list li::before{content:counter(steps);width:24px;height:24px;border-radius:50%;background:#0f62fe;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 .step-text{font-size:13px;color:#374151;line-height:1.6;}
+
+.shout-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f1f3;}
+.shout-item:last-child{border-bottom:none;}
+.shout-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0530ad,#0f62fe);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;}
+.shout-body{flex:1;min-width:0;}
+.shout-meta{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;}
+.shout-from{font-size:13px;font-weight:700;color:#1f2328;}
+.shout-to{font-size:13px;color:#0f62fe;font-weight:700;}
+.shout-time{font-size:11px;color:#57606a;}
+.shout-msg{font-size:13px;color:#374151;line-height:1.5;}
+.shout-emoji{font-size:16px;}
+.shout-compose{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:14px;}
+.shout-emoji-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.shout-emoji-btn{width:34px;height:34px;border-radius:6px;background:#fff;border:2px solid #e5e7eb;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.15s;}
+.shout-emoji-btn.picked{border-color:#0f62fe;background:#eef3ff;}
 svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
@@ -658,7 +673,7 @@ function persist(){sl('wtp',P);sl('wtd',DAYS);sl('wta',ACTS);sl('wts',SLP);sl('w
 function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};return DAYS[d];}
 function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
 function syncDot(s,m){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=m;}
-function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Connected ✓');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('ok','Ready');return false;});}
+function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];cloud.shoutouts=Array.isArray(r.shoutouts)?r.shoutouts:[];syncDot('ok','Connected ✓');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('ok','Ready');return false;});}
 function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)},8000).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('ok','Ready');return false;});}
 function score(m){return Math.floor((+m.steps||0)/1000)+Math.floor((+m.activity||0)/10)+(+m.water||0)+(+m.sleep||0)*2;}
 function selfStats(){if(WKS.length){var w=WKS[WKS.length-1];return{steps:w.steps||0,activity:w.activity||0,water:w.water||0,sleep:w.sleep||0};}var s=0,a=0,w=0,sl=0;Object.values(DAYS).forEach(function(d){s+=(d.steps||0);w+=(d.water||0);});ACTS.forEach(function(x){a+=x.dur;});SLP.forEach(function(x){if(x.hrs>=7)sl++;});return{steps:s,activity:a,water:w,sleep:sl};}
@@ -680,6 +695,8 @@ function launch(){
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
   // Wire up all event listeners
   document.getElementById('spin-btn').addEventListener('click',spinWheel);
+  document.getElementById('btn-shout-send').addEventListener('click',sendShoutOut);
+  initShoutEmojis();
   document.getElementById('sr-done').addEventListener('click',function(){document.getElementById('spin-result').classList.remove('show');toast('Wellness break logged!');});
   document.getElementById('rem-enabled').addEventListener('change',function(){RSET.enabled=this.checked;document.getElementById('rem-enabled-lbl').textContent=this.checked?'On':'Off';});
   document.getElementById('rem-interval').addEventListener('input',function(){RSET.interval=parseInt(this.value);document.getElementById('rem-interval-lbl').textContent='Every '+RSET.interval+' min';});
@@ -703,7 +720,7 @@ document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.
 if(P){launch();}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
-document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='mindfulness'){initAffirmations();initGhosting();initReset();}if(b.dataset.tab==='spin'){buildWheel();}});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();renderShoutFeed();fillShoutToSelect();initShoutEmojis();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='mindfulness'){initAffirmations();initGhosting();initReset();}if(b.dataset.tab==='spin'){buildWheel();}});});
 function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
 document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();schedulePush();renderSteps();renderSummary();toast('Steps saved!');});
 document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
@@ -724,7 +741,7 @@ document.getElementById('wk-start').value=getMon(td());
 document.getElementById('btn-wk-auto').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,we=new Date(ws);we.setDate(we.getDate()+6);var weS=we.toISOString().slice(0,10);var s=0,a=0,w=0,sl=0;Object.entries(DAYS).forEach(function(kv){if(kv[0]>=ws&&kv[0]<=weS){s+=(kv[1].steps||0);w+=(kv[1].water||0);}});ACTS.forEach(function(x){if(x.date>=ws&&x.date<=weS)a+=x.dur;});SLP.forEach(function(x){if(x.date>=ws&&x.date<=weS&&x.hrs>=7)sl++;});document.getElementById('wk-steps').value=s;document.getElementById('wk-act').value=a;document.getElementById('wk-water').value=w;document.getElementById('wk-sleep').value=sl;toast('Auto-filled!');});
 document.getElementById('btn-wk-save').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,steps=parseInt(document.getElementById('wk-steps').value)||0,act=parseInt(document.getElementById('wk-act').value)||0,water=parseInt(document.getElementById('wk-water').value)||0,slp=parseInt(document.getElementById('wk-sleep').value)||0;if(!ws){toast('Select a week.');return;}var sc=score({steps:steps,activity:act,water:water,sleep:slp}),i=WKS.findIndex(function(w){return w.ws===ws;});var e={ws:ws,steps:steps,activity:act,water:water,sleep:slp,score:sc};if(i>=0)WKS[i]=e;else WKS.push(e);WKS.sort(function(a,b){return a.ws<b.ws?-1:1;});persist();renderWkHist();syncSelf().then(function(){toast('Synced to team!');});});
 function renderWkHist(){var w=document.getElementById('wk-hist');if(!WKS.length){w.innerHTML='<div class="empty">No weekly reports yet.</div>';return;}var r=[].concat(WKS).reverse().map(function(w){return'<tr><td>'+w.ws+'</td><td>'+(w.steps||0).toLocaleString()+'</td><td>'+(w.activity||0)+' min</td><td>'+(w.water||0)+'</td><td>'+(w.sleep||0)+'</td><td><strong style="color:#0f62fe">'+w.score+' pts</strong></td></tr>';}).join('');w.innerHTML='<table><thead><tr><th>Week Of</th><th>Steps</th><th>Activity</th><th>Water</th><th>Sleep</th><th>Points</th></tr></thead><tbody>'+r+'</tbody></table>';}
-function renderTeam(){renderIndLB();renderPairsLB();fillSelects();renderPairsMgr();}
+function renderTeam(){renderIndLB();renderPairsLB();fillSelects();renderPairsMgr();renderShoutFeed();fillShoutToSelect();}
 function renderIndLB(){var sorted=[].concat(cloud.members).map(function(m){return Object.assign({},m,{sc:score(m)});}).sort(function(a,b){return b.sc-a.sc;});var max=sorted[0]?sorted[0].sc:1,w=document.getElementById('ind-lb');if(!sorted.length){w.innerHTML='<div class="empty">No data yet — submit your weekly report to appear here.</div>';return;}w.innerHTML=sorted.map(function(m,i){var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',pct=Math.round(m.sc/max*100),isMe=P&&m.name===P.name;return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+m.name+(isMe?' <span class="tag">You</span>':'')+(m.dept?' <span class="tag tagt">'+m.dept+'</span>':'')+'</div><div class="lbs">Steps: '+(m.steps||0).toLocaleString()+' · Act: '+(m.activity||0)+' min · Water: '+(m.water||0)+' · Sleep: '+(m.sleep||0)+'</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb'+(rc==='gold'?' gold':'')+'" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+m.sc+' pts</div></div>';}).join('');}
 function renderPairsLB(){var w=document.getElementById('pairs-lb');if(!cloud.pairs||!cloud.pairs.length){w.innerHTML='<div class="empty">No pairs yet.</div>';return;}var sc=cloud.pairs.map(function(p){var m1=cloud.members.find(function(m){return m.name===p.p1;}),m2=cloud.members.find(function(m){return m.name===p.p2;});var s1=m1?score(m1):0,s2=m2?score(m2):0;return Object.assign({},p,{s1:s1,s2:s2,total:s1+s2});}).sort(function(a,b){return b.total-a.total;});var max=sc[0]?sc[0].total:1;w.innerHTML=sc.map(function(p,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',pct=Math.round(p.total/max*100);return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+(p.pairName||p.p1+' & '+p.p2)+'</div><div class="lbs">'+p.p1+' ('+p.s1+' pts) + '+p.p2+' ('+p.s2+' pts)</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb t" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+p.total+' pts</div></div>';}).join('');}
 function fillSelects(){var names=cloud.members.map(function(m){return m.name;});['pp1','pp2'].forEach(function(id){var sel=document.getElementById(id),cur=sel.value;sel.innerHTML='<option value="">— select —</option>'+names.map(function(n){return'<option value="'+n+'"'+(n===cur?' selected':'')+'>'+n+'</option>';}).join('');});}
@@ -923,7 +940,7 @@ function schedulePush(){
 function fetchCloudSilent(){
   return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
     .then(function(r){if(!r.ok)throw 0;return r.json();})
-    .then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;})
+    .then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];cloud.shoutouts=Array.isArray(r.shoutouts)?r.shoutouts:[];document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;})
     .catch(function(){return false;});
 }
 
@@ -1135,6 +1152,105 @@ function initRejection() {
 function initReset() {
   var el = document.getElementById('reset-affirmation');
   if (el) el.textContent = '“' + AFFIRMATIONS[Math.floor(Math.random()*AFFIRMATIONS.length)] + '”';
+}
+
+// ---- TEAM SHOUT-OUTS ----
+var SHOUT_EMOJIS = ['🎉','⭐','💪','🙌','🔥','💡','🏆','❤️','✨','👏'];
+var selectedShoutEmoji = '🎉';
+
+function initShoutEmojis(){
+  var row = document.getElementById('shout-emoji-row');
+  if(!row) return;
+  row.innerHTML = '';
+  SHOUT_EMOJIS.forEach(function(em){
+    var btn = document.createElement('button');
+    btn.className = 'shout-emoji-btn' + (em === selectedShoutEmoji ? ' picked' : '');
+    btn.textContent = em;
+    btn.addEventListener('click', function(){
+      selectedShoutEmoji = em;
+      document.querySelectorAll('.shout-emoji-btn').forEach(function(b){ b.classList.remove('picked'); });
+      btn.classList.add('picked');
+    });
+    row.appendChild(btn);
+  });
+}
+
+function fillShoutToSelect(){
+  var sel = document.getElementById('shout-to');
+  if(!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">— select teammate —</option>';
+  cloud.members.forEach(function(m){
+    if(P && m.name === P.name) return; // don't shout out yourself
+    var opt = document.createElement('option');
+    opt.value = m.name;
+    opt.textContent = m.name;
+    if(m.name === cur) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+function renderShoutFeed(){
+  var w = document.getElementById('shout-feed');
+  if(!w) return;
+  var shouts = cloud.shoutouts || [];
+  if(!shouts.length){
+    w.innerHTML = '<div class="empty">No shout-outs yet — be the first to celebrate a teammate!</div>';
+    return;
+  }
+  // Show most recent 20
+  var recent = [].concat(shouts).reverse().slice(0,20);
+  w.innerHTML = recent.map(function(s){
+    var initials = s.from ? s.from.split(' ').map(function(x){return x[0];}).join('').substring(0,2).toUpperCase() : '?';
+    return '<div class="shout-item">' +
+      '<div class="shout-avatar">' + initials + '</div>' +
+      '<div class="shout-body">' +
+        '<div class="shout-meta">' +
+          '<span class="shout-from">' + (s.from||'Someone') + '</span>' +
+          '<span style="color:#57606a;font-size:12px;">&#x2192;</span>' +
+          '<span class="shout-to">' + (s.to||'the team') + '</span>' +
+          '<span class="shout-emoji">' + (s.emoji||'🎉') + '</span>' +
+          '<span class="shout-time">' + (s.time||'') + '</span>' +
+        '</div>' +
+        '<div class="shout-msg">' + (s.msg||'') + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function sendShoutOut(){
+  var to = document.getElementById('shout-to').value;
+  var msg = document.getElementById('shout-msg').value.trim();
+  if(!to){ toast('Select a teammate to shout out.'); return; }
+  if(!msg){ toast('Write a message first.'); return; }
+  var shout = {
+    from: P ? P.name : 'Someone',
+    to: to,
+    emoji: selectedShoutEmoji,
+    msg: msg,
+    time: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})
+  };
+  // Fetch latest cloud, add shoutout, push back
+  syncDot('busy','Sending...');
+  fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){
+      var data = j.record || {members:[],pairs:[],shoutouts:[]};
+      if(!data.shoutouts) data.shoutouts = [];
+      data.shoutouts.push(shout);
+      // Keep max 50 shout-outs
+      if(data.shoutouts.length > 50) data.shoutouts = data.shoutouts.slice(-50);
+      return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)},8000)
+        .then(function(r2){if(!r2.ok)throw 0;
+          cloud = data;
+          syncDot('ok','Connected ✓');
+          document.getElementById('shout-msg').value = '';
+          document.getElementById('shout-to').value = '';
+          renderShoutFeed();
+          toast(selectedShoutEmoji + ' Shout-out sent to ' + to + '!');
+        });
+    })
+    .catch(function(){ syncDot('ok','Ready'); toast('Could not send — check your connection.'); });
 }
 setInterval(function(){var t=document.querySelector('nav button.active');fetchCloudSilent().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
 </script>
