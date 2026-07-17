@@ -302,6 +302,36 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 <div id="tab-team" class="tab">
   <div class="card"><div class="banner bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>Individual Leaderboard — The Wellness Collective</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;"><p style="font-size:13px;color:#57606a;">Points: steps (1/1,000) · activity (1/10 min) · water (1/glass) · sleep ≥7 hrs (2/night).</p><span id="last-sync" style="font-size:11px;color:#57606a;"></span></div><div id="ind-lb"><div class="empty">Loading…</div></div></div>
   <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
+  <!-- TEAM SHOUT-OUTS CARD -->
+  <div class="card">
+    <div class="banner bl">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Team Shout-Outs &#x1F389;</span>
+    </div>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Celebrate a teammate's win, effort, or good energy. Shout-outs sync to everyone instantly.</p>
+
+    <!-- Compose -->
+    <div class="shout-compose">
+      <h3 style="margin-bottom:10px;">Send a Shout-Out</h3>
+      <div class="g2" style="margin-bottom:10px;">
+        <div>
+          <label for="shout-to">To</label>
+          <select id="shout-to"><option value="">— select teammate —</option></select>
+        </div>
+        <div>
+          <label>Pick an emoji</label>
+          <div class="shout-emoji-row" id="shout-emoji-row"></div>
+        </div>
+      </div>
+      <label for="shout-msg">Your message</label>
+      <input type="text" id="shout-msg" placeholder="e.g. Crushed that intake call today — love the energy! 🔥" style="margin-bottom:10px;">
+      <button class="btn bb" id="btn-shout-send">&#x1F4E4; Send Shout-Out</button>
+    </div>
+
+    <!-- Live feed -->
+    <h3 style="margin-bottom:10px;">Recent Shout-Outs</h3>
+    <div id="shout-feed"><div class="empty">No shout-outs yet — be the first to celebrate a teammate!</div></div>
+  </div>
 </div>
 
 
