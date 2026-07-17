@@ -1,8 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Wellness Collective v2</title>
 <style>
@@ -677,6 +676,16 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 
 <script>
+var APP_VERSION='20250722-1';
+(function(){
+  if(location.search.indexOf('v=')>=0)return;
+  fetch(location.pathname+'?nocache='+Date.now())
+    .then(function(r){return r.text();})
+    .then(function(html){
+      var m=html.match(/APP_VERSION='([^']+)'/);
+      if(m&&m[1]&&m[1]!==APP_VERSION){location.replace(location.pathname+'?v='+m[1]);}
+    }).catch(function(){});
+})();
 var BIN='6a57c11cda38895dfe6225c7',KEY='$2a$10$afJ/ONXifa.ehapwCn8wh.2gwgvVey8tOac6uC69ZzY31jRtVJNda',BURL='https://api.jsonbin.io/v3/b/'+BIN;
 function gl(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
 function sl(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
