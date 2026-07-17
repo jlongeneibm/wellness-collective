@@ -202,7 +202,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   </div>
   <div class="tagband"><span>"Move more. Rest well. Thrive together."</span><div class="pill">IBM Wellness Program</div></div>
 </header>
-<div id="syncbar"><div style="display:flex;align-items:center;"><span class="sdot" id="sdot"></span><span id="stxt">Connecting…</span></div><button id="srefbtn">↻ Refresh Now</button></div>
+<div id="syncbar" style="display:none;"><div style="display:flex;align-items:center;"><span class="sdot" id="sdot"></span><span id="stxt">Ready</span></div><button id="srefbtn">↻ Refresh Now</button></div>
 <nav>
   <button class="active" data-tab="today">Today</button>
   <button data-tab="log">Activity Log</button>
@@ -350,6 +350,7 @@ function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].conc
 
 function launch(){
   document.getElementById('setup').style.display='none';
+  document.getElementById('syncbar').style.display='flex';
   document.getElementById('app').style.display='block';
   var now=new Date(),h=now.getHours();
   document.getElementById('hdate').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
