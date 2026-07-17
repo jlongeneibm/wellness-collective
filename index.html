@@ -579,7 +579,7 @@ function fetchPersonal(){
         renderSteps();renderWater();renderHabits();renderMood();renderSummary();
         renderActs();renderSleep();renderWkHist();
         if(document.getElementById('tab-charts').classList.contains('active'))drawCharts();
-        toast('Personal data restored ✓');
+        // restored silently
       }
     })
     .catch(function(){});
