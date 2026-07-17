@@ -176,6 +176,20 @@ tr:last-child td{border-bottom:none;}
 .affirmation-sub{font-size:12px;color:rgba(255,255,255,0.5);margin-top:8px;}
 .btn-affirmation{margin-top:14px;padding:9px 24px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:99px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
 .btn-affirmation:hover{background:rgba(255,255,255,0.25);}
+/* Daily Wellness Challenge */
+#challenge-card{border-radius:12px;padding:20px 20px 16px;margin-bottom:14px;position:relative;}
+#challenge-card .ch-label{font-size:10px;font-weight:800;color:rgba(255,255,255,0.6);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;}
+#challenge-card .ch-icon{font-size:40px;margin-bottom:8px;display:block;}
+#challenge-card .ch-title{font-size:17px;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.3;}
+#challenge-card .ch-desc{font-size:13px;color:rgba(255,255,255,0.8);line-height:1.6;margin-bottom:16px;}
+#challenge-card .ch-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+#challenge-card .ch-tag{padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.85);}
+#challenge-card .ch-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#btn-challenge-done{padding:10px 22px;border-radius:99px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;border:none;background:#fff;transition:opacity 0.15s;}
+#btn-challenge-done:hover{opacity:0.88;}
+#btn-challenge-done:disabled{opacity:0.5;cursor:default;}
+#challenge-done-badge{display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.18);border-radius:99px;padding:6px 14px;font-size:13px;font-weight:700;color:#fff;}
+#challenge-streak{font-size:12px;color:rgba(255,255,255,0.6);margin-left:auto;}
 /* Motivational Boost */
 .boost-card{border-radius:14px;padding:28px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;}
 .boost-card-svg{display:block;margin:0 auto 16px;width:180px;height:140px;}
@@ -408,6 +422,20 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   </div>
   <div class="card"><h2>Daily Habits</h2><ul class="hlist" id="hlist"></ul><div class="sep"></div><h3>Add a habit</h3><div class="irow"><div><label for="new-habit">Habit name</label><input type="text" id="new-habit" placeholder="e.g. 10-min meditation"></div><button class="btn bb bsm" id="btn-add-habit">Add</button></div></div>
   <div class="card"><h2>Mood Check-in</h2><p style="font-size:13px;color:#57606a;margin-bottom:11px;">How are you feeling today?</p><div style="display:flex;gap:9px;flex-wrap:wrap;" id="mood-btns"></div><div id="mood-disp" style="margin-top:11px;font-size:14px;color:#57606a;"></div></div>
+
+  <!-- DAILY WELLNESS CHALLENGE CARD -->
+  <div id="challenge-card">
+    <div class="ch-label">&#x1F3AF; Today's Wellness Challenge</div>
+    <span class="ch-icon" id="ch-icon"></span>
+    <div class="ch-title" id="ch-title"></div>
+    <div class="ch-desc" id="ch-desc"></div>
+    <div class="ch-tags" id="ch-tags"></div>
+    <div class="ch-actions">
+      <button id="btn-challenge-done" onclick="completeChallenge()"></button>
+      <div id="challenge-done-badge">&#x2713; Completed today!</div>
+      <span id="challenge-streak"></span>
+    </div>
+  </div>
 
   <!-- Today Coaching Flags -->
   <div class="card">
@@ -1232,6 +1260,7 @@ function launch(){
   document.getElementById('hgreet').textContent=h<12?'Good morning!':h<17?'Good afternoon!':'Good evening!';
   document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
+  renderChallenge();
   syncRemUI();startReminders();renderRemLog();
   buildWheel();initTodayFlags();
   setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
@@ -2609,6 +2638,126 @@ var TODAY_FLAG_MAP = {
 var TODAY_FLAGS_KEY = 'wtflags';
 function getTodayFlags(){var d=gl(TODAY_FLAGS_KEY,{});return d[td()]||[];}
 function saveTodayFlags(flags){var d=gl(TODAY_FLAGS_KEY,{});d[td()]=flags;sl(TODAY_FLAGS_KEY,d);}
+
+
+// ---- DAILY WELLNESS CHALLENGES ----
+var CHALLENGES = [
+  {icon:'💧', title:'Drink 8 Glasses of Water', desc:'Hit your full hydration goal today. Keep a bottle at your desk and sip consistently — every glass counts toward your energy and focus.', tags:['Hydration','5 min'], bg:['#0c4a6e','#0369a1'], btnColor:'#0369a1'},
+  {icon:'🚶', title:'Take a 10-Minute Walk', desc:'Step outside or walk the halls. A short walk resets your stress hormones, boosts creative thinking, and lifts your mood for hours.', tags:['Movement','10 min'], bg:['#14532d','#16a34a'], btnColor:'#16a34a'},
+  {icon:'😴', title:'Get 7+ Hours of Sleep Tonight', desc:'Set a bedtime alarm for tonight. Quality sleep is the single biggest lever for performance, mood, and resilience tomorrow.', tags:['Sleep','Tonight'], bg:['#1e1b4b','#4338ca'], btnColor:'#4338ca'},
+  {icon:'🌬️', title:'3-Minute Box Breathing', desc:'Take 3 minutes for box breathing: inhale 4 counts, hold 4, exhale 4, hold 4. Do it 5 times. Instant stress reset — try it before your next meeting.', tags:['Mindfulness','3 min'], bg:['#3b0764','#7c5cd8'], btnColor:'#7c5cd8'},
+  {icon:'🙌', title:'Send a Shout-Out to a Teammate', desc:'Take 60 seconds to recognize someone\'s effort today. Head to Team View and send a shout-out — it boosts their day and yours.', tags:['Team Morale','1 min'], bg:['#7c2d12','#c2410c'], btnColor:'#c2410c'},
+  {icon:'🍎', title:'Eat a Fruit or Vegetable with Every Meal', desc:'Aim for at least one fruit or vegetable at each meal today. Small nutrition wins compound into lasting energy and focus.', tags:['Nutrition','All day'], bg:['#052e16','#15803d'], btnColor:'#15803d'},
+  {icon:'📵', title:'Phone-Free Lunch Break', desc:'Put your phone face-down for your entire lunch break. Real rest — even 20 minutes — recharges your cognitive battery more than scrolling.', tags:['Rest','20 min'], bg:['#1c1917','#57534e'], btnColor:'#57534e'},
+  {icon:'✍️', title:'Write Down 3 Wins from This Week', desc:'Open a notes app or grab paper. List 3 things that went well this week — big or small. Recognizing progress rewires your brain toward positivity.', tags:['Gratitude','5 min'], bg:['#831843','#be185d'], btnColor:'#be185d'},
+  {icon:'🧘', title:'2-Minute Desk Stretch', desc:'Stand up and do a full neck roll, shoulder roll, and wrist stretch on each side. Your body will feel the difference in the next hour.', tags:['Movement','2 min'], bg:['#064e3b','#059669'], btnColor:'#059669'},
+  {icon:'💬', title:'Check In with a Colleague', desc:'Reach out to one teammate — not about work. A quick "how\'s your week going?" message builds the relationships that make hard days easier.', tags:['Connection','2 min'], bg:['#0530ad','#0f62fe'], btnColor:'#0f62fe'},
+  {icon:'🌞', title:'Step Outside for 5 Minutes of Sunlight', desc:'Natural light regulates your circadian rhythm and boosts serotonin. Even overcast daylight outside beats artificial indoor lighting.', tags:['Energy','5 min'], bg:['#7c3000','#d97706'], btnColor:'#d97706'},
+  {icon:'🏆', title:'Log All Your Wellness Data Today', desc:'Steps, water, an activity, and sleep — log all four today. Tracking creates awareness, and awareness creates change.', tags:['Habit','5 min'], bg:['#021126','#0530ad'], btnColor:'#0530ad'},
+  {icon:'🧠', title:'Single-Task for One Full Hour', desc:'Close extra tabs, silence notifications, and commit to one task for 60 minutes. Deep work — even once a week — drives outsized results.', tags:['Focus','60 min'], bg:['#1e1b4b','#6d28d9'], btnColor:'#6d28d9'},
+  {icon:'💤', title:'Take a 10-Minute Screen Break', desc:'Step away from all screens for 10 full minutes. Close your laptop, put down your phone. Let your eyes and mind genuinely rest.', tags:['Rest','10 min'], bg:['#0c4a6e','#0284c7'], btnColor:'#0284c7'},
+  {icon:'🎯', title:'Set Your Top 3 Priorities Before 9am', desc:'Before your first meeting, write down exactly 3 things you want to accomplish today. Intentional focus beats reactive busyness every time.', tags:['Productivity','5 min'], bg:['#064e3b','#0f766e'], btnColor:'#0f766e'},
+  {icon:'❤️', title:'Do One Act of Kindness', desc:'Hold a door, write an encouraging Slack message, or simply smile at someone. Small acts of kindness measurably reduce your own stress.', tags:['Connection','1 min'], bg:['#881337','#e11d48'], btnColor:'#e11d48'},
+  {icon:'💪', title:'10,000 Steps Today', desc:'Aim for 10k steps. Park further away, take the stairs, pace during calls. Log them in the Steps section and watch that progress bar fill up!', tags:['Movement','All day'], bg:['#14532d','#22c55e'], btnColor:'#22c55e'},
+  {icon:'📖', title:'Read Something Non-Work for 10 Minutes', desc:'A book, magazine, or long-form article — anything that isn\'t email or Slack. Mental variety is a form of rest that restores focus.', tags:['Rest','10 min'], bg:['#1e1b4b','#4338ca'], btnColor:'#4338ca'},
+  {icon:'🌿', title:'Add a Plant or Nature to Your Space', desc:'Place a plant on your desk, open a window, or take a walk by something green. Exposure to nature — even briefly — measurably lowers cortisol.', tags:['Environment','5 min'], bg:['#052e16','#16a34a'], btnColor:'#16a34a'},
+  {icon:'🎵', title:'Listen to Music While You Work', desc:'Put on a focus playlist for your next deep-work session. Instrumental or lyric-free music can boost concentration and reduce perceived stress.', tags:['Mood','All day'], bg:['#3b0764','#7c5cd8'], btnColor:'#7c5cd8'},
+  {icon:'🙏', title:'Write Down One Thing You\'re Grateful For', desc:'Just one. It can be tiny — good coffee, a sunny window, a colleague\'s laugh. Gratitude practice shifts your attention toward what\'s working.', tags:['Gratitude','2 min'], bg:['#7c2d12','#ea580c'], btnColor:'#ea580c'},
+  {icon:'🔌', title:'Fully Disconnect After Work Tonight', desc:'Set a firm end-to-work time and stick to it. No email, no Slack after that moment. Recovery only happens when you\'re actually off the clock.', tags:['Recovery','Tonight'], bg:['#1c1917','#44403c'], btnColor:'#44403c'},
+  {icon:'🏃', title:'Add a Workout to Your Activity Log', desc:'Any movement counts — yoga, a bike ride, a swim. Log it in the Activity Log tab. Tracking what you do makes you more likely to do it again.', tags:['Movement','Any time'], bg:['#0c4a6e','#0369a1'], btnColor:'#0369a1'},
+  {icon:'😊', title:'Do a Full Mood Check-In', desc:'Open the Today tab and tap how you\'re truly feeling — not how you think you should feel. Emotional awareness is the first step to managing it.', tags:['Mindfulness','1 min'], bg:['#831843','#be185d'], btnColor:'#be185d'},
+  {icon:'🌙', title:'Wind-Down Routine Tonight', desc:'One hour before bed: dim your lights, put screens away, and do something calm — reading, stretching, or a warm drink. Signal your brain it\'s time to rest.', tags:['Sleep','Tonight'], bg:['#1e1b4b','#312e81'], btnColor:'#312e81'},
+  {icon:'🤝', title:'Give a Specific Compliment to Someone', desc:'Not a general "great job" — a specific one. "The way you handled that objection in the call was sharp." Specific praise is 3× more impactful.', tags:['Team Morale','2 min'], bg:['#064e3b','#059669'], btnColor:'#059669'},
+  {icon:'🧊', title:'Drink a Full Glass of Water Right Now', desc:'Stop reading and drink a full glass of water before your next action. Mild dehydration — even 1–2% — measurably reduces cognitive performance.', tags:['Hydration','1 min'], bg:['#0c4a6e','#0ea5e9'], btnColor:'#0ea5e9'},
+  {icon:'🗓️', title:'Block Focus Time on Your Calendar', desc:'Open your calendar and block 90 minutes of uninterrupted focus time this week. Treat it like a meeting you can\'t cancel. Deep work needs protection.', tags:['Focus','5 min'], bg:['#0530ad','#0f62fe'], btnColor:'#0f62fe'},
+  {icon:'🌬️', title:'Take 5 Deep Breaths Between Every Meeting', desc:'Before your next meeting ends, commit to 5 slow deep breaths in the transition. It resets your nervous system so you arrive present, not frazzled.', tags:['Mindfulness','1 min'], bg:['#3b0764','#6d28d9'], btnColor:'#6d28d9'}
+];
+
+// Deterministic seeded random — same challenge every calendar day for everyone
+function dailySeed() {
+  var d = new Date(), s = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  s = ((s >>> 16) ^ s) * 0x45d9f3b; s = ((s >>> 16) ^ s) * 0x45d9f3b; s = (s >>> 16) ^ s;
+  return Math.abs(s) % CHALLENGES.length;
+}
+
+var CHALLENGE_KEY = 'wtchallenge'; // {date: 'YYYY-MM-DD', done: bool}
+
+function renderChallenge() {
+  var idx = dailySeed();
+  var ch = CHALLENGES[idx];
+  var today = td();
+  var saved = gl(CHALLENGE_KEY, {date: null, done: false});
+  var done = saved.date === today && saved.done;
+
+  // Background gradient
+  var card = document.getElementById('challenge-card');
+  if (!card) return;
+  card.style.background = 'linear-gradient(135deg,' + ch.bg[0] + ' 0%,' + ch.bg[1] + ' 100%)';
+
+  // Content
+  document.getElementById('ch-icon').textContent = ch.icon;
+  document.getElementById('ch-title').textContent = ch.title;
+  document.getElementById('ch-desc').textContent = ch.desc;
+
+  // Tags
+  var tagsEl = document.getElementById('ch-tags');
+  tagsEl.innerHTML = '';
+  ch.tags.forEach(function(t) {
+    var s = document.createElement('span');
+    s.className = 'ch-tag';
+    s.textContent = t;
+    tagsEl.appendChild(s);
+  });
+
+  // Button vs done badge
+  var btn = document.getElementById('btn-challenge-done');
+  var badge = document.getElementById('challenge-done-badge');
+  btn.style.color = ch.btnColor;
+  if (done) {
+    btn.style.display = 'none';
+    badge.style.display = 'flex';
+  } else {
+    btn.textContent = '✓ Mark Complete';
+    btn.style.display = 'inline-block';
+    badge.style.display = 'none';
+  }
+
+  // Streak
+  var streak = calcChallengeStreak(today);
+  var streakEl = document.getElementById('challenge-streak');
+  if (streak > 1) {
+    streakEl.textContent = '🔥 ' + streak + '-day streak!';
+  } else if (done) {
+    streakEl.textContent = '✓ Done today';
+  } else {
+    streakEl.textContent = 'Challenge ' + (idx + 1) + ' of ' + CHALLENGES.length;
+  }
+}
+
+function completeChallenge() {
+  var today = td();
+  // Load history, mark today done
+  var history = gl(CHALLENGE_KEY + '_hist', {});
+  history[today] = true;
+  sl(CHALLENGE_KEY + '_hist', history);
+  sl(CHALLENGE_KEY, {date: today, done: true});
+  renderChallenge();
+  toast('🎯 Challenge complete! Great work today!');
+}
+
+function calcChallengeStreak(today) {
+  var history = gl(CHALLENGE_KEY + '_hist', {});
+  var streak = 0;
+  var d = new Date(today);
+  while (true) {
+    var key = d.toISOString().slice(0, 10);
+    if (history[key]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+    if (streak > 365) break; // safety
+  }
+  return streak;
+}
+
 
 function initTodayFlags(){
   var flags=getTodayFlags();
