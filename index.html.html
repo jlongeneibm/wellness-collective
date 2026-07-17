@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Wellness Collective</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.6;color:#1f2328;background:#061433;}
+#setup{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+#app{display:none;}
+.box{background:#fff;border-radius:16px;padding:40px 36px;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.45);}
+.bars{display:flex;flex-direction:column;gap:3px;width:40px;margin:0 auto 14px;}
+.bar{height:4px;background:#0f62fe;border-radius:1px;}
+.ibm-lbl{font-size:11px;font-weight:700;color:#0f62fe;letter-spacing:0.18em;text-transform:uppercase;text-align:center;margin-bottom:6px;}
+.box h1{font-size:22px;font-weight:800;color:#021126;text-align:center;margin-bottom:8px;}
+.box p{font-size:14px;color:#57606a;text-align:center;margin-bottom:26px;}
+.flbl{display:block;font-size:14px;font-weight:600;color:#1f2328;margin-bottom:5px;}
+.finp{width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:15px;font-family:inherit;color:#1f2328;margin-bottom:16px;}
+.finp:focus{outline:2px solid #0f62fe;border-color:transparent;}
+#go-btn{width:100%;padding:14px;background:#0f62fe;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;}
+#go-btn:hover{background:#0530ad;}
+header{background:linear-gradient(135deg,#021126 0%,#0530ad 45%,#0f62fe 75%,#0099c8 100%);}
+.htop{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 0;}
+.hlogo{display:flex;align-items:center;gap:14px;}
+.ibars{display:flex;flex-direction:column;gap:3px;}
+.ibar{height:4px;width:40px;background:#fff;border-radius:1px;}
+.bname{font-size:20px;font-weight:800;color:#fff;line-height:1.2;}
+.bibm{font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.18em;text-transform:uppercase;}
+.btag{font-size:11px;color:rgba(255,255,255,0.6);}
+.hright{text-align:right;}
+.hdate{font-size:13px;color:rgba(255,255,255,0.75);}
+.hgreet{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+.huser{font-size:12px;color:#fff;font-weight:700;margin-top:4px;background:rgba(255,255,255,0.15);padding:2px 10px;border-radius:99px;}
+.hicons{display:flex;gap:18px;padding:12px 24px 14px;flex-wrap:wrap;}
+.hi{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.hic{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;}
+.hil{font-size:10px;color:rgba(255,255,255,0.7);text-align:center;line-height:1.3;}
+.tagband{background:rgba(0,0,0,0.28);border-top:1px solid rgba(255,255,255,0.08);padding:7px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.tagband span{font-size:12px;color:rgba(255,255,255,0.6);font-style:italic;}
+.pill{background:#0f62fe;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;font-style:normal;}
+#syncbar{background:#021126;border-bottom:1px solid #0f3577;padding:5px 20px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,0.55);}
+.sdot{width:8px;height:8px;border-radius:50%;background:#57606a;display:inline-block;margin-right:6px;}
+.sdot.ok{background:#22c55e;}.sdot.busy{background:#f59e0b;animation:pulse 1s infinite;}.sdot.err{background:#ef4444;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+#srefbtn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-size:11px;padding:2px 10px;border-radius:4px;cursor:pointer;font-family:inherit;}
+nav{background:#fff;border-bottom:2px solid #e5e7eb;display:flex;padding:0 14px;overflow-x:auto;}
+nav button{background:none;border:none;border-bottom:3px solid transparent;padding:10px 12px;font-size:13px;color:#57606a;cursor:pointer;font-family:inherit;white-space:nowrap;}
+nav button.active{border-bottom-color:#0f62fe;color:#0f62fe;font-weight:700;}
+nav button:hover:not(.active){color:#1f2328;}
+main{max-width:780px;margin:0 auto;padding:20px 14px;}
+.tab{display:none;}.tab.active{display:block;}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:18px;margin-bottom:14px;}
+.card h2{font-size:15px;font-weight:700;margin-bottom:12px;color:#1f2328;border-left:4px solid #0f62fe;padding-left:9px;}
+.card h3{font-size:12px;font-weight:700;color:#57606a;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;}
+.banner{border-radius:6px;padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:9px;}
+.banner.bl{background:linear-gradient(90deg,#0530ad,#0f62fe);}
+.banner.tl{background:linear-gradient(90deg,#005a3c,#00b4a0);}
+.banner span{color:rgba(255,255,255,0.92);font-size:13px;font-weight:600;}
+label{display:block;font-size:14px;margin-bottom:3px;color:#1f2328;}
+input[type="number"],input[type="text"],input[type="date"],select{width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:6px;font-size:14px;font-family:inherit;color:#1f2328;background:#fff;margin-bottom:10px;}
+input:focus,select:focus{outline:2px solid #0f62fe;border-color:transparent;}
+.btn{display:inline-block;padding:8px 16px;border-radius:6px;font-size:14px;font-family:inherit;cursor:pointer;border:none;font-weight:600;}
+.bb{background:#0f62fe;color:#fff;}.bb:hover{background:#0530ad;}
+.bt{background:#00b4a0;color:#fff;}.bt:hover{background:#008f80;}
+.bd{background:#fee2e2;color:#b91c1c;}
+.bo{background:#fff;color:#0f62fe;border:2px solid #0f62fe;}
+.bsm{padding:5px 11px;font-size:13px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.hlist{list-style:none;}
+.hlist li{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f1f3;}
+.hlist li:last-child{border-bottom:none;}
+.hck{display:flex;align-items:center;gap:9px;cursor:pointer;}
+.hck input[type="checkbox"]{width:17px;height:17px;accent-color:#0f62fe;margin:0;cursor:pointer;}
+.hck span.done{text-decoration:line-through;color:#57606a;}
+.stile{background:linear-gradient(145deg,#eef3ff,#dceeff);border:1px solid #b8d0f8;border-radius:8px;padding:13px;text-align:center;}
+.stile .v{font-size:24px;font-weight:800;color:#0f62fe;}
+.stile .u{font-size:12px;color:#57606a;}.stile .l{font-size:12px;color:#57606a;margin-top:1px;}
+.pw{background:#e5e7eb;border-radius:99px;height:9px;margin:5px 0 10px;}
+.pb{height:9px;border-radius:99px;background:#0f62fe;transition:width 0.3s;}
+.pb.g{background:#22c55e;}.pb.t{background:#00b4a0;}.pb.gold{background:#d97706;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:7px 9px;background:#eef3ff;color:#0530ad;border-bottom:2px solid #b8d0f8;font-weight:700;}
+td{padding:7px 9px;border-bottom:1px solid #f0f1f3;}
+tr:last-child td{border-bottom:none;}
+.lbr{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #f0f1f3;}
+.lbr:last-child{border-bottom:none;}
+.lbrk{font-size:17px;width:34px;text-align:center;font-weight:800;color:#57606a;flex-shrink:0;}
+.lbrk.gold{color:#d97706;}.lbrk.silver{color:#6b7280;}.lbrk.bronze{color:#92400e;}
+.lbi{flex:1;min-width:0;}.lbn{font-size:14px;font-weight:700;}.lbs{font-size:12px;color:#57606a;}
+.lbbw{flex:2;}.lbsc{font-size:15px;color:#0f62fe;font-weight:800;min-width:52px;text-align:right;}
+.wg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ws{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:11px;}
+.ws label{font-size:12px;color:#57606a;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;}
+.ws input{margin-bottom:0;}
+.tag{display:inline-block;background:#eef3ff;color:#0f62fe;border-radius:4px;padding:1px 7px;font-size:12px;font-weight:700;}
+.tagt{background:#f0fdfa;color:#0f766e;}
+.empty{text-align:center;color:#57606a;font-size:14px;padding:18px 0;}
+.irow{display:flex;gap:9px;align-items:flex-end;}
+.irow>div{flex:1;}.irow>.btn{margin-bottom:10px;white-space:nowrap;}
+.sep{border:none;border-top:1px solid #e5e7eb;margin:14px 0;}
+.ibadge{display:inline-flex;align-items:center;gap:5px;background:#0f62fe;border-radius:4px;padding:3px 8px;margin-bottom:10px;}
+.ibadge span{font-size:11px;font-weight:800;color:#fff;letter-spacing:0.1em;}
+.infobox{background:#eef3ff;border:1px solid #b8d0f8;border-radius:6px;padding:11px 13px;font-size:13px;color:#0530ad;margin-bottom:12px;}
+.infobox.g{background:#f0fff4;border-color:#86efac;color:#15803d;}
+svg.chart{width:100%;overflow:visible;}
+.cl{font-size:11px;fill:#57606a;}
+.cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0530ad;color:#fff;padding:9px 20px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:9999;font-weight:600;}
+#toast.show{opacity:1;}
+footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,255,0.4);padding:16px;display:flex;flex-direction:column;align-items:center;gap:7px;}
+.fr{display:flex;align-items:center;gap:9px;}.fd{width:1px;height:14px;background:rgba(255,255,255,0.2);}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="box">
+    <div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    <div class="ibm-lbl">IBM</div>
+    <h1>The Wellness Collective</h1>
+    <p>Enter your name to join the team leaderboard. Your weekly scores sync to the shared cloud automatically.</p>
+    <label class="flbl" for="inp-name">Your Name</label>
+    <input class="finp" type="text" id="inp-name" placeholder="e.g. Alex Smith" autocomplete="off">
+    <label class="flbl" for="inp-dept">Department <span style="font-weight:400;color:#57606a;">(optional)</span></label>
+    <input class="finp" type="text" id="inp-dept" placeholder="e.g. Watson Health" autocomplete="off">
+    <button id="go-btn" type="button">Get Started →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<header>
+  <div class="htop">
+    <div class="hlogo">
+      <div class="ibars"><div class="ibar"></div><div class="ibar"></div><div class="ibar"></div><div class="ibar"></div><div class="ibar"></div><div class="ibar"></div><div class="ibar"></div><div class="ibar"></div></div>
+      <div><div class="bibm">IBM</div><div class="bname">The Wellness Collective</div><div class="btag">Powered by IBM &bull; Built for your team</div></div>
+    </div>
+    <div class="hright"><div class="hdate" id="hdate"></div><div class="hgreet" id="hgreet"></div><div class="huser" id="huser"></div></div>
+  </div>
+  <div class="hicons">
+    <div class="hi"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.69 3 10 3C11.07 3 12.07 3.32 12.93 3.86C13.79 3.32 14.79 3 15.86 3C19.17 3 21.86 5.42 21.86 8.5C21.86 13.5 12 21 12 21Z" fill="rgba(255,255,255,0.85)"/></svg></div><div class="hil">Heart<br>Health</div></div>
+    <div class="hi"><div class="hic"><svg width="18" height="22" viewBox="0 0 22 26" fill="none"><path d="M11 2C11 2 3 11 3 17C3 21.42 6.58 25 11 25C15.42 25 19 21.42 19 17C19 11 11 2 11 2Z" fill="rgba(255,255,255,0.85)"/></svg></div><div class="hil">Hydration</div></div>
+    <div class="hi"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" fill="rgba(255,255,255,0.85)"/><line x1="12" y1="2" x2="12" y2="5" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="22" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="12" x2="5" y2="12" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="12" x2="22" y2="12" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/></svg></div><div class="hil">Energy</div></div>
+    <div class="hi"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79Z" fill="rgba(255,255,255,0.85)"/></svg></div><div class="hil">Sleep</div></div>
+    <div class="hi"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2.5" fill="rgba(255,255,255,0.85)"/><path d="M12 8L9 14H11V20H13V14H15L12 8Z" fill="rgba(255,255,255,0.85)"/></svg></div><div class="hil">Activity</div></div>
+    <div class="hi"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.85)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round"/></svg></div><div class="hil">Team</div></div>
+    <div class="hi"><div class="hic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="hil">Progress</div></div>
+  </div>
+  <div class="tagband"><span>"Move more. Rest well. Thrive together."</span><div class="pill">IBM Wellness Program</div></div>
+</header>
+<div id="syncbar"><div style="display:flex;align-items:center;"><span class="sdot" id="sdot"></span><span id="stxt">Connecting…</span></div><button id="srefbtn">↻ Refresh Now</button></div>
+<nav>
+  <button class="active" data-tab="today">Today</button>
+  <button data-tab="log">Activity Log</button>
+  <button data-tab="sleep">Sleep</button>
+  <button data-tab="weekly">Weekly Report</button>
+  <button data-tab="team">Team View</button>
+  <button data-tab="charts">Charts</button>
+</nav>
+<main>
+<div id="tab-today" class="tab active">
+  <div class="card">
+    <div class="ibadge"><svg width="14" height="6" viewBox="0 0 28 12" fill="none"><rect width="7" height="2" rx="0.5" fill="white"/><rect y="3" width="7" height="2" rx="0.5" fill="white"/><rect y="6" width="7" height="2" rx="0.5" fill="white"/><rect y="9" width="7" height="2" rx="0.5" fill="white"/><rect x="9" width="10" height="2" rx="0.5" fill="white"/><rect x="10" y="3" width="8" height="2" rx="0.5" fill="white"/><rect x="9" y="6" width="10" height="2" rx="0.5" fill="white"/><rect x="10" y="9" width="8" height="2" rx="0.5" fill="white"/><rect x="21" width="7" height="2" rx="0.5" fill="white"/><rect x="22" y="3" width="5" height="2" rx="0.5" fill="white"/><rect x="21" y="6" width="7" height="2" rx="0.5" fill="white"/><rect x="22" y="9" width="5" height="2" rx="0.5" fill="white"/></svg><span>Daily Summary</span></div>
+    <div class="g3">
+      <div class="stile"><div style="font-size:19px;margin-bottom:2px;">🏃</div><div class="v" id="ts">0</div><div class="u">steps</div><div class="l">Goal: 10,000</div></div>
+      <div class="stile"><div style="font-size:19px;margin-bottom:2px;">💧</div><div class="v" id="tw">0</div><div class="u">glasses</div><div class="l">Goal: 8</div></div>
+      <div class="stile"><div style="font-size:19px;margin-bottom:2px;">😴</div><div class="v" id="tsl">—</div><div class="u">hours</div><div class="l">Last night</div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card"><h2>Steps</h2><label for="sinp">Steps today</label><input type="number" id="sinp" min="0" max="100000" placeholder="e.g. 7500"><div class="pw"><div class="pb" id="sbar" style="width:0%"></div></div><small style="color:#57606a;font-size:12px;" id="spct">0% of 10,000 goal</small><br><br><button class="btn bb bsm" id="btn-save-steps">Save Steps</button></div>
+    <div class="card"><h2>Water Intake</h2><label>Tap a glass to log (8 oz each)</label><div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;" id="wbtns"></div><div class="pw"><div class="pb g" id="wbar" style="width:0%"></div></div><small style="color:#57606a;font-size:12px;" id="wpct">0 of 8 glasses</small></div>
+  </div>
+  <div class="card"><h2>Daily Habits</h2><ul class="hlist" id="hlist"></ul><div class="sep"></div><h3>Add a habit</h3><div class="irow"><div><label for="new-habit">Habit name</label><input type="text" id="new-habit" placeholder="e.g. 10-min meditation"></div><button class="btn bb bsm" id="btn-add-habit">Add</button></div></div>
+  <div class="card"><h2>Mood Check-in</h2><p style="font-size:13px;color:#57606a;margin-bottom:11px;">How are you feeling today?</p><div style="display:flex;gap:9px;flex-wrap:wrap;" id="mood-btns"></div><div id="mood-disp" style="margin-top:11px;font-size:14px;color:#57606a;"></div></div>
+</div>
+<div id="tab-log" class="tab">
+  <div class="card"><h2>Log Activity</h2><div class="g2"><div><label for="log-date">Date</label><input type="date" id="log-date"></div><div><label for="log-type">Activity Type</label><select id="log-type"><option>Walking</option><option>Running</option><option>Cycling</option><option>Swimming</option><option>Yoga</option><option>Strength Training</option><option>Stretching</option><option>Other</option></select></div><div><label for="log-dur">Duration (minutes)</label><input type="number" id="log-dur" min="1" max="480" placeholder="e.g. 30"></div><div><label for="log-cal">Calories (optional)</label><input type="number" id="log-cal" min="0" placeholder="e.g. 200"></div></div><label for="log-notes">Notes (optional)</label><input type="text" id="log-notes" placeholder="How did it feel?"><button class="btn bb" id="btn-log-act">Log Activity</button></div>
+  <div class="card"><h2>Activity History</h2><div id="act-wrap"><div class="empty">No activities logged yet.</div></div></div>
+</div>
+<div id="tab-sleep" class="tab">
+  <div class="card"><h2>Log Sleep</h2><div class="g2"><div><label for="sl-date">Date (night of)</label><input type="date" id="sl-date"></div><div><label for="sl-hrs">Hours slept</label><input type="number" id="sl-hrs" min="0" max="24" step="0.5" placeholder="e.g. 7.5"></div><div><label for="sl-qual">Sleep Quality</label><select id="sl-qual"><option value="5">Excellent</option><option value="4">Good</option><option value="3" selected>Fair</option><option value="2">Poor</option><option value="1">Very Poor</option></select></div><div><label for="sl-notes">Notes (optional)</label><input type="text" id="sl-notes" placeholder="e.g. woke up once"></div></div><button class="btn bb" id="btn-log-sleep">Log Sleep</button></div>
+  <div class="card"><h2>Sleep History</h2><div id="sleep-wrap"><div class="empty">No sleep logged yet.</div></div></div>
+</div>
+<div id="tab-weekly" class="tab">
+  <div class="card"><h2>Submit Weekly Totals</h2><div class="infobox g"><strong>Live sync enabled.</strong> Submitting pushes your scores to the shared cloud — your name appears on everyone's Team View within 30 seconds.</div><div class="g2"><div><label for="wk-start">Week Starting</label><input type="date" id="wk-start"></div><div><label>&nbsp;</label><div style="padding-top:5px;font-size:13px;color:#57606a;">Enter your totals for the full week.</div></div></div><div class="wg"><div class="ws"><label>Total Steps</label><input type="number" id="wk-steps" min="0" placeholder="e.g. 52000"></div><div class="ws"><label>Activity Minutes</label><input type="number" id="wk-act" min="0" placeholder="e.g. 180"></div><div class="ws"><label>Glasses of Water</label><input type="number" id="wk-water" min="0" placeholder="e.g. 45"></div><div class="ws"><label>Nights 7+ hrs Sleep</label><input type="number" id="wk-sleep" min="0" max="7" placeholder="0–7"></div></div><br><button class="btn bb" id="btn-wk-save">Submit &amp; Sync to Team</button><button class="btn bo bsm" id="btn-wk-auto" style="margin-left:9px;">Auto-fill from my logs</button></div>
+  <div class="card"><h2>My Weekly History</h2><div id="wk-hist"><div class="empty">No weekly reports yet.</div></div></div>
+</div>
+<div id="tab-team" class="tab">
+  <div class="card"><div class="banner bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>Individual Leaderboard — The Wellness Collective</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;"><p style="font-size:13px;color:#57606a;">Points: steps (1/1,000) · activity (1/10 min) · water (1/glass) · sleep ≥7 hrs (2/night).</p><span id="last-sync" style="font-size:11px;color:#57606a;"></span></div><div id="ind-lb"><div class="empty">Loading…</div></div></div>
+  <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
+</div>
+<div id="tab-charts" class="tab">
+  <div class="card"><h2>Steps — Last 7 Days</h2><div id="ch-steps"></div></div>
+  <div class="card"><h2>Water — Last 7 Days</h2><div id="ch-water"></div></div>
+  <div class="card"><h2>Sleep — Last 7 Days</h2><div id="ch-sleep"></div></div>
+</div>
+</main>
+<div id="toast"></div>
+<footer><div class="fr"><svg width="26" height="11" viewBox="0 0 26 11" fill="none"><rect x="0" y="0" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="2.3" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="4.6" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="6.9" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="0" y="9.2" width="4.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="0" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="2.3" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="4.6" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6.8" y="6.9" width="5.9" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="6" y="9.2" width="7.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="0" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="2.3" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="4.6" width="8.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="16.3" y="6.9" width="6.5" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/><rect x="15.5" y="9.2" width="10" height="1.6" rx="0.3" fill="rgba(255,255,255,0.5)"/></svg><div class="fd"></div><span style="color:rgba(255,255,255,0.5);font-weight:600;font-size:13px;">The Wellness Collective</span><div class="fd"></div><span>Made with IBM Bob</span></div><div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;">Team data synced via JSONBin · Personal logs stored locally in your browser.</div></footer>
+</div>
+
+<script>
+var BIN='6a57c11cda38895dfe6225c7',KEY='$2a$10$afJ/ONXifa.ehapwCn8wh.2gwgvVey8tOac6uC69ZzY31jRtVJNda',BURL='https://api.jsonbin.io/v3/b/'+BIN;
+function gl(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function sl(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function td(){return new Date().toISOString().slice(0,10);}
+var P=gl('wtp',null),DAYS=gl('wtd',{}),ACTS=gl('wta',[]),SLP=gl('wts',[]),HABITS=gl('wth',['Drink water before coffee','10-min walk','No phone before bed']),WKS=gl('wtw',[]);
+var cloud={members:[],pairs:[]};
+function persist(){sl('wtp',P);sl('wtd',DAYS);sl('wta',ACTS);sl('wts',SLP);sl('wth',HABITS);sl('wtw',WKS);}
+function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};return DAYS[d];}
+function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
+function syncDot(s,m){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=m;}
+function fetchCloud(){syncDot('busy','Syncing…');return fetch(BURL+'/latest',{headers:{'X-Master-Key':KEY}}).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];syncDot('ok','Up to date');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('err','Sync failed');return false;});}
+function pushCloud(data){syncDot('busy','Saving…');return fetch(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)}).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('err','Save failed');return false;});}
+function score(m){return Math.floor((+m.steps||0)/1000)+Math.floor((+m.activity||0)/10)+(+m.water||0)+(+m.sleep||0)*2;}
+function selfStats(){if(WKS.length){var w=WKS[WKS.length-1];return{steps:w.steps||0,activity:w.activity||0,water:w.water||0,sleep:w.sleep||0};}var s=0,a=0,w=0,sl=0;Object.values(DAYS).forEach(function(d){s+=(d.steps||0);w+=(d.water||0);});ACTS.forEach(function(x){a+=x.dur;});SLP.forEach(function(x){if(x.hrs>=7)sl++;});return{steps:s,activity:a,water:w,sleep:sl};}
+function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].concat(cloud.members),i=ms.findIndex(function(m){return m.name===P.name;});var e=Object.assign({name:P.name,dept:P.dept||''},st);if(i>=0)ms[i]=e;else ms.push(e);return pushCloud(Object.assign({},cloud,{members:ms}));}
+
+function launch(){
+  document.getElementById('setup').style.display='none';
+  document.getElementById('app').style.display='block';
+  var now=new Date(),h=now.getHours();
+  document.getElementById('hdate').textContent=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('hgreet').textContent=h<12?'Good morning!':h<17?'Good afternoon!':'Good evening!';
+  document.getElementById('huser').textContent='👤 '+P.name+(P.dept?' · '+P.dept:'');
+  renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
+  fetchCloud().then(function(){renderTeam();syncSelf();});
+}
+
+document.getElementById('go-btn').addEventListener('click',function(){
+  var n=document.getElementById('inp-name').value.trim();
+  if(!n){document.getElementById('inp-name').style.borderColor='#ef4444';document.getElementById('inp-name').focus();return;}
+  P={name:n,dept:document.getElementById('inp-dept').value.trim()};
+  persist();launch();
+});
+document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('go-btn').click();});
+
+if(P){launch();}
+
+document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();});});});
+function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
+document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();renderSteps();renderSummary();toast('Steps saved!');});
+document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
+function renderWater(){var d=getDay(td()),g=d.water||0;document.getElementById('tw').textContent=g;document.getElementById('wbar').style.width=Math.min(100,g/8*100)+'%';document.getElementById('wpct').textContent=g+' of 8 glasses';var w=document.getElementById('wbtns');w.innerHTML='';for(var i=1;i<=8;i++){(function(n){var b=document.createElement('button');b.className='btn bsm';b.style.background=n<=g?'#0f62fe':'#f0f1f3';b.style.color=n<=g?'#fff':'#57606a';b.style.minWidth='34px';b.textContent=n<=g?'💧':n;b.addEventListener('click',function(){getDay(td()).water=n;persist();renderWater();renderSummary();});w.appendChild(b);})(i);}}
+function renderHabits(){var d=getDay(td()),ul=document.getElementById('hlist');ul.innerHTML='';if(!HABITS.length){ul.innerHTML='<div class="empty">No habits yet.</div>';return;}HABITS.forEach(function(h,i){var done=!!(d.habits&&d.habits[i]),li=document.createElement('li');li.innerHTML='<label class="hck"><input type="checkbox"'+(done?' checked':'')+'><span class="'+(done?'done':'')+'" >'+h+'</span></label><button class="btn bd bsm">Remove</button>';li.querySelector('input').addEventListener('change',function(e){if(!d.habits)d.habits={};d.habits[i]=e.target.checked;persist();renderHabits();});li.querySelector('button').addEventListener('click',function(){HABITS.splice(i,1);persist();renderHabits();});ul.appendChild(li);});}
+document.getElementById('btn-add-habit').addEventListener('click',function(){var inp=document.getElementById('new-habit'),v=inp.value.trim();if(!v)return;HABITS.push(v);persist();inp.value='';renderHabits();toast('Habit added!');});
+function renderMood(){var d=getDay(td()),w=document.getElementById('mood-btns');w.innerHTML='';['Happy','Calm','Tired','Stressed','Energized','Neutral'].forEach(function(m){var b=document.createElement('button');b.className='btn bsm';b.style.background=d.mood===m?'#0f62fe':'#f0f1f3';b.style.color=d.mood===m?'#fff':'#1f2328';b.textContent=m;b.addEventListener('click',function(){getDay(td()).mood=m;persist();renderMood();});w.appendChild(b);});document.getElementById('mood-disp').textContent=d.mood?'Today you feel: '+d.mood:'';}
+function renderSummary(){var d=getDay(td());document.getElementById('ts').textContent=(d.steps||0).toLocaleString();document.getElementById('tw').textContent=d.water||0;var x=[].concat(SLP).sort(function(a,b){return b.date<a.date?-1:1;});document.getElementById('tsl').textContent=x[0]?x[0].hrs:'—';}
+document.getElementById('log-date').value=td();
+document.getElementById('btn-log-act').addEventListener('click',function(){var date=document.getElementById('log-date').value,type=document.getElementById('log-type').value,dur=parseInt(document.getElementById('log-dur').value)||0,cal=parseInt(document.getElementById('log-cal').value)||0,notes=document.getElementById('log-notes').value.trim();if(!date||!dur){toast('Enter date and duration.');return;}ACTS.push({date:date,type:type,dur:dur,cal:cal,notes:notes});persist();renderActs();toast('Activity logged!');document.getElementById('log-dur').value='';document.getElementById('log-cal').value='';document.getElementById('log-notes').value='';});
+function renderActs(){var w=document.getElementById('act-wrap');if(!ACTS.length){w.innerHTML='<div class="empty">No activities logged yet.</div>';return;}var r=[].concat(ACTS).sort(function(a,b){return b.date<a.date?-1:1;}).map(function(a){return'<tr><td>'+a.date+'</td><td><span class="tag">'+a.type+'</span></td><td>'+a.dur+' min</td><td>'+(a.cal?a.cal+' kcal':'—')+'</td><td style="color:#57606a">'+(a.notes||'—')+'</td></tr>';}).join('');w.innerHTML='<table><thead><tr><th>Date</th><th>Type</th><th>Duration</th><th>Calories</th><th>Notes</th></tr></thead><tbody>'+r+'</tbody></table>';}
+document.getElementById('sl-date').value=td();
+document.getElementById('btn-log-sleep').addEventListener('click',function(){var date=document.getElementById('sl-date').value,hrs=parseFloat(document.getElementById('sl-hrs').value)||0,qual=document.getElementById('sl-qual').value,notes=document.getElementById('sl-notes').value.trim();if(!date||!hrs){toast('Enter date and hours.');return;}var i=SLP.findIndex(function(s){return s.date===date;});var e={date:date,hrs:hrs,qual:parseInt(qual),notes:notes};if(i>=0)SLP[i]=e;else SLP.push(e);persist();renderSleep();renderSummary();toast('Sleep logged!');});
+var QL={1:'Very Poor',2:'Poor',3:'Fair',4:'Good',5:'Excellent'};
+function renderSleep(){var w=document.getElementById('sleep-wrap');if(!SLP.length){w.innerHTML='<div class="empty">No sleep logged yet.</div>';return;}var r=[].concat(SLP).sort(function(a,b){return b.date<a.date?-1:1;}).map(function(s){return'<tr><td>'+s.date+'</td><td>'+s.hrs+' hrs</td><td>'+(QL[s.qual]||s.qual)+'</td><td style="color:#57606a">'+(s.notes||'—')+'</td></tr>';}).join('');w.innerHTML='<table><thead><tr><th>Date</th><th>Hours</th><th>Quality</th><th>Notes</th></tr></thead><tbody>'+r+'</tbody></table>';}
+function getMon(d){var dt=new Date(d),day=dt.getDay(),diff=dt.getDate()-day+(day===0?-6:1);return new Date(dt.setDate(diff)).toISOString().slice(0,10);}
+document.getElementById('wk-start').value=getMon(td());
+document.getElementById('btn-wk-auto').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,we=new Date(ws);we.setDate(we.getDate()+6);var weS=we.toISOString().slice(0,10);var s=0,a=0,w=0,sl=0;Object.entries(DAYS).forEach(function(kv){if(kv[0]>=ws&&kv[0]<=weS){s+=(kv[1].steps||0);w+=(kv[1].water||0);}});ACTS.forEach(function(x){if(x.date>=ws&&x.date<=weS)a+=x.dur;});SLP.forEach(function(x){if(x.date>=ws&&x.date<=weS&&x.hrs>=7)sl++;});document.getElementById('wk-steps').value=s;document.getElementById('wk-act').value=a;document.getElementById('wk-water').value=w;document.getElementById('wk-sleep').value=sl;toast('Auto-filled!');});
+document.getElementById('btn-wk-save').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,steps=parseInt(document.getElementById('wk-steps').value)||0,act=parseInt(document.getElementById('wk-act').value)||0,water=parseInt(document.getElementById('wk-water').value)||0,slp=parseInt(document.getElementById('wk-sleep').value)||0;if(!ws){toast('Select a week.');return;}var sc=score({steps:steps,activity:act,water:water,sleep:slp}),i=WKS.findIndex(function(w){return w.ws===ws;});var e={ws:ws,steps:steps,activity:act,water:water,sleep:slp,score:sc};if(i>=0)WKS[i]=e;else WKS.push(e);WKS.sort(function(a,b){return a.ws<b.ws?-1:1;});persist();renderWkHist();syncSelf().then(function(){toast('Synced to team!');});});
+function renderWkHist(){var w=document.getElementById('wk-hist');if(!WKS.length){w.innerHTML='<div class="empty">No weekly reports yet.</div>';return;}var r=[].concat(WKS).reverse().map(function(w){return'<tr><td>'+w.ws+'</td><td>'+(w.steps||0).toLocaleString()+'</td><td>'+(w.activity||0)+' min</td><td>'+(w.water||0)+'</td><td>'+(w.sleep||0)+'</td><td><strong style="color:#0f62fe">'+w.score+' pts</strong></td></tr>';}).join('');w.innerHTML='<table><thead><tr><th>Week Of</th><th>Steps</th><th>Activity</th><th>Water</th><th>Sleep</th><th>Points</th></tr></thead><tbody>'+r+'</tbody></table>';}
+function renderTeam(){renderIndLB();renderPairsLB();fillSelects();renderPairsMgr();}
+function renderIndLB(){var sorted=[].concat(cloud.members).map(function(m){return Object.assign({},m,{sc:score(m)});}).sort(function(a,b){return b.sc-a.sc;});var max=sorted[0]?sorted[0].sc:1,w=document.getElementById('ind-lb');if(!sorted.length){w.innerHTML='<div class="empty">No data yet — submit your weekly report to appear here.</div>';return;}w.innerHTML=sorted.map(function(m,i){var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',pct=Math.round(m.sc/max*100),isMe=P&&m.name===P.name;return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+m.name+(isMe?' <span class="tag">You</span>':'')+(m.dept?' <span class="tag tagt">'+m.dept+'</span>':'')+'</div><div class="lbs">Steps: '+(m.steps||0).toLocaleString()+' · Act: '+(m.activity||0)+' min · Water: '+(m.water||0)+' · Sleep: '+(m.sleep||0)+'</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb'+(rc==='gold'?' gold':'')+'" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+m.sc+' pts</div></div>';}).join('');}
+function renderPairsLB(){var w=document.getElementById('pairs-lb');if(!cloud.pairs||!cloud.pairs.length){w.innerHTML='<div class="empty">No pairs yet.</div>';return;}var sc=cloud.pairs.map(function(p){var m1=cloud.members.find(function(m){return m.name===p.p1;}),m2=cloud.members.find(function(m){return m.name===p.p2;});var s1=m1?score(m1):0,s2=m2?score(m2):0;return Object.assign({},p,{s1:s1,s2:s2,total:s1+s2});}).sort(function(a,b){return b.total-a.total;});var max=sc[0]?sc[0].total:1;w.innerHTML=sc.map(function(p,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',pct=Math.round(p.total/max*100);return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+(p.pairName||p.p1+' & '+p.p2)+'</div><div class="lbs">'+p.p1+' ('+p.s1+' pts) + '+p.p2+' ('+p.s2+' pts)</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb t" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+p.total+' pts</div></div>';}).join('');}
+function fillSelects(){var names=cloud.members.map(function(m){return m.name;});['pp1','pp2'].forEach(function(id){var sel=document.getElementById(id),cur=sel.value;sel.innerHTML='<option value="">— select —</option>'+names.map(function(n){return'<option value="'+n+'"'+(n===cur?' selected':'')+'>'+n+'</option>';}).join('');});}
+function renderPairsMgr(){var w=document.getElementById('pairs-mgr');if(!cloud.pairs||!cloud.pairs.length){w.innerHTML='';return;}w.innerHTML='<h3 style="margin-bottom:7px;">Current Pairs</h3>'+cloud.pairs.map(function(p,i){return'<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 9px;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;"><span style="font-weight:600">'+(p.pairName||p.p1+' & '+p.p2)+'</span><span style="font-size:13px;color:#57606a;">'+p.p1+' + '+p.p2+'</span><button class="btn bd bsm" data-pi="'+i+'">Remove</button></div>';}).join('');w.querySelectorAll('[data-pi]').forEach(function(btn){btn.addEventListener('click',function(){cloud.pairs.splice(parseInt(btn.dataset.pi),1);pushCloud(cloud).then(function(){renderTeam();toast('Pair removed.');});});});}
+document.getElementById('btn-pair-save').addEventListener('click',function(){var p1=document.getElementById('pp1').value,p2=document.getElementById('pp2').value,pn=document.getElementById('pname-inp').value.trim();if(!p1||!p2){toast('Select both partners.');return;}if(p1===p2){toast('Must be different people.');return;}if(!cloud.pairs)cloud.pairs=[];if(cloud.pairs.find(function(p){return(p.p1===p1&&p.p2===p2)||(p.p1===p2&&p.p2===p1);})){toast('Pair already exists.');return;}cloud.pairs.push({id:Date.now(),pairName:pn,p1:p1,p2:p2});pushCloud(cloud).then(function(){renderTeam();toast('Pair synced!');document.getElementById('pname-inp').value='';});});
+function last7(){var d=[];for(var i=6;i>=0;i--){var x=new Date();x.setDate(x.getDate()-i);d.push(x.toISOString().slice(0,10));}return d;}
+function barChart(cid,data,max,cls,unit){var c=document.getElementById(cid),W=680,H=150,pl=36,pr=8,pt=12,pb=26,iW=W-pl-pr,iH=H-pt-pb,bW=Math.floor(iW/data.length)-6;var eM=max||Math.max.apply(null,data.map(function(d){return d.v;}).concat([1]));var bars='',lbl='',vals='',grid='';data.forEach(function(d,i){var x=pl+i*(iW/data.length)+3,bH=Math.max(2,Math.round(d.v/eM*iH)),y=pt+iH-bH;bars+='<rect class="cb '+cls+'" x="'+x+'" y="'+y+'" width="'+bW+'" height="'+bH+'" rx="2"/>';lbl+='<text class="cl" x="'+(x+bW/2)+'" y="'+(H-4)+'" text-anchor="middle">'+d.l.slice(5)+'</text>';vals+=d.v>0?'<text class="cl" x="'+(x+bW/2)+'" y="'+(y-3)+'" text-anchor="middle">'+d.v+'</text>':'';});for(var g=0;g<=4;g++){var yg=pt+iH-(g/4)*iH,val=Math.round(eM*g/4);grid+='<line x1="'+pl+'" y1="'+yg+'" x2="'+(W-pr)+'" y2="'+yg+'" stroke="#e5e7eb" stroke-width="1"/><text class="cl" x="'+(pl-3)+'" y="'+(yg+4)+'" text-anchor="end">'+val+'</text>';}c.innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'">'+grid+bars+lbl+vals+'</svg><div style="font-size:11px;color:#57606a;text-align:right;margin-top:3px;">'+unit+'</div>';}
+function drawCharts(){var d=last7();barChart('ch-steps',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].steps:0)||0};}),10000,'','steps');barChart('ch-water',d.map(function(x){return{l:x,v:(DAYS[x]?DAYS[x].water:0)||0};}),8,'wt','glasses');barChart('ch-sleep',d.map(function(x){var e=SLP.find(function(s){return s.date===x;});return{l:x,v:e?e.hrs:0};}),10,'sl','hours');}
+setInterval(function(){var t=document.querySelector('nav button.active');fetchCloud().then(function(){if(t&&t.dataset.tab==='team')renderTeam();});},30000);
+</script>
+</body>
+</html>
