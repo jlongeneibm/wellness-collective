@@ -676,13 +676,13 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 
 <script>
-var APP_VERSION='20250722-3';
+var APP_VERSION='20250722-4';
 (function(){
   if(location.search.indexOf('v=')>=0)return;
   fetch(location.pathname+'?nocache='+Date.now())
     .then(function(r){return r.text();})
     .then(function(html){
-      var m=html.match(/APP_VERSION='20250722-3']+)'/);
+      var m=html.match(/APP_VERSION='20250722-4']+)'/);
       if(m&&m[1]&&m[1]!==APP_VERSION){location.replace(location.pathname+'?v='+m[1]);}
     }).catch(function(){});
 })();
