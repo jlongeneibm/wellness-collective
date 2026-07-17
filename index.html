@@ -300,7 +300,8 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><h2>My Weekly History</h2><div id="wk-hist"><div class="empty">No weekly reports yet.</div></div></div>
 </div>
 <div id="tab-team" class="tab">
-  <div class="card"><div class="banner bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>Individual Leaderboard — The Wellness Collective</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;"><p style="font-size:13px;color:#57606a;">Points: steps (1/1,000) · activity (1/10 min) · water (1/glass) · sleep ≥7 hrs (2/night).</p><span id="last-sync" style="font-size:11px;color:#57606a;"></span></div><div id="ind-lb"><div class="empty">Loading…</div></div></div>
+  <div class="card"><div class="banner bl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>This Week's Leaderboard</span></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;flex-wrap:wrap;gap:6px;"><p style="font-size:13px;color:#57606a;">Points: steps (1/1,000) · activity (1/10 min) · water (1/glass) · sleep ≥7 hrs (2/night). <span id="lb-reset-lbl" style="font-weight:700;color:#0f62fe;"></span></p><span id="last-sync" style="font-size:11px;color:#57606a;"></span></div><div id="ind-lb"><div class="empty">Loading…</div></div></div>
+  <div class="card"><div class="banner tl" style="background:linear-gradient(90deg,#5b21b6,#7c5cd8);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="rgba(255,255,255,0.9)"/></svg><span>4-Week Rolling Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Cumulative points across the last 4 weeks. Active members only.</p><div id="hist-lb"><div class="empty">Loading…</div></div></div>
   <div class="card"><div class="banner tl"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="rgba(255,255,255,0.9)" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg><span>Partner Pairs Leaderboard</span></div><p style="font-size:13px;color:#57606a;margin-bottom:12px;">Combined scores of two teammates compete against other pairs.</p><div id="pairs-lb"><div class="empty">Loading…</div></div><div class="sep"></div><h3>Create a Pair</h3><div class="g2" style="margin-bottom:10px;"><div><label for="pp1">Person 1</label><select id="pp1"><option value="">— select —</option></select></div><div><label for="pp2">Person 2</label><select id="pp2"><option value="">— select —</option></select></div></div><label for="pname-inp">Pair Name (optional)</label><input type="text" id="pname-inp" placeholder="e.g. Team Thunderbolts"><button class="btn bt" id="btn-pair-save">Create Pair &amp; Sync</button><div id="pairs-mgr" style="margin-top:12px;"></div></div>
   <!-- TEAM SHOUT-OUTS CARD -->
   <div class="card">
@@ -681,7 +682,7 @@ function gl(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}cat
 function sl(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function td(){return new Date().toISOString().slice(0,10);}
 var P=gl('wtp',null),DAYS=gl('wtd',{}),ACTS=gl('wta',[]),SLP=gl('wts',[]),HABITS=gl('wth',['Drink water before coffee','10-min walk','No phone before bed']),WKS=gl('wtw',[]);
-var cloud={members:[],pairs:[]};
+var cloud={members:[],pairs:[],history:[],shoutouts:[]};
 var RTYPES=[
   {id:'walk',   icon:'🚶',title:'Take a Walk',       msg:'Step away from your desk for a 10-minute walk. Even a short stroll boosts energy and focus!'},
   {id:'water',  icon:'💧',title:'Drink Water',        msg:'Time to hydrate! Grab a glass of water and stay on track for your daily goal.'},
@@ -703,11 +704,54 @@ function persist(){sl('wtp',P);sl('wtd',DAYS);sl('wta',ACTS);sl('wts',SLP);sl('w
 function getDay(d){if(!DAYS[d])DAYS[d]={steps:0,water:0,mood:null,habits:{}};return DAYS[d];}
 function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show');},2400);}
 function syncDot(s,m){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=m;}
-function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];cloud.shoutouts=Array.isArray(r.shoutouts)?r.shoutouts:[];syncDot('ok','Connected ✓');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('ok','Ready');return false;});}
+function fetchCloud(){syncDot('busy','Syncing…');return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){var r=j.record||{};cloud.members=Array.isArray(r.members)?r.members:[];cloud.pairs=Array.isArray(r.pairs)?r.pairs:[];cloud.shoutouts=Array.isArray(r.shoutouts)?r.shoutouts:[];cloud.history=Array.isArray(r.history)?r.history:[];syncDot('ok','Connected ✓');document.getElementById('last-sync').textContent='Synced: '+new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});return true;}).catch(function(){syncDot('ok','Ready');return false;});}
 function pushCloud(data){syncDot('busy','Saving…');return fetchWithTimeout(BURL,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(data)},8000).then(function(r){if(!r.ok)throw 0;cloud=data;syncDot('ok','Saved ✓');return true;}).catch(function(){syncDot('ok','Ready');return false;});}
 function score(m){return Math.floor((+m.steps||0)/1000)+Math.floor((+m.activity||0)/10)+(+m.water||0)+(+m.sleep||0)*2;}
 function selfStats(){if(WKS.length){var w=WKS[WKS.length-1];return{steps:w.steps||0,activity:w.activity||0,water:w.water||0,sleep:w.sleep||0};}var s=0,a=0,w=0,sl=0;Object.values(DAYS).forEach(function(d){s+=(d.steps||0);w+=(d.water||0);});ACTS.forEach(function(x){a+=x.dur;});SLP.forEach(function(x){if(x.hrs>=7)sl++;});return{steps:s,activity:a,water:w,sleep:sl};}
-function syncSelf(){if(!P)return Promise.resolve();var st=selfStats(),ms=[].concat(cloud.members),i=ms.findIndex(function(m){return m.name===P.name;});var e=Object.assign({name:P.name,dept:P.dept||''},st);if(i>=0)ms[i]=e;else ms.push(e);return pushCloud(Object.assign({},cloud,{members:ms}));}
+// Returns the Monday date string for the current leaderboard week.
+// The week resets Friday EOD: Sat(6) and Sun(0) already belong to the *next* Mon–Fri week.
+function currentWeekMonday(){
+  var now=new Date(),day=now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  var daysToMon=day===0?1:day===6?2:-(day-1); // negative=go back, positive=go forward
+  var mon=new Date(now);mon.setDate(now.getDate()+daysToMon);
+  return mon.toISOString().slice(0,10);
+}
+// Returns YYYY-MM-DD strings for the Mondays of the last 4 completed weeks + current week (up to 5 keys, capped at 4 distinct past weeks).
+function last4WeekMondays(){
+  var cur=currentWeekMonday(),out=[cur];
+  for(var i=1;i<=3;i++){var d=new Date(cur);d.setDate(d.getDate()-7*i);out.push(d.toISOString().slice(0,10));}
+  return out; // [currentMon, -1wk, -2wk, -3wk]
+}
+// Days until end-of-day Friday from now.
+function daysToFriday(){
+  var day=new Date().getDay(); // 0=Sun
+  return day===5?0:day===6?6:(5-day);
+}
+function syncSelf(){
+  if(!P)return Promise.resolve();
+  return fetchWithTimeout(BURL+'/latest',{headers:{'X-Master-Key':KEY}},8000)
+    .then(function(r){if(!r.ok)throw 0;return r.json();})
+    .then(function(j){
+      var fresh=j.record||{};
+      var ms=Array.isArray(fresh.members)?[].concat(fresh.members):[];
+      var hist=Array.isArray(fresh.history)?[].concat(fresh.history):[];
+      var st=selfStats();
+      var curMon=currentWeekMonday();
+      // Update current-week members entry (week-stamped)
+      var entry=Object.assign({name:P.name,dept:P.dept||'',ws:curMon},st);
+      var mi=ms.findIndex(function(m){return m.name===P.name;});
+      if(mi>=0)ms[mi]=entry;else ms.push(entry);
+      // Upsert into rolling history: one entry per (name, ws)
+      var hi=hist.findIndex(function(h){return h.name===P.name&&h.ws===curMon;});
+      if(hi>=0)hist[hi]=entry;else hist.push(entry);
+      // Trim history: keep only entries within last 4 weeks
+      var keep=last4WeekMondays();
+      hist=hist.filter(function(h){return keep.indexOf(h.ws)>=0;});
+      var data=Object.assign({},fresh,{members:ms,history:hist});
+      cloud=data;
+      return pushCloud(data);
+    }).catch(function(){return false;});
+}
 
 function launch(){
   document.getElementById('setup').style.display='none';
@@ -772,8 +816,49 @@ document.getElementById('wk-start').value=getMon(td());
 document.getElementById('btn-wk-auto').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,we=new Date(ws);we.setDate(we.getDate()+6);var weS=we.toISOString().slice(0,10);var s=0,a=0,w=0,sl=0;Object.entries(DAYS).forEach(function(kv){if(kv[0]>=ws&&kv[0]<=weS){s+=(kv[1].steps||0);w+=(kv[1].water||0);}});ACTS.forEach(function(x){if(x.date>=ws&&x.date<=weS)a+=x.dur;});SLP.forEach(function(x){if(x.date>=ws&&x.date<=weS&&x.hrs>=7)sl++;});document.getElementById('wk-steps').value=s;document.getElementById('wk-act').value=a;document.getElementById('wk-water').value=w;document.getElementById('wk-sleep').value=sl;toast('Auto-filled!');});
 document.getElementById('btn-wk-save').addEventListener('click',function(){var ws=document.getElementById('wk-start').value,steps=parseInt(document.getElementById('wk-steps').value)||0,act=parseInt(document.getElementById('wk-act').value)||0,water=parseInt(document.getElementById('wk-water').value)||0,slp=parseInt(document.getElementById('wk-sleep').value)||0;if(!ws){toast('Select a week.');return;}var sc=score({steps:steps,activity:act,water:water,sleep:slp}),i=WKS.findIndex(function(w){return w.ws===ws;});var e={ws:ws,steps:steps,activity:act,water:water,sleep:slp,score:sc};if(i>=0)WKS[i]=e;else WKS.push(e);WKS.sort(function(a,b){return a.ws<b.ws?-1:1;});persist();renderWkHist();syncSelf().then(function(){toast('Synced to team!');});});
 function renderWkHist(){var w=document.getElementById('wk-hist');if(!WKS.length){w.innerHTML='<div class="empty">No weekly reports yet.</div>';return;}var r=[].concat(WKS).reverse().map(function(w){return'<tr><td>'+w.ws+'</td><td>'+(w.steps||0).toLocaleString()+'</td><td>'+(w.activity||0)+' min</td><td>'+(w.water||0)+'</td><td>'+(w.sleep||0)+'</td><td><strong style="color:#0f62fe">'+w.score+' pts</strong></td></tr>';}).join('');w.innerHTML='<table><thead><tr><th>Week Of</th><th>Steps</th><th>Activity</th><th>Water</th><th>Sleep</th><th>Points</th></tr></thead><tbody>'+r+'</tbody></table>';}
-function renderTeam(){renderIndLB();renderPairsLB();fillSelects();renderPairsMgr();renderShoutFeed();fillShoutToSelect();}
-function renderIndLB(){var sorted=[].concat(cloud.members).map(function(m){return Object.assign({},m,{sc:score(m)});}).sort(function(a,b){return b.sc-a.sc;});var max=sorted[0]?sorted[0].sc:1,w=document.getElementById('ind-lb');if(!sorted.length){w.innerHTML='<div class="empty">No data yet — submit your weekly report to appear here.</div>';return;}w.innerHTML=sorted.map(function(m,i){var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',pct=Math.round(m.sc/max*100),isMe=P&&m.name===P.name;return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+m.name+(isMe?' <span class="tag">You</span>':'')+(m.dept?' <span class="tag tagt">'+m.dept+'</span>':'')+'</div><div class="lbs">Steps: '+(m.steps||0).toLocaleString()+' · Act: '+(m.activity||0)+' min · Water: '+(m.water||0)+' · Sleep: '+(m.sleep||0)+'</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb'+(rc==='gold'?' gold':'')+'" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+m.sc+' pts</div></div>';}).join('');}
+function renderTeam(){renderIndLB();render4WeekLB();renderPairsLB();fillSelects();renderPairsMgr();renderShoutFeed();fillShoutToSelect();}
+function renderIndLB(){
+  var curMon=currentWeekMonday();
+  // Only show members who have submitted for the current week
+  var thisWeek=cloud.members.filter(function(m){return m.ws===curMon;});
+  var sorted=thisWeek.map(function(m){return Object.assign({},m,{sc:score(m)});}).sort(function(a,b){return b.sc-a.sc;});
+  var max=sorted[0]?sorted[0].sc:1,w=document.getElementById('ind-lb');
+  // Reset label
+  var lbl=document.getElementById('lb-reset-lbl');
+  if(lbl){var dtf=daysToFriday();lbl.textContent=dtf===0?'Resets tonight at midnight!':'Resets in '+dtf+' day'+(dtf===1?'':'s')+'.';}
+  if(!sorted.length){w.innerHTML='<div class="empty">No submissions yet this week — submit your weekly report to appear here.</div>';return;}
+  w.innerHTML=sorted.map(function(m,i){
+    var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',pct=Math.round(m.sc/max*100),isMe=P&&m.name===P.name;
+    return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+m.name+(isMe?' <span class="tag">You</span>':'')+(m.dept?' <span class="tag tagt">'+m.dept+'</span>':'')+'</div><div class="lbs">Steps: '+(m.steps||0).toLocaleString()+' · Act: '+(m.activity||0)+' min · Water: '+(m.water||0)+' · Sleep: '+(m.sleep||0)+'</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb'+(rc==='gold'?' gold':'')+'" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+m.sc+' pts</div></div>';
+  }).join('');
+}
+function render4WeekLB(){
+  var w=document.getElementById('hist-lb');
+  if(!w)return;
+  var weeks=last4WeekMondays(); // [curMon, -1, -2, -3]
+  var hist=cloud.history||[];
+  if(!hist.length){w.innerHTML='<div class="empty">No history yet — scores accumulate here as weeks complete.</div>';return;}
+  // Aggregate: sum points per person across all weeks in range
+  var totals={};
+  hist.forEach(function(h){
+    if(weeks.indexOf(h.ws)<0)return;
+    if(!totals[h.name])totals[h.name]={name:h.name,dept:h.dept||'',total:0,weeks:0};
+    totals[h.name].total+=score(h);
+    totals[h.name].weeks++;
+  });
+  var sorted=Object.values(totals).sort(function(a,b){return b.total-a.total;});
+  if(!sorted.length){w.innerHTML='<div class="empty">No history yet — scores accumulate here as weeks complete.</div>';return;}
+  var max=sorted[0].total||1;
+  // Week label row
+  var weekLabels=weeks.map(function(wk){
+    var d=new Date(wk);return(d.getMonth()+1)+'/'+d.getDate();
+  });
+  w.innerHTML='<div style="font-size:11px;color:#57606a;margin-bottom:10px;">Weeks included: '+weekLabels.join(', ')+'</div>'+
+  sorted.map(function(m,i){
+    var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',pct=Math.round(m.total/max*100),isMe=P&&m.name===P.name;
+    return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+m.name+(isMe?' <span class="tag">You</span>':'')+(m.dept?' <span class="tag tagt">'+m.dept+'</span>':'')+'</div><div class="lbs">Active '+m.weeks+' of 4 weeks</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb sl" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+m.total+' pts</div></div>';
+  }).join('');
+}
 function renderPairsLB(){var w=document.getElementById('pairs-lb');if(!cloud.pairs||!cloud.pairs.length){w.innerHTML='<div class="empty">No pairs yet.</div>';return;}var sc=cloud.pairs.map(function(p){var m1=cloud.members.find(function(m){return m.name===p.p1;}),m2=cloud.members.find(function(m){return m.name===p.p2;});var s1=m1?score(m1):0,s2=m2?score(m2):0;return Object.assign({},p,{s1:s1,s2:s2,total:s1+s2});}).sort(function(a,b){return b.total-a.total;});var max=sc[0]?sc[0].total:1;w.innerHTML=sc.map(function(p,i){var medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.',rc=i===0?'gold':i===1?'silver':i===2?'bronze':'',pct=Math.round(p.total/max*100);return'<div class="lbr"><div class="lbrk '+rc+'">'+medal+'</div><div class="lbi"><div class="lbn">'+(p.pairName||p.p1+' & '+p.p2)+'</div><div class="lbs">'+p.p1+' ('+p.s1+' pts) + '+p.p2+' ('+p.s2+' pts)</div></div><div class="lbbw"><div class="pw" style="margin:0"><div class="pb t" style="width:'+pct+'%"></div></div></div><div class="lbsc">'+p.total+' pts</div></div>';}).join('');}
 function fillSelects(){var names=cloud.members.map(function(m){return m.name;});['pp1','pp2'].forEach(function(id){var sel=document.getElementById(id),cur=sel.value;sel.innerHTML='<option value="">— select —</option>'+names.map(function(n){return'<option value="'+n+'"'+(n===cur?' selected':'')+'>'+n+'</option>';}).join('');});}
 function renderPairsMgr(){var w=document.getElementById('pairs-mgr');if(!cloud.pairs||!cloud.pairs.length){w.innerHTML='';return;}w.innerHTML='<h3 style="margin-bottom:7px;">Current Pairs</h3>'+cloud.pairs.map(function(p,i){return'<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 9px;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;margin-bottom:5px;"><span style="font-weight:600">'+(p.pairName||p.p1+' & '+p.p2)+'</span><span style="font-size:13px;color:#57606a;">'+p.p1+' + '+p.p2+'</span><button class="btn bd bsm" data-pi="'+i+'">Remove</button></div>';}).join('');w.querySelectorAll('[data-pi]').forEach(function(btn){btn.addEventListener('click',function(){cloud.pairs.splice(parseInt(btn.dataset.pi),1);pushCloud(cloud).then(function(){renderTeam();toast('Pair removed.');});});});}
@@ -1211,12 +1296,22 @@ function fillShoutToSelect(){
   if(!sel) return;
   var cur = sel.value;
   sel.innerHTML = '<option value="">— select teammate —</option>';
-  cloud.members.forEach(function(m){
-    if(P && m.name === P.name) return; // don't shout out yourself
+  // Use all unique names active in the last 4 weeks (from history) plus current week members
+  var weeks=last4WeekMondays();
+  var seen={};
+  // history first (covers past 4 weeks)
+  (cloud.history||[]).forEach(function(h){
+    if(weeks.indexOf(h.ws)>=0)seen[h.name]=true;
+  });
+  // also include anyone in current-week members even if history not yet populated
+  (cloud.members||[]).forEach(function(m){seen[m.name]=true;});
+  var names=Object.keys(seen).sort();
+  names.forEach(function(name){
+    if(P && name === P.name) return;
     var opt = document.createElement('option');
-    opt.value = m.name;
-    opt.textContent = m.name;
-    if(m.name === cur) opt.selected = true;
+    opt.value = name;
+    opt.textContent = name;
+    if(name === cur) opt.selected = true;
     sel.appendChild(opt);
   });
 }
