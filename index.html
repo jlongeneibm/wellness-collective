@@ -378,7 +378,7 @@ document.getElementById('go-btn').addEventListener('click',function(){
   var n=document.getElementById('inp-name').value.trim();
   if(!n){document.getElementById('inp-name').style.borderColor='#ef4444';document.getElementById('inp-name').focus();return;}
   P={name:n,dept:document.getElementById('inp-dept').value.trim()};
-  persist();launch();
+  persist();launch();fetchPersonal();
 });
 document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('go-btn').click();});
 
