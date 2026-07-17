@@ -196,6 +196,37 @@ tr:last-child td{border-bottom:none;}
 .shout-emoji-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .shout-emoji-btn{width:34px;height:34px;border-radius:6px;background:#fff;border:2px solid #e5e7eb;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color 0.15s;}
 .shout-emoji-btn.picked{border-color:#0f62fe;background:#eef3ff;}
+/* Stretch modal */
+#stretch-modal{position:fixed;inset:0;background:rgba(2,17,38,0.75);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;}
+#stretch-modal.open{display:flex;}
+.smod{background:#fff;border-radius:14px;padding:28px 24px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;}
+.smod h2{font-size:18px;font-weight:800;color:#021126;margin-bottom:6px;}
+.smod-sub{font-size:13px;color:#57606a;margin-bottom:16px;}
+.stretch-step{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:10px;}
+.stretch-step-num{font-size:11px;font-weight:800;color:#0f62fe;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.stretch-step-title{font-size:15px;font-weight:700;color:#1f2328;margin-bottom:6px;}
+.stretch-step-body{font-size:13px;color:#57606a;line-height:1.6;}
+.stretch-timer{font-size:36px;font-weight:800;color:#0f62fe;text-align:center;margin:12px 0 6px;}
+.stretch-timer-lbl{font-size:12px;color:#57606a;text-align:center;margin-bottom:14px;}
+/* Eye-strain fullscreen overlay */
+#eye-overlay{position:fixed;inset:0;background:#021126;z-index:10001;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;}
+#eye-overlay.open{display:flex;}
+#eye-overlay .eo-title{font-size:22px;font-weight:800;margin-bottom:8px;}
+#eye-overlay .eo-sub{font-size:15px;color:rgba(255,255,255,0.6);margin-bottom:32px;}
+#eye-overlay .eo-count{font-size:96px;font-weight:800;color:#0f62fe;line-height:1;}
+#eye-overlay .eo-hint{font-size:14px;color:rgba(255,255,255,0.5);margin-top:20px;}
+#eye-overlay .eo-close{margin-top:28px;padding:10px 28px;background:#0f62fe;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+/* Stretch area grid */
+.area-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.area-btn{padding:12px 8px;background:#f7f8fa;border:2px solid #e5e7eb;border-radius:8px;font-size:13px;font-weight:700;color:#1f2328;cursor:pointer;text-align:center;transition:border-color 0.15s,background 0.15s;}
+.area-btn:hover{background:#eef3ff;border-color:#0f62fe;color:#0f62fe;}
+/* Energy tips */
+.etip{background:#fff8e1;border:1px solid #fcd34d;border-radius:7px;padding:12px 14px;margin-bottom:8px;font-size:13px;color:#1f2328;line-height:1.5;}
+.etip strong{color:#d97706;}
+/* Accomplishment banner */
+#acc-banner{background:linear-gradient(135deg,#005a3c,#00b4a0);border-radius:8px;padding:16px;color:#fff;margin-bottom:14px;display:none;}
+#acc-banner h3{font-size:15px;font-weight:800;margin-bottom:8px;}
+#acc-banner .acc-row{font-size:13px;opacity:0.9;margin-bottom:3px;}
 svg.chart{width:100%;overflow:visible;}
 .cl{font-size:11px;fill:#57606a;}
 .cb{fill:#0f62fe;}.cb.sl{fill:#7c5cd8;}.cb.wt{fill:#22c55e;}
@@ -640,6 +671,71 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
     </div>
   </div>
   <div class="card"><h2>Today's Reminder Log</h2><div id="rem-log"><div class="empty">No reminders fired yet today.</div></div></div>
+
+  <!-- End-of-Day Accomplishment Banner (shown at 5pm+) -->
+  <div id="acc-banner">
+    <h3>&#x1F3C6; Great work today!</h3>
+    <div id="acc-rows"></div>
+  </div>
+
+  <!-- Guided Stretch Card -->
+  <div class="card">
+    <h2>&#x1F9D8; Guided Stretch Break</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Pick a body area and follow the guided stretch. Each step is timed — no guesswork needed.</p>
+    <div class="area-grid">
+      <button class="area-btn" onclick="startStretch('neck')">&#x1F99B; Neck</button>
+      <button class="area-btn" onclick="startStretch('shoulders')">&#x1F4AA; Shoulders</button>
+      <button class="area-btn" onclick="startStretch('wrists')">&#x1F932; Wrists &amp; Hands</button>
+      <button class="area-btn" onclick="startStretch('back')">&#x1FA91; Back &amp; Spine</button>
+    </div>
+  </div>
+
+  <!-- Eye-Strain 20-20-20 Card -->
+  <div class="card">
+    <h2>&#x1F441;&#xFE0F; 20-20-20 Eye Reset</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Every 20 minutes of screen time, look at something <strong>20 feet away</strong> for <strong>20 seconds</strong>. Dramatically reduces eye strain and digital fatigue.</p>
+    <button class="btn bb" onclick="startEyeStrain()">&#x23F1; Start 20-Second Timer</button>
+  </div>
+
+  <!-- Afternoon Energy Boosters Card -->
+  <div class="card">
+    <h2>&#x26A1; Afternoon Energy Boosters</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Science-backed strategies for the 2&ndash;3 pm slump. A time-based reminder will also fire automatically during this window.</p>
+    <div class="etip"><strong>&#x1F6B6; Move for 5 minutes.</strong> A short walk resets cortisol and boosts alertness for 30&ndash;60 min.</div>
+    <div class="etip"><strong>&#x1F4A7; Drink water first.</strong> Afternoon fatigue is often mild dehydration &mdash; drink a full glass before reaching for coffee.</div>
+    <div class="etip"><strong>&#x1F32C;&#xFE0F; Box breathing.</strong> 4 counts in &rarr; 4 hold &rarr; 4 out &rarr; 4 hold. Repeat 4 times. Activates your parasympathetic system.</div>
+    <div class="etip"><strong>&#x2600;&#xFE0F; Step outside for 2 min.</strong> Natural light resets your circadian clock and reduces afternoon melatonin.</div>
+    <div class="etip"><strong>&#x1F3B5; Change your environment.</strong> Move to a different spot &mdash; novel environments boost dopamine and focus.</div>
+    <div style="margin-top:8px;">
+      <button class="btn bt bsm" id="btn-energy-boost">&#x2713; I did a booster!</button>
+      <span id="energy-logged" style="font-size:13px;color:#00b4a0;margin-left:10px;display:none;">Logged! Keep it up &#x1F4AA;</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Stretch Modal -->
+<div id="stretch-modal">
+  <div class="smod">
+    <h2 id="stretch-title">Stretch</h2>
+    <div class="smod-sub" id="stretch-sub"></div>
+    <div id="stretch-steps"></div>
+    <div class="stretch-timer" id="stretch-timer" style="display:none;"></div>
+    <div class="stretch-timer-lbl" id="stretch-timer-lbl"></div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+      <button class="btn bb" id="stretch-next-btn">Next Step &rarr;</button>
+      <button class="btn bo bsm" onclick="closeStretch()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Eye-Strain Overlay -->
+<div id="eye-overlay">
+  <div class="eo-title">&#x1F441;&#xFE0F; 20-20-20 Eye Reset</div>
+  <div class="eo-sub">Look at something at least 20 feet away&hellip;</div>
+  <div class="eo-count" id="eo-count">20</div>
+  <div class="eo-hint">Relax your gaze. Blink naturally.</div>
+  <button class="eo-close" onclick="closeEyeOverlay()">Done</button>
 </div>
 
 
@@ -676,7 +772,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 
 <script>
-var APP_VERSION='20250722-5';var APP_VER='20250722-5';
+var APP_VERSION='20250722-6';var APP_VER='20250722-6';
 (function(){
   if(location.search.indexOf('v=')>=0)return;
   fetch(location.pathname+'?nocache='+Date.now())
@@ -806,7 +902,7 @@ document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.
 if(P){launch();}
 
 document.getElementById('srefbtn').addEventListener('click',function(){fetchCloud().then(function(){renderTeam();});});
-document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();renderShoutFeed();fillShoutToSelect();initShoutEmojis();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();}if(b.dataset.tab==='mindfulness'){initAffirmations();initGhosting();initReset();}if(b.dataset.tab==='spin'){buildWheel();}});});
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='charts')drawCharts();if(b.dataset.tab==='team')fetchCloud().then(function(){renderTeam();renderShoutFeed();fillShoutToSelect();initShoutEmojis();});if(b.dataset.tab==='reminders'){syncRemUI();renderRemLog();if(new Date().getHours()>=17)showAccomplishments();}if(b.dataset.tab==='mindfulness'){initAffirmations();initGhosting();initReset();}if(b.dataset.tab==='spin'){buildWheel();}});});
 function renderSteps(){var d=getDay(td()),s=d.steps||0,p=Math.min(100,Math.round(s/100));document.getElementById('ts').textContent=s.toLocaleString();document.getElementById('sinp').value=s||'';document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';}
 document.getElementById('btn-save-steps').addEventListener('click',function(){var v=parseInt(document.getElementById('sinp').value)||0;getDay(td()).steps=v;persist();schedulePush();renderSteps();renderSummary();toast('Steps saved!');});
 document.getElementById('sinp').addEventListener('input',function(){var v=parseInt(this.value)||0,p=Math.min(100,Math.round(v/100));document.getElementById('sbar').style.width=p+'%';document.getElementById('spct').textContent=p+'% of 10,000 goal';});
@@ -906,6 +1002,117 @@ function playChime(){
 }
 
 // ---- REMINDER TYPES ----
+
+// ---- STRETCH & EYE-STRAIN ----
+var STRETCHES={
+  neck:{title:'&#x1F99B; Neck Stretch',steps:[
+    {title:'Ear to Shoulder (Right)',body:'Slowly tilt your right ear toward your right shoulder. Keep your left shoulder relaxed and down. Hold gently.',hold:20},
+    {title:'Ear to Shoulder (Left)',body:'Slowly tilt your left ear toward your left shoulder. Keep your right shoulder relaxed and down. Hold gently.',hold:20},
+    {title:'Chin to Chest',body:'Drop your chin toward your chest. Feel the stretch along the back of your neck and upper back. Breathe slowly.',hold:20},
+    {title:'Gentle Rotation',body:'Turn your head slowly to look over your right shoulder, pause, then back through centre and over your left shoulder. Repeat twice.',hold:15}
+  ]},
+  shoulders:{title:'&#x1F4AA; Shoulder Stretch',steps:[
+    {title:'Shoulder Rolls',body:'Roll both shoulders backward in large slow circles — 5 times. Then forward — 5 times. Release built-up tension.',hold:15},
+    {title:'Cross-Body Stretch (Right)',body:'Bring your right arm across your chest. Use your left hand to gently press it closer. Feel the back of the shoulder.',hold:25},
+    {title:'Cross-Body Stretch (Left)',body:'Bring your left arm across your chest. Use your right hand to gently press it closer. Feel the stretch evenly.',hold:25},
+    {title:'Clasp Behind Back',body:'Interlace your fingers behind your back. Gently squeeze your shoulder blades together and lift your chest. Breathe in.',hold:20}
+  ]},
+  wrists:{title:'&#x1F932; Wrist &amp; Hand Stretch',steps:[
+    {title:'Wrist Circles',body:'Extend both arms forward. Make slow circles with your wrists — 5 clockwise, then 5 counter-clockwise. Shake them out.',hold:15},
+    {title:'Prayer Stretch',body:'Press your palms together in front of your chest. Slowly lower your hands toward your waist until you feel a stretch in your wrists.',hold:20},
+    {title:'Finger Spread',body:'Spread your fingers as wide as possible, hold for 5 counts, then make a loose fist. Repeat 5 times.',hold:15},
+    {title:'Desk Press',body:'Place your palm flat on the desk with fingers pointing toward you. Gently lean back to stretch the inside of the wrist.',hold:20}
+  ]},
+  back:{title:'&#x1FA91; Back &amp; Spine Stretch',steps:[
+    {title:'Seated Spinal Twist (Right)',body:'Sit tall. Place your right hand on the back of your chair and your left hand on your right knee. Gently twist right. Hold.',hold:20},
+    {title:'Seated Spinal Twist (Left)',body:'Place your left hand on the back of your chair and your right hand on your left knee. Gently twist left. Hold.',hold:20},
+    {title:'Forward Fold',body:'Sit at the edge of your chair. Let your upper body hang forward over your legs. Let your arms dangle toward the floor. Breathe.',hold:25},
+    {title:'Cat-Cow in Chair',body:'Sit tall with hands on knees. Arch your back and lift your chest (cow). Then round your spine and tuck your chin (cat). Repeat 5 times.',hold:20}
+  ]}
+};
+var _stretchData=null,_stretchStep=0,_stretchTimerID=null;
+
+function startStretch(area){
+  _stretchData=STRETCHES[area];_stretchStep=0;
+  document.getElementById('stretch-title').innerHTML=_stretchData.title;
+  renderStretchStep();
+  document.getElementById('stretch-modal').classList.add('open');
+}
+function renderStretchStep(){
+  var steps=_stretchData.steps,s=steps[_stretchStep];
+  document.getElementById('stretch-steps').innerHTML='<div class="stretch-step"><div class="stretch-step-num">Step '+(_stretchStep+1)+' of '+steps.length+'</div><div class="stretch-step-title">'+s.title+'</div><div class="stretch-step-body">'+s.body+'</div></div>';
+  document.getElementById('stretch-sub').textContent='Follow at your own pace — step '+(_stretchStep+1)+' of '+steps.length;
+  document.getElementById('stretch-next-btn').textContent=(_stretchStep<steps.length-1)?'Next Step \u2192':'\u2713 Finish';
+  startStretchHold(s.hold);
+}
+function startStretchHold(secs){
+  if(_stretchTimerID)clearInterval(_stretchTimerID);
+  var rem=secs,el=document.getElementById('stretch-timer'),lbl=document.getElementById('stretch-timer-lbl');
+  el.style.display='block';el.textContent=rem;lbl.textContent='Hold for '+secs+' seconds';
+  _stretchTimerID=setInterval(function(){rem--;el.textContent=rem;if(rem<=0){clearInterval(_stretchTimerID);lbl.textContent='\u2713 Release \u2014 ready for next step';playChime();}},1000);
+}
+document.getElementById('stretch-next-btn').addEventListener('click',function(){
+  if(_stretchTimerID)clearInterval(_stretchTimerID);
+  if(_stretchStep<_stretchData.steps.length-1){_stretchStep++;renderStretchStep();}
+  else{closeStretch();toast('Stretch complete! \uD83E\uDDD8 Great job!');}
+});
+function closeStretch(){
+  if(_stretchTimerID)clearInterval(_stretchTimerID);
+  document.getElementById('stretch-modal').classList.remove('open');
+  document.getElementById('stretch-timer').style.display='none';
+}
+
+var _eyeTimerID=null;
+function startEyeStrain(){
+  var rem=20;document.getElementById('eo-count').textContent=rem;
+  document.getElementById('eye-overlay').classList.add('open');
+  if(_eyeTimerID)clearInterval(_eyeTimerID);
+  _eyeTimerID=setInterval(function(){rem--;document.getElementById('eo-count').textContent=rem;if(rem<=0){clearInterval(_eyeTimerID);playChime();document.getElementById('eo-count').textContent='\u2713';}},1000);
+}
+function closeEyeOverlay(){if(_eyeTimerID)clearInterval(_eyeTimerID);document.getElementById('eye-overlay').classList.remove('open');}
+
+document.getElementById('btn-energy-boost').addEventListener('click',function(){document.getElementById('energy-logged').style.display='inline';toast('Energy booster logged! \u26A1');});
+
+// ---- END-OF-DAY ACCOMPLISHMENTS ----
+var _eodFiredToday=gl('wtr_eod',null),_energyFiredToday=gl('wtr_ef',null);
+
+function buildAccomplishments(){
+  var d=getDay(td()),rows=[];
+  var steps=d.steps||0;
+  if(steps>0)rows.push('\uD83C\uDFC3 '+steps.toLocaleString()+' steps'+(steps>=10000?' \u2014 goal crushed! \uD83C\uDFAF':' toward your 10k goal'));
+  var water=d.water||0;
+  if(water>0)rows.push('\uD83D\uDCA7 '+water+' glass'+(water!==1?'es':'')+' of water'+(water>=8?' \u2014 hydration goal hit! \uD83D\uDCAA':''));
+  var sleepEntry=[].concat(SLP).sort(function(a,b){return b.date<a.date?-1:1;})[0];
+  if(sleepEntry)rows.push('\uD83D\uDE34 '+sleepEntry.hrs+' hours of sleep last night'+(sleepEntry.hrs>=7?' \u2014 well rested! \u2B50':''));
+  var todayActs=ACTS.filter(function(a){return a.date===td();});
+  if(todayActs.length>0){var mins=todayActs.reduce(function(s,a){return s+a.dur;},0);rows.push('\uD83C\uDFCB\uFE0F '+mins+' min of activity across '+todayActs.length+' session'+(todayActs.length!==1?'s':''));}
+  var done=d.habits?Object.values(d.habits).filter(Boolean).length:0;
+  if(done>0)rows.push('\u2705 '+done+' daily habit'+(done!==1?'s':'')+' completed');
+  if(d.mood)rows.push('\uD83D\uDE0A Mood logged: '+d.mood);
+  if(!rows.length)rows.push('Log your steps, water, and activities to see your daily wins here!');
+  return rows;
+}
+function showAccomplishments(){
+  var banner=document.getElementById('acc-banner'),rowsEl=document.getElementById('acc-rows');
+  if(!banner)return;
+  rowsEl.innerHTML=buildAccomplishments().map(function(r){return'<div class="acc-row">'+r+'</div>';}).join('');
+  banner.style.display='block';
+}
+
+// Time-based reminders: 2-3pm energy + 5pm EOD — checked every minute
+setInterval(function(){
+  var h=new Date().getHours(),today=td();
+  if(h>=14&&h<15&&_energyFiredToday!==today){
+    _energyFiredToday=today;sl('wtr_ef',today);
+    toast('\u26A1 Afternoon slump? Check the Reminders tab for an energy boost!');
+  }
+  if(h>=17&&_eodFiredToday!==today){
+    _eodFiredToday=today;sl('wtr_eod',today);
+    toast('\uD83C\uDFC6 5pm! See your accomplishments in the Reminders tab!');
+    var remBtn=document.querySelector('nav button[data-tab="reminders"]');
+    if(remBtn&&remBtn.classList.contains('active'))showAccomplishments();
+  }
+},60000);
 
 // ---- REMINDER STATE ----
 function saveRem(){sl('wtrem',RSET);}
