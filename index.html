@@ -375,11 +375,11 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <button data-tab="focus">&#x23F1; Focus</button>
   <button data-tab="spin">&#x1F3A1; Spin</button>
   <button data-tab="charts">Charts</button>
-  <button data-tab="coach">&#x1F916; AI Coach</button>
+  <button data-tab="coach">&#x1F916; Coaching</button>
 </nav>
 <main>
 <div id="tab-today" class="tab active">
-  <!-- Today AI Coach Nudge (shown when a flag is active) -->
+  <!-- Today Coaching Nudge (shown when a flag is active) -->
   <div id="today-coach-nudge" class="today-coach-nudge card" style="display:none;">
     <div class="tcn-title" id="tcn-title">&#x1F916; You've got a big moment today</div>
     <div class="tcn-body" id="tcn-body">Here's your personalized prep routine.</div>
@@ -401,10 +401,10 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card"><h2>Daily Habits</h2><ul class="hlist" id="hlist"></ul><div class="sep"></div><h3>Add a habit</h3><div class="irow"><div><label for="new-habit">Habit name</label><input type="text" id="new-habit" placeholder="e.g. 10-min meditation"></div><button class="btn bb bsm" id="btn-add-habit">Add</button></div></div>
   <div class="card"><h2>Mood Check-in</h2><p style="font-size:13px;color:#57606a;margin-bottom:11px;">How are you feeling today?</p><div style="display:flex;gap:9px;flex-wrap:wrap;" id="mood-btns"></div><div id="mood-disp" style="margin-top:11px;font-size:14px;color:#57606a;"></div></div>
 
-  <!-- Today AI Coach Flags -->
+  <!-- Today Coaching Flags -->
   <div class="card">
     <h2>&#x1F916; Flag Today's Challenges</h2>
-    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Tap what's on your plate today — your AI Coach will prepare a tailored routine for you.</p>
+    <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Tap what's on your plate today — your Coach will prepare a tailored routine for you.</p>
     <div class="today-flag-row" id="today-flag-row">
       <button class="today-flag-btn" data-flag="exec" id="flag-exec">&#x1F3A4; Big Presentation</button>
       <button class="today-flag-btn" data-flag="hm" id="flag-hm">&#x1F91D; Difficult HM Sync</button>
@@ -1065,9 +1065,9 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 
   <!-- Hero header -->
   <div class="coach-hero">
-    <div class="ibadge" style="background:rgba(255,255,255,0.15);margin-bottom:8px;"><span>AI COACH</span></div>
+    <div class="ibadge" style="background:rgba(255,255,255,0.15);margin-bottom:8px;"><span>COACHING</span></div>
     <h2>&#x1F916; Your Personal Wellness Coach</h2>
-    <p>No AI API needed — this is expert-curated coaching tailored to the real challenges recruiters face every day. Select a scenario below to get your personalized prep routine.</p>
+    <p>Expert-curated coaching tailored to the real challenges recruiters face every day. Select a scenario below to get your personalized prep routine.</p>
   </div>
 
   <!-- Scenario picker card -->
@@ -1090,7 +1090,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 
   <!-- How it works card -->
   <div class="card">
-    <h2>&#x1F4A1; How AI Coach Works</h2>
+    <h2>&#x1F4A1; How Coaching Works</h2>
     <p style="font-size:13px;color:#57606a;margin-bottom:12px;">Each coaching routine is built around evidence-based techniques used by performance coaches and workplace wellbeing researchers:</p>
     <div class="tip-card" style="margin-bottom:8px;">
       <div class="tc-icon">&#x1F32C;</div>
@@ -1116,7 +1116,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 </div>
 
 <script>
-var APP_VERSION='20250724-9';var APP_VER='20250724-9';
+var APP_VERSION='20250724-10';var APP_VER='20250724-10';
 (function(){
   if(location.search.indexOf('v=')>=0)return;
   fetch(location.pathname+'?nocache='+Date.now())
@@ -2524,7 +2524,7 @@ function renderTodayFlagResult(flags){
   el.style.display='block';
   el.innerHTML='<div class="infobox" style="background:#faf5ff;border-color:#c4b5fd;color:#6d28d9;margin-top:10px;">'+
     '<strong>&#x1F916; '+scenarios.length+' coaching routine'+(scenarios.length!==1?'s':'')+' ready.</strong> '+
-    'Head to the <strong>AI Coach</strong> tab for your full prep routines.'+
+    'Head to the <strong>Coaching</strong> tab for your full prep routines.'+
     '</div>';
 }
 
