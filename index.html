@@ -1673,7 +1673,11 @@ function launch(){
   renderGratitude();
   syncRemUI();startReminders();renderRemLog();
   buildWheel();initTodayFlags();
-  setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
+  setTimeout(function(){
+    fetchPersonal().then(function(){
+      fetchCloud().then(function(){renderTeam();syncSelf();});
+    });
+  },500);
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
   // Wire up all event listeners
   document.getElementById('spin-btn').addEventListener('click',spinWheel);
