@@ -1675,7 +1675,7 @@ function launch(){
   buildWheel();initTodayFlags();
   setTimeout(function(){
     fetchPersonal().then(function(){
-      fetchCloud().then(function(){renderTeam();syncSelf();});
+      fetchCloud().then(function(){renderTeam();});
     });
   },500);
   if(window.Notification&&Notification.permission==='default'){Notification.requestPermission();}
@@ -1700,7 +1700,7 @@ document.getElementById('go-btn').addEventListener('click',function(){
   var n=document.getElementById('inp-name').value.trim();
   if(!n){document.getElementById('inp-name').style.borderColor='#ef4444';document.getElementById('inp-name').focus();return;}
   P={name:n,dept:document.getElementById('inp-dept').value.trim()};
-  persist();launch();fetchPersonal();
+  persist();launch();
 });
 document.getElementById('inp-name').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('go-btn').click();});
 
