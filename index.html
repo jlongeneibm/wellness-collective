@@ -1276,11 +1276,15 @@ function syncSelf(){
       var hist=Array.isArray(fresh.history)?[].concat(fresh.history):[];
       var st=selfStats();
       var curMon=currentWeekMonday();
+      // Backfill: stamp any existing members that have no ws (pre-migration entries)
+      ms=ms.map(function(m){return m.ws?m:Object.assign({},m,{ws:curMon});});
       // Update current-week members entry (week-stamped)
       var entry=Object.assign({name:P.name,dept:P.dept||'',ws:curMon},st);
       var mi=ms.findIndex(function(m){return m.name===P.name;});
       if(mi>=0)ms[mi]=entry;else ms.push(entry);
       // Upsert into rolling history: one entry per (name, ws)
+      // Also migrate any un-stamped history entries
+      hist=hist.map(function(h){return h.ws?h:Object.assign({},h,{ws:curMon});});
       var hi=hist.findIndex(function(h){return h.name===P.name&&h.ws===curMon;});
       if(hi>=0)hist[hi]=entry;else hist.push(entry);
       // Trim history: keep only entries within last 4 weeks
@@ -1723,8 +1727,8 @@ function renderWkHist(){var w=document.getElementById('wk-hist');if(!WKS.length)
 function renderTeam(){renderIndLB();render4WeekLB();renderPairsLB();fillSelects();renderPairsMgr();renderShoutFeed();fillShoutToSelect();}
 function renderIndLB(){
   var curMon=currentWeekMonday();
-  // Only show members who have submitted for the current week
-  var thisWeek=cloud.members.filter(function(m){return m.ws===curMon;});
+  // Show members for the current week; treat entries with no ws (pre-migration) as current week
+  var thisWeek=cloud.members.filter(function(m){return !m.ws||m.ws===curMon;});
   var sorted=thisWeek.map(function(m){return Object.assign({},m,{sc:score(m)});}).sort(function(a,b){return b.sc-a.sc;});
   var max=sorted[0]?sorted[0].sc:1,w=document.getElementById('ind-lb');
   // Reset label
@@ -1741,14 +1745,22 @@ function render4WeekLB(){
   if(!w)return;
   var weeks=last4WeekMondays(); // [curMon, -1, -2, -3]
   var hist=cloud.history||[];
+  // Also fold current-week members (with or without ws) into history view so no-one is missing
+  var curMon=currentWeekMonday();
+  (cloud.members||[]).forEach(function(m){
+    var mws=m.ws||curMon;
+    if(weeks.indexOf(mws)<0)return;
+    var already=hist.find(function(h){return h.name===m.name&&(h.ws||curMon)===mws;});
+    if(!already)hist.push(Object.assign({},m,{ws:mws}));
+  });
   if(!hist.length){w.innerHTML='<div class="empty">No history yet — scores accumulate here as weeks complete.</div>';return;}
   // Aggregate: sum points per person across all weeks in range
   var totals={};
   hist.forEach(function(h){
-    if(weeks.indexOf(h.ws)<0)return;
-    if(!totals[h.name])totals[h.name]={name:h.name,dept:h.dept||'',total:0,weeks:0};
-    totals[h.name].total+=score(h);
-    totals[h.name].weeks++;
+    var hws=h.ws||curMon;
+    if(weeks.indexOf(hws)<0)return;
+    if(!totals[h.name])totals[h.name]={name:h.name,dept:h.dept||'',total:0,weeks:0,seen:{}};
+    if(!totals[h.name].seen[hws]){totals[h.name].seen[hws]=true;totals[h.name].total+=score(h);totals[h.name].weeks++;}
   });
   var sorted=Object.values(totals).sort(function(a,b){return b.total-a.total;});
   if(!sorted.length){w.innerHTML='<div class="empty">No history yet — scores accumulate here as weeks complete.</div>';return;}
