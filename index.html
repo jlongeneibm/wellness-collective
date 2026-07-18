@@ -190,6 +190,22 @@ tr:last-child td{border-bottom:none;}
 #btn-challenge-done:disabled{opacity:0.5;cursor:default;}
 #challenge-done-badge{display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.18);border-radius:99px;padding:6px 14px;font-size:13px;font-weight:700;color:#fff;}
 #challenge-streak{font-size:12px;color:rgba(255,255,255,0.6);margin-left:auto;}
+/* Daily Gratitude */
+.gratitude-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:18px;margin-bottom:14px;}
+.gratitude-card h2{font-size:15px;font-weight:700;color:#1f2328;border-left:4px solid #f59e0b;padding-left:9px;margin-bottom:4px;}
+.gratitude-prompt{font-size:13px;color:#57606a;font-style:italic;margin-bottom:12px;padding:8px 12px;background:#fffbeb;border-radius:6px;border-left:3px solid #f59e0b;}
+.gratitude-entries{margin-bottom:12px;}
+.gratitude-entry{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f0f1f3;font-size:13px;color:#374151;line-height:1.5;}
+.gratitude-entry:last-child{border-bottom:none;}
+.gratitude-entry-dot{width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;margin-top:5px;}
+.gratitude-entry-time{font-size:11px;color:#57606a;white-space:nowrap;margin-left:auto;padding-left:8px;}
+.gratitude-input-row{display:flex;gap:8px;align-items:flex-end;}
+.gratitude-inp{flex:1;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;font-family:inherit;color:#1f2328;resize:none;line-height:1.5;}
+.gratitude-inp:focus{outline:2px solid #f59e0b;border-color:transparent;}
+#btn-gratitude-save{padding:9px 18px;background:#f59e0b;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;}
+#btn-gratitude-save:hover{background:#d97706;}
+.gratitude-streak{font-size:12px;color:#92400e;font-weight:700;margin-top:8px;}
+.gratitude-empty{font-size:13px;color:#57606a;font-style:italic;padding:8px 0;}
 /* Motivational Boost */
 .boost-card{border-radius:14px;padding:28px 20px;text-align:center;margin-bottom:14px;position:relative;overflow:hidden;}
 .boost-card-svg{display:block;margin:0 auto 16px;width:180px;height:140px;}
@@ -449,6 +465,18 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
       <div id="kindness-done-badge" style="display:none;align-items:center;gap:6px;background:rgba(255,255,255,0.18);border-radius:99px;padding:6px 14px;font-size:13px;font-weight:700;color:#fff;">&#x2713; Kindness done!</div>
       <span id="kindness-streak" style="font-size:12px;color:rgba(255,255,255,0.6);margin-left:auto;"></span>
     </div>
+  </div>
+
+  <!-- DAILY GRATITUDE CARD -->
+  <div class="gratitude-card">
+    <h2>&#x1F31F; Daily Gratitude</h2>
+    <div class="gratitude-prompt" id="gratitude-prompt"></div>
+    <div class="gratitude-entries" id="gratitude-entries"></div>
+    <div class="gratitude-input-row">
+      <textarea class="gratitude-inp" id="gratitude-inp" rows="2" placeholder="What are you grateful for today?"></textarea>
+      <button id="btn-gratitude-save" onclick="saveGratitude()">Add &#x2713;</button>
+    </div>
+    <div class="gratitude-streak" id="gratitude-streak"></div>
   </div>
 
   <!-- Today Coaching Flags -->
@@ -1512,6 +1540,120 @@ function kindnessStreak(today) {
   return streak;
 }
 
+// ---- DAILY GRATITUDE ----
+var GRATITUDE_PROMPTS = [
+  'What\'s one small thing that made today a little easier?',
+  'Who on your team showed up for you this week — even in a small way?',
+  'What\'s something you\'re grateful for about working from home today?',
+  'Name one thing you accomplished today that you\'re proud of.',
+  'What\'s a moment from today that you want to remember?',
+  'Who is someone you\'re grateful to have on your team right now?',
+  'What\'s something about your work right now that genuinely excites you?',
+  'What\'s one thing that went better than expected today?',
+  'What\'s a skill or strength you used today that you\'re glad you have?',
+  'What\'s something simple — a meal, a song, a view — you\'re grateful for today?',
+  'Name one candidate or hiring manager interaction that reminded you why this work matters.',
+  'What\'s something your body did today that you\'re grateful for — energy, focus, calm?',
+  'Who made you laugh or smile today?',
+  'What\'s one challenge you\'re facing right now that is also making you grow?',
+  'What\'s something about your home workspace you appreciate?',
+  'Name one moment of genuine connection you had today — however brief.',
+  'What\'s a resource, tool, or process that made your work easier this week?',
+  'What\'s something you learned today — about your work, a candidate, or yourself?',
+  'Who in your life outside of work are you grateful for right now?',
+  'What\'s one thing you\'re looking forward to tomorrow?',
+  'What\'s a boundary you set or respected today that you\'re proud of?',
+  'Name one thing about your team culture that you genuinely value.',
+  'What\'s something that felt hard recently that you\'re now getting better at?',
+  'What\'s a small luxury of working from home that you don\'t take for granted?',
+  'Name one person who believed in your potential before you fully did.',
+  'What\'s something you got to say "no" to today that protected your energy?',
+  'What\'s a moment from this week where things came together unexpectedly well?',
+  'Who gave you feedback recently that helped you — even if it was hard to hear?',
+  'What\'s one thing about today that, if you\'re honest, you wouldn\'t trade?',
+  'Name something about your career path so far that you\'re genuinely grateful for.'
+];
+
+var GRATITUDE_KEY = 'wtgratitude';
+
+function gratitudePromptForToday() {
+  var d = new Date();
+  var start = new Date(d.getFullYear(), 0, 0);
+  var dayOfYear = Math.floor((d - start) / 86400000);
+  return GRATITUDE_PROMPTS[dayOfYear % GRATITUDE_PROMPTS.length];
+}
+
+function renderGratitude() {
+  var promptEl   = document.getElementById('gratitude-prompt');
+  var entriesEl  = document.getElementById('gratitude-entries');
+  var streakEl   = document.getElementById('gratitude-streak');
+  if (!promptEl || !entriesEl || !streakEl) return;
+
+  // Rotating daily prompt
+  promptEl.textContent = '✨ ' + gratitudePromptForToday();
+
+  // Load today's entries from DAYS
+  var today = td();
+  var day = getDay(today);
+  var entries = day.gratitude || [];
+
+  // Render entries list
+  if (entries.length === 0) {
+    entriesEl.innerHTML = '<div class="gratitude-empty">Nothing logged yet — add your first gratitude above.</div>';
+  } else {
+    entriesEl.innerHTML = entries.map(function(e) {
+      return '<div class="gratitude-entry">' +
+        '<div class="gratitude-entry-dot"></div>' +
+        '<span>' + escapeHtml(e.text) + '</span>' +
+        '<span class="gratitude-entry-time">' + e.time + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  // Streak: count consecutive days with at least one gratitude entry
+  var streak = 0;
+  var d = new Date(today + 'T12:00:00');
+  for (var i = 0; i < 366; i++) {
+    var key = d.toISOString().slice(0, 10);
+    var entries_day = DAYS[key] && DAYS[key].gratitude;
+    if (entries_day && entries_day.length > 0) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+
+  if (streak > 1) {
+    streakEl.textContent = '🔥 ' + streak + '-day gratitude streak!';
+  } else if (entries.length > 0) {
+    streakEl.textContent = '✓ ' + entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies') + ' today';
+  } else {
+    streakEl.textContent = '';
+  }
+}
+
+function saveGratitude() {
+  var inp = document.getElementById('gratitude-inp');
+  if (!inp) return;
+  var text = inp.value.trim();
+  if (!text) { inp.focus(); return; }
+
+  var today = td();
+  var day = getDay(today);
+  if (!day.gratitude) day.gratitude = [];
+  var now = new Date();
+  var time = now.toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
+  day.gratitude.push({text: text, time: time});
+  persist();
+  schedulePush();
+
+  inp.value = '';
+  inp.style.borderColor = '';
+  renderGratitude();
+  toast('🌟 Gratitude logged!');
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function launch(){
   document.getElementById('setup').style.display='none';
   document.getElementById('syncbar').style.display='flex';
@@ -1524,6 +1666,7 @@ function launch(){
   renderSteps();renderWater();renderHabits();renderMood();renderSummary();renderActs();renderSleep();renderWkHist();
   renderChallenge();
   renderKindness();
+  renderGratitude();
   syncRemUI();startReminders();renderRemLog();
   buildWheel();initTodayFlags();
   setTimeout(function(){fetchCloud().then(function(){renderTeam();syncSelf();});fetchPersonal();},500);
