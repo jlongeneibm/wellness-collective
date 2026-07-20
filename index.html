@@ -309,6 +309,29 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
 .focus-prep-btn .fp-icon{font-size:26px;display:block;margin-bottom:5px;}
 .focus-prep-panel{display:none;}.focus-prep-panel.active{display:block;}
 
+/* ---- SOOTHING SOUNDS ---- */
+.sounds-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.sound-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:#f7f8fa;border:2px solid #e5e7eb;border-radius:10px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:#1f2328;transition:border-color 0.15s,background 0.15s;}
+.sound-btn:hover{border-color:#7c5cd8;background:#faf5ff;color:#6d28d9;}
+.sound-btn.playing{border-color:#7c5cd8;background:#ede9fe;color:#6d28d9;}
+.sound-btn .sb-icon{font-size:28px;}
+.sound-vol-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.sound-vol-row label{font-size:13px;font-weight:600;color:#57606a;white-space:nowrap;}
+.sound-vol-row input[type=range]{flex:1;accent-color:#7c5cd8;margin-bottom:0;}
+/* Mini-player fixed bar */
+#sound-miniplayer{position:fixed;bottom:0;left:0;right:0;background:#1e1b4b;color:#fff;padding:10px 20px;display:none;align-items:center;gap:14px;z-index:9999;border-top:2px solid #4c1d95;box-shadow:0 -2px 16px rgba(0,0,0,0.35);}
+#sound-miniplayer .smp-icon{font-size:22px;flex-shrink:0;}
+#sound-miniplayer .smp-info{flex:1;min-width:0;}
+#sound-miniplayer .smp-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#sound-miniplayer .smp-status{font-size:11px;color:rgba(255,255,255,0.55);margin-top:1px;}
+#sound-miniplayer .smp-vol{display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,0.6);}
+#sound-miniplayer .smp-vol input[type=range]{width:80px;accent-color:#a78bfa;margin-bottom:0;}
+.smp-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:5px 13px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;}
+.smp-btn:hover{background:rgba(255,255,255,0.22);}
+.smp-btn.stop{background:rgba(239,68,68,0.25);border-color:rgba(239,68,68,0.4);}
+/* nudge main content up so mini-player doesn't cover it */
+body.sounds-playing main{padding-bottom:72px;}
+
 /* ---- AI COACH TAB ---- */
 .coach-hero{background:linear-gradient(135deg,#021126 0%,#0530ad 55%,#7c5cd8 100%);border-radius:10px;padding:22px 20px;margin-bottom:14px;color:#fff;}
 .coach-hero h2{font-size:17px;font-weight:800;margin-bottom:5px;}
@@ -402,6 +425,18 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="tagband"><span>"Move more. Rest well. Thrive together."</span><div class="pill">IBM Wellness Program</div></div>
 </header>
 <div id="syncbar" style="display:none;"><div style="display:flex;align-items:center;"><span class="sdot" id="sdot"></span><span id="stxt">Ready</span></div><button id="srefbtn">↻ Refresh Now</button></div>
+<!-- SOOTHING SOUNDS MINI-PLAYER (persistent, fixed bottom) -->
+<div id="sound-miniplayer">
+  <span class="smp-icon" id="smp-icon">&#x1F3B5;</span>
+  <div class="smp-info">
+    <div class="smp-name" id="smp-name">Rain</div>
+    <div class="smp-status" id="smp-status">Playing</div>
+  </div>
+  <div class="smp-vol">&#x1F50A; <input type="range" id="sound-vol-bar" min="0" max="100" value="60" oninput="SoundPlayer.setVolume(this.value/100);document.getElementById('sound-vol-panel').value=this.value;"></div>
+  <button class="smp-btn" id="smp-playpause" onclick="SoundPlayer.togglePause()">&#x23F8; Pause</button>
+  <button class="smp-btn stop" onclick="SoundPlayer.stop()">&#x25A0; Stop</button>
+</div>
+
 <nav>
   <button class="active" data-tab="today">Today</button>
   <button data-tab="log">Activity Log</button>
@@ -602,6 +637,7 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
       <button class="mind-btn" onclick="showMindPanel('reset')"><span class="mb-icon">&#x1F504;</span>Reset After a Meeting</button>
       <button class="mind-btn" onclick="showMindPanel('boost')" style="grid-column:1/-1;border-color:#d97706;background:#fffbeb;"><span class="mb-icon">&#x26A1;</span>Give Me a Boost!</button>
       <button class="mind-btn" onclick="showMindPanel('yoga')" style="grid-column:1/-1;border-color:#0f766e;background:#f0fdfa;"><span class="mb-icon">&#x1F9D8;</span>Desk Yoga</button>
+      <button class="mind-btn" onclick="showMindPanel('sounds')" style="grid-column:1/-1;border-color:#7c5cd8;background:#faf5ff;"><span class="mb-icon">&#x1F3B5;</span>Soothing Sounds</button>
     </div>
   </div>
 
@@ -869,6 +905,25 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
     </div>
   </div>
 
+  <!-- SOOTHING SOUNDS PANEL -->
+  <div id="mind-sounds" class="mind-panel card">
+    <h2>&#x1F3B5; Soothing Sounds</h2>
+    <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Generated entirely in your browser — no downloads, no internet required. Pick a sound to begin. It will keep playing as you switch tabs.</p>
+    <div class="sounds-grid">
+      <button class="sound-btn" id="sbtn-rain"    onclick="SoundPlayer.toggle('rain')">   <span class="sb-icon">&#x1F327;&#xFE0F;</span>Rain</button>
+      <button class="sound-btn" id="sbtn-ocean"   onclick="SoundPlayer.toggle('ocean')">  <span class="sb-icon">&#x1F30A;</span>Ocean Waves</button>
+      <button class="sound-btn" id="sbtn-forest"  onclick="SoundPlayer.toggle('forest')"> <span class="sb-icon">&#x1F333;</span>Forest &amp; Birds</button>
+      <button class="sound-btn" id="sbtn-brown"   onclick="SoundPlayer.toggle('brown')">  <span class="sb-icon">&#x1F7AB;</span>Brown Noise</button>
+      <button class="sound-btn" id="sbtn-white"   onclick="SoundPlayer.toggle('white')">  <span class="sb-icon">&#x26AA;</span>White Noise</button>
+      <button class="sound-btn" id="sbtn-binaural" onclick="SoundPlayer.toggle('binaural')"><span class="sb-icon">&#x1F9E0;</span>Binaural Focus</button>
+    </div>
+    <div class="sound-vol-row">
+      <label for="sound-vol-panel">&#x1F50A; Volume</label>
+      <input type="range" id="sound-vol-panel" min="0" max="100" value="60" oninput="SoundPlayer.setVolume(this.value/100)">
+    </div>
+    <p style="font-size:12px;color:#57606a;font-style:italic;">&#x2139;&#xFE0F; Binaural Focus uses a 10 Hz difference between ears — best experienced with headphones.</p>
+  </div>
+
 </div>
 
 <!-- REMINDERS TAB -->
@@ -1000,6 +1055,10 @@ footer{background:#021126;text-align:center;font-size:12px;color:rgba(255,255,25
   <div class="card">
     <h2>&#x23F1; Focus Session Timer</h2>
     <p style="font-size:13px;color:#57606a;margin-bottom:14px;">Pomodoro-style timer. Focus hard, then rest. Sessions are saved to your log.</p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;color:#57606a;">
+      <input type="checkbox" id="focus-music-toggle" style="width:16px;height:16px;accent-color:#7c5cd8;margin:0;cursor:pointer;" onchange="SoundPlayer.handleFocusToggle(this.checked)">
+      <label for="focus-music-toggle" style="cursor:pointer;margin-bottom:0;">&#x1F3B5; Play soothing sounds during focus sessions</label>
+    </div>
 
     <div class="focus-mode-tabs">
       <button class="focus-mode-tab active" id="fmode-focus" onclick="setFocusMode('focus')">&#x1F3AF; 25 min Focus</button>
@@ -2657,12 +2716,14 @@ function startFocusTimer() {
   var pauseBtn = document.getElementById('btn-focus-pause');
   if (startBtn) startBtn.style.display = 'none';
   if (pauseBtn) pauseBtn.style.display = 'inline-block';
+  if (typeof SoundPlayer !== 'undefined') SoundPlayer.onFocusStart();
   focusTimerID = setInterval(function() {
     focusRemSecs--;
     updateFocusDisplay();
     if (focusRemSecs <= 0) {
       clearInterval(focusTimerID);
       focusRunning = false;
+      if (typeof SoundPlayer !== 'undefined') SoundPlayer.onFocusEnd();
       var m = FOCUS_MODES[focusMode];
       var log = getFocusLog();
       log.push({type: m.isBreak ? 'break' : 'focus', mins: m.mins, time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})});
@@ -3562,6 +3623,266 @@ function downloadCSV(filename, rows) {
   URL.revokeObjectURL(url);
   toast('CSV downloaded!');
 }
+
+// ============================================================
+// SOOTHING SOUNDS — Web Audio API SoundPlayer
+// ============================================================
+var SoundPlayer = (function() {
+  var _ctx = null;
+  var _masterGain = null;
+  var _nodes = [];          // currently running audio nodes
+  var _currentTrack = null; // id string
+  var _paused = false;
+  var _volume = 0.6;
+  var _focusMusicEnabled = false;
+  var _focusMusicTrack = 'brown'; // default track for focus mode
+
+  var TRACKS = {
+    rain:     { icon: '🌧️', name: 'Rain' },
+    ocean:    { icon: '🌊', name: 'Ocean Waves' },
+    forest:   { icon: '🌳', name: 'Forest & Birds' },
+    brown:    { icon: '🟫', name: 'Brown Noise' },
+    white:    { icon: '⚪', name: 'White Noise' },
+    binaural: { icon: '🧠', name: 'Binaural Focus' }
+  };
+
+  function _getCtx() {
+    if (!_ctx) {
+      _ctx = new (window.AudioContext || window.webkitAudioContext)();
+      _masterGain = _ctx.createGain();
+      _masterGain.gain.value = _volume;
+      _masterGain.connect(_ctx.destination);
+    }
+    if (_ctx.state === 'suspended') _ctx.resume();
+    return _ctx;
+  }
+
+  // --- noise buffer helpers ---
+  function _makeNoiseBuffer(ctx, seconds, type) {
+    var sr = ctx.sampleRate;
+    var len = sr * seconds;
+    var buf = ctx.createBuffer(1, len, sr);
+    var data = buf.getChannelData(0);
+    if (type === 'white') {
+      for (var i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    } else { // brown / pink approximation
+      var last = 0;
+      for (var i = 0; i < len; i++) {
+        var w = Math.random() * 2 - 1;
+        last = (last + 0.02 * w) / 1.02;
+        data[i] = last * 6; // boost gain to audible level
+      }
+    }
+    return buf;
+  }
+
+  function _stopAll() {
+    _nodes.forEach(function(n) { try { n.stop(); } catch(e){} });
+    _nodes = [];
+  }
+
+  // --- track generators ---
+  function _playRain(ctx, dest) {
+    // layered filtered brown noise bursts for rain texture
+    var buf = _makeNoiseBuffer(ctx, 4, 'brown');
+    [2000, 4000, 8000].forEach(function(freq, i) {
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var filt = ctx.createBiquadFilter();
+      filt.type = 'bandpass'; filt.frequency.value = freq; filt.Q.value = 0.8;
+      var g = ctx.createGain(); g.gain.value = 0.38 - i * 0.06;
+      src.connect(filt); filt.connect(g); g.connect(dest);
+      src.start(); _nodes.push(src);
+    });
+    // low rumble
+    var rumble = ctx.createBufferSource();
+    rumble.buffer = _makeNoiseBuffer(ctx, 4, 'brown'); rumble.loop = true;
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 200;
+    var rg = ctx.createGain(); rg.gain.value = 0.15;
+    rumble.connect(lp); lp.connect(rg); rg.connect(dest);
+    rumble.start(); _nodes.push(rumble);
+  }
+
+  function _playOcean(ctx, dest) {
+    // slow LFO-modulated noise for wave rhythm
+    var buf = _makeNoiseBuffer(ctx, 8, 'brown');
+    var src = ctx.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    var filt = ctx.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 700;
+    var g = ctx.createGain(); g.gain.value = 0.5;
+    src.connect(filt); filt.connect(g); g.connect(dest);
+    src.start(); _nodes.push(src);
+    // LFO for the wave swell (0.12 Hz ≈ one wave every ~8 sec)
+    var lfo = ctx.createOscillator();
+    lfo.type = 'sine'; lfo.frequency.value = 0.12;
+    var lfoGain = ctx.createGain(); lfoGain.gain.value = 0.35;
+    lfo.connect(lfoGain); lfoGain.connect(g.gain);
+    lfo.start(); _nodes.push(lfo);
+    // higher surf crackle
+    var surf = ctx.createBufferSource();
+    surf.buffer = _makeNoiseBuffer(ctx, 4, 'white'); surf.loop = true;
+    var sfilt = ctx.createBiquadFilter(); sfilt.type = 'highpass'; sfilt.frequency.value = 3000;
+    var sg = ctx.createGain(); sg.gain.value = 0.08;
+    surf.connect(sfilt); sfilt.connect(sg); sg.connect(dest);
+    surf.start(); _nodes.push(surf);
+  }
+
+  function _playForest(ctx, dest) {
+    // background ambient breeze
+    var buf = _makeNoiseBuffer(ctx, 8, 'brown');
+    var src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    var filt = ctx.createBiquadFilter(); filt.type = 'bandpass'; filt.frequency.value = 800; filt.Q.value = 0.5;
+    var g = ctx.createGain(); g.gain.value = 0.2;
+    src.connect(filt); filt.connect(g); g.connect(dest);
+    src.start(); _nodes.push(src);
+    // bird chirps — short sine sweeps fired on a random schedule
+    function chirp() {
+      if (_currentTrack !== 'forest') return;
+      var o = ctx.createOscillator(); var og = ctx.createGain();
+      o.connect(og); og.connect(dest);
+      var baseFreq = 2000 + Math.random() * 2000;
+      o.type = 'sine'; o.frequency.value = baseFreq;
+      o.frequency.linearRampToValueAtTime(baseFreq * 1.4, ctx.currentTime + 0.12);
+      og.gain.setValueAtTime(0, ctx.currentTime);
+      og.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.04);
+      og.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.25);
+      _nodes.push(o);
+      setTimeout(chirp, 800 + Math.random() * 3200);
+    }
+    setTimeout(chirp, 600);
+  }
+
+  function _playBrownNoise(ctx, dest) {
+    var buf = _makeNoiseBuffer(ctx, 4, 'brown');
+    var src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    var g = ctx.createGain(); g.gain.value = 0.5;
+    src.connect(g); g.connect(dest);
+    src.start(); _nodes.push(src);
+  }
+
+  function _playWhiteNoise(ctx, dest) {
+    var buf = _makeNoiseBuffer(ctx, 4, 'white');
+    var src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    var g = ctx.createGain(); g.gain.value = 0.28;
+    src.connect(g); g.connect(dest);
+    src.start(); _nodes.push(src);
+  }
+
+  function _playBinaural(ctx, dest) {
+    // Left ear: 200 Hz base, Right ear: 210 Hz (10 Hz theta beat)
+    var splitter = ctx.createChannelMerger(2);
+    splitter.connect(dest);
+    [[200, 0], [210, 1]].forEach(function(pair) {
+      var osc = ctx.createOscillator(); var g = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = pair[0];
+      g.gain.value = 0.18;
+      osc.connect(g);
+      // route to specific channel via merger
+      var ch = ctx.createChannelSplitter(1);
+      g.connect(splitter, 0, pair[1]);
+      osc.start(); _nodes.push(osc);
+    });
+    // ambient pink-ish pad underneath
+    var buf = _makeNoiseBuffer(ctx, 4, 'brown');
+    var src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    var filt = ctx.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 400;
+    var bg = ctx.createGain(); bg.gain.value = 0.08;
+    src.connect(filt); filt.connect(bg); bg.connect(dest);
+    src.start(); _nodes.push(src);
+  }
+
+  function _startTrack(id) {
+    var ctx = _getCtx();
+    _stopAll();
+    _currentTrack = id;
+    switch (id) {
+      case 'rain':     _playRain(ctx, _masterGain);     break;
+      case 'ocean':    _playOcean(ctx, _masterGain);    break;
+      case 'forest':   _playForest(ctx, _masterGain);   break;
+      case 'brown':    _playBrownNoise(ctx, _masterGain); break;
+      case 'white':    _playWhiteNoise(ctx, _masterGain); break;
+      case 'binaural': _playBinaural(ctx, _masterGain); break;
+    }
+    _paused = false;
+    _updateUI();
+  }
+
+  function _updateUI() {
+    // highlight active sound button
+    document.querySelectorAll('.sound-btn').forEach(function(b) { b.classList.remove('playing'); });
+    if (_currentTrack) {
+      var btn = document.getElementById('sbtn-' + _currentTrack);
+      if (btn) btn.classList.add('playing');
+    }
+    // mini-player
+    var mp = document.getElementById('sound-miniplayer');
+    if (!mp) return;
+    if (_currentTrack) {
+      var t = TRACKS[_currentTrack];
+      document.getElementById('smp-icon').textContent = t.icon;
+      document.getElementById('smp-name').textContent = t.name;
+      document.getElementById('smp-status').textContent = _paused ? 'Paused' : 'Playing';
+      document.getElementById('smp-playpause').innerHTML = _paused ? '&#x25B6; Resume' : '&#x23F8; Pause';
+      mp.style.display = 'flex';
+      document.body.classList.add('sounds-playing');
+    } else {
+      mp.style.display = 'none';
+      document.body.classList.remove('sounds-playing');
+    }
+  }
+
+  return {
+    toggle: function(id) {
+      if (_currentTrack === id && !_paused) {
+        // clicking the active track pauses it
+        this.togglePause();
+      } else {
+        _startTrack(id);
+        _focusMusicTrack = id; // remember for focus timer
+      }
+    },
+    togglePause: function() {
+      if (!_currentTrack) return;
+      var ctx = _getCtx();
+      if (_paused) {
+        ctx.resume();
+        _paused = false;
+      } else {
+        ctx.suspend();
+        _paused = true;
+      }
+      _updateUI();
+    },
+    stop: function() {
+      _stopAll();
+      if (_ctx) _ctx.suspend();
+      _currentTrack = null;
+      _paused = false;
+      _updateUI();
+    },
+    setVolume: function(v) {
+      _volume = Math.max(0, Math.min(1, v));
+      if (_masterGain) _masterGain.gain.value = _volume;
+      // sync both sliders
+      var bar = document.getElementById('sound-vol-bar');
+      var panel = document.getElementById('sound-vol-panel');
+      if (bar)   bar.value   = Math.round(_volume * 100);
+      if (panel) panel.value = Math.round(_volume * 100);
+    },
+    handleFocusToggle: function(enabled) {
+      _focusMusicEnabled = enabled;
+      if (!enabled && _currentTrack) this.stop();
+    },
+    onFocusStart: function() {
+      if (_focusMusicEnabled) _startTrack(_focusMusicTrack);
+    },
+    onFocusEnd: function() {
+      if (_focusMusicEnabled) this.stop();
+    },
+    isPlaying: function() { return !!_currentTrack && !_paused; }
+  };
+})();
 
 document.getElementById('btn-export-steps').addEventListener('click', function() {
   var rows = [['Date', 'Steps', 'Water (glasses)', 'Mood']];
