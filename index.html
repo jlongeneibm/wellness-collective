@@ -3683,28 +3683,17 @@ var SoundPlayer = (function() {
 
   // --- track generators ---
   function _playRain(ctx, dest) {
-    // layered filtered brown noise bursts for rain texture
-    var buf = _makeNoiseBuffer(ctx, 4, 'brown');
-    [2000, 4000, 8000].forEach(function(freq, i) {
-      var src = ctx.createBufferSource();
-      src.buffer = buf; src.loop = true;
-      var filt = ctx.createBiquadFilter();
-      filt.type = 'bandpass'; filt.frequency.value = freq; filt.Q.value = 0.8;
-      var g = ctx.createGain(); g.gain.value = 0.38 - i * 0.06;
-      src.connect(filt); filt.connect(g); g.connect(dest);
-      src.start(); _nodes.push(src);
-    });
-    // low rumble
-    var rumble = ctx.createBufferSource();
-    rumble.buffer = _makeNoiseBuffer(ctx, 4, 'brown'); rumble.loop = true;
-    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 200;
-    var rg = ctx.createGain(); rg.gain.value = 0.15;
-    rumble.connect(lp); lp.connect(rg); rg.connect(dest);
-    rumble.start(); _nodes.push(rumble);
+    // clean white noise through a highpass filter — natural rain sound
+    var src = ctx.createBufferSource();
+    src.buffer = _makeNoiseBuffer(ctx, 4, 'white'); src.loop = true;
+    var filt = ctx.createBiquadFilter(); filt.type = 'highpass'; filt.frequency.value = 1000;
+    var g = ctx.createGain(); g.gain.value = 0.35;
+    src.connect(filt); filt.connect(g); g.connect(dest);
+    src.start(); _nodes.push(src);
   }
 
   function _playOcean(ctx, dest) {
-    // slow LFO-modulated noise for wave rhythm
+    // single lowpass-filtered brown noise with a slow LFO wave swell
     var buf = _makeNoiseBuffer(ctx, 8, 'brown');
     var src = ctx.createBufferSource();
     src.buffer = buf; src.loop = true;
@@ -3718,13 +3707,6 @@ var SoundPlayer = (function() {
     var lfoGain = ctx.createGain(); lfoGain.gain.value = 0.35;
     lfo.connect(lfoGain); lfoGain.connect(g.gain);
     lfo.start(); _nodes.push(lfo);
-    // higher surf crackle
-    var surf = ctx.createBufferSource();
-    surf.buffer = _makeNoiseBuffer(ctx, 4, 'white'); surf.loop = true;
-    var sfilt = ctx.createBiquadFilter(); sfilt.type = 'highpass'; sfilt.frequency.value = 3000;
-    var sg = ctx.createGain(); sg.gain.value = 0.08;
-    surf.connect(sfilt); sfilt.connect(sg); sg.connect(dest);
-    surf.start(); _nodes.push(surf);
   }
 
   function _playForest(ctx, dest) {
